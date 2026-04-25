@@ -1,0 +1,125 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a href="{:url('certificate/index')}">证书管理</a>
+                <a><cite>生成证书</cite></a>
+            </span>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form" lay-filter="form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="required">*</span>选择模板</label>
+                    <div class="layui-input-block">
+                        <select name="template_id" lay-verify="required">
+                            <option value="">请选择证书模板</option>
+                            {volist name="templates" id="t"}
+                            <option value="{$t.id}">{$t.name} ({$t.code})</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="required">*</span>生成数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="quantity" value="100" min="1" max="10000" class="layui-input" style="width: 200px;" lay-verify="required|number">
+                        <span class="layui-form-label-text">（1-10000）</span>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <label class="layui-form-label">绑定商品</label>
+                    <div class="layui-input-block">
+                        <div class="layui-input-inline" style="width: 300px;">
+                            <input type="text" id="goods_name" placeholder="点击选择商品" readonly class="layui-input">
+                            <input type="hidden" name="goods_id" id="goods_id" value="0">
+                        </div>
+                        <button type="button" class="layui-btn layui-btn-sm" id="selectGoods">
+                            <i class="layui-icon layui-icon-search"></i> 选择商品
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="clearGoods">
+                            <i class="layui-icon layui-icon-close"></i> 清除
+                        </button>
+                        <span class="layui-form-label-text" style="color: #999;">（可选，不选择则为空码）</span>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="submit">开始生成</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+            
+            <blockquote class="layui-elem-quote" style="margin-top: 30px;">
+                <p><strong>使用说明：</strong></p>
+                <p>1. 选择证书模板，确定生成数量</p>
+                <p>2. 可选择绑定商品，绑定后证书将自动关联该商品</p>
+                <p>3. 生成后可导出证书码用于印刷</p>
+                <p>4. 证书码格式示例：<code>MZ123456780001AB</code></p>
+            </blockquote>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+layui.use(['form', 'layer'], function(){
+    var form = layui.form;
+    var layer = layui.layer;
+
+    // 选择商品
+    $('#selectGoods').click(function(){
+        layer.open({
+            type: 2,
+            title: '选择商品',
+            content: '{:url("goodsSelect")}',
+            area: ['80%', '80%'],
+            btn: ['确定', '取消'],
+            yes: function(index, layero){
+                var iframeWin = layero.find('iframe')[0].contentWindow;
+                var goods = iframeWin.getSelectedGoods();
+                if(goods){
+                    $('#goods_name').val(goods.title);
+                    $('#goods_id').val(goods.id);
+                    layer.close(index);
+                } else {
+                    layer.msg('请选择商品');
+                }
+            }
+        });
+    });
+
+    // 清除商品
+    $('#clearGoods').click(function(){
+        $('#goods_name').val('');
+        $('#goods_id').val(0);
+    });
+
+    // 提交
+    form.on('submit(submit)', function(data){
+        var loadIndex = layer.load(2, {shade: [0.3, '#000']});
+        $.post('{:url("generate")}', data.field, function(res){
+            layer.close(loadIndex);
+            if(res.code === 0){
+                layer.alert(res.msg + '<br>批次号：' + res.batch_no, function(index){
+                    location.href = '{:url("index")}';
+                });
+            } else {
+                layer.msg(res.msg);
+            }
+        });
+        return false;
+    });
+
+    form.render();
+});
+</script>
+{/block}

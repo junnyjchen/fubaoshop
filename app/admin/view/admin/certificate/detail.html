@@ -1,0 +1,179 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a href="{:url('certificate/index')}">证书管理</a>
+                <a><cite>证书详情</cite></a>
+            </span>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space15">
+                <!-- 证书信息 -->
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">证书信息</div>
+                        <div class="layui-card-body">
+                            <table class="layui-table">
+                                <tr>
+                                    <td width="120">证书码</td>
+                                    <td><strong style="color: #c41e3a;">{$cert.code}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>模板</td>
+                                    <td>{$template.name|default='未知'}</td>
+                                </tr>
+                                <tr>
+                                    <td>状态</td>
+                                    <td>
+                                        {switch name="cert.status"}
+                                            {case value="0"}<span class="layui-badge layui-bg-gray">未激活</span>{/case}
+                                            {case value="1"}<span class="layui-badge layui-bg-blue">已激活</span>{/case}
+                                            {case value="2"}<span class="layui-badge layui-bg-orange">已绑定</span>{/case}
+                                            {case value="3"}<span class="layui-badge layui-bg-green">已验证</span>{/case}
+                                        {/switch}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>验证次数</td>
+                                    <td>{$cert.verify_count}</td>
+                                </tr>
+                                <tr>
+                                    <td>生成时间</td>
+                                    <td>{:date('Y-m-d H:i:s', $cert.add_time)}</td>
+                                </tr>
+                                {notempty name="$cert.bind_time"}
+                                <tr>
+                                    <td>绑定时间</td>
+                                    <td>{:date('Y-m-d H:i:s', $cert.bind_time)}</td>
+                                </tr>
+                                {/notempty}
+                                {notempty name="$cert.last_verify_time"}
+                                <tr>
+                                    <td>最后验证</td>
+                                    <td>{:date('Y-m-d H:i:s', $cert.last_verify_time)}</td>
+                                </tr>
+                                {/notempty}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 绑定商品 -->
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">绑定商品</div>
+                        <div class="layui-card-body">
+                            {empty name="$goods"}
+                            <div class="empty-state">
+                                <i class="layui-icon layui-icon-note" style="font-size: 48px; color: #999;"></i>
+                                <p>暂未绑定商品</p>
+                            </div>
+                            {else/}
+                            <div class="goods-info">
+                                <img src="{$goods.images}" alt="{$goods.title}" class="goods-thumb">
+                                <div class="goods-detail">
+                                    <h4>{$goods.title}</h4>
+                                    <p>商品ID: {$goods.id}</p>
+                                    {notempty name="$goodssku"}
+                                    <p>SKU: {$goodssku.title|default='-'} (ID: {$cert.goods_sku_id})</p>
+                                    {/notempty}
+                                </div>
+                            </div>
+                            {/empty}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 证书预览 -->
+            {notempty name="$template"}
+            <div class="layui-card" style="margin-top: 15px;">
+                <div class="layui-card-header">证书内容</div>
+                <div class="layui-card-body">
+                    <div class="certificate-preview">
+                        {$template.content|raw}
+                    </div>
+                </div>
+            </div>
+            {/notempty}
+            
+            <!-- 验证记录 -->
+            <div class="layui-card" style="margin-top: 15px;">
+                <div class="layui-card-header">
+                    验证记录
+                    <span class="layui-badge layui-bg-gray" style="margin-left: 10px;">{:count($logs)} 条</span>
+                </div>
+                <div class="layui-card-body">
+                    {empty name="$logs"}
+                    <div class="empty-state">
+                        <p>暂无验证记录</p>
+                    </div>
+                    {else/}
+                    <table class="layui-table">
+                        <thead>
+                            <tr>
+                                <th>IP</th>
+                                <th>地区</th>
+                                <th>时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {volist name="$logs" id="log"}
+                            <tr>
+                                <td>{$log.ip}</td>
+                                <td>{$log.province}{$log.city}</td>
+                                <td>{$log.add_time}</td>
+                            </tr>
+                            {/volist}
+                        </tbody>
+                    </table>
+                    {/empty}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.certificate-preview {
+    padding: 30px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #d4af37;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1.8;
+}
+.certificate-preview strong {
+    color: #e63950;
+}
+.goods-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.goods-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.goods-detail h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+.goods-detail p {
+    margin: 3px 0;
+    color: #666;
+    font-size: 13px;
+}
+.empty-state {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+}
+</style>
+{/block}

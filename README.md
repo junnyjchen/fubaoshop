@@ -96,7 +96,23 @@
 
 **访问地址**: `/wish`
 
-### 6. 营销弹窗
+### 6. 一物一码证书
+
+产品证书认证与防伪溯源功能。
+
+| 功能 | 说明 |
+|------|------|
+| 证书模板 | 支持多种证书类型（开光/鉴定/传承） |
+| 批量生成 | 支持批量生成唯一证书码 |
+| 商品绑定 | 与商品/SKU绑定，支持一码一物 |
+| 防伪验证 | 扫码验证，记录验证日志 |
+| 溯源追踪 | 查看证书全生命周期 |
+
+**后台地址**: `/admin/certificate`
+
+**前台验证**: `/certificate/verify?code=xxx`
+
+### 7. 营销弹窗
 
 商品详情页智能营销组件。
 
@@ -105,7 +121,7 @@
 | 下单提示 | 5秒后 | 显示其他用户购买动态 |
 | 优惠券 | 10秒后 | 领取新人专享券 |
 
-### 7. 觅智商城主题
+### 8. 觅智商城主题
 
 玄学文化主题 UI 组件。
 
@@ -116,7 +132,7 @@
 | 字体 | Noto Serif TC（中文）+ Noto Sans TC |
 | 动效 | 古韵过渡动画 |
 
-### 8. 多语言支持
+### 9. 多语言支持
 
 内置多语言切换功能。
 
@@ -138,7 +154,8 @@
 │   │   │   ├── freepick/          # 免费领取控制器
 │   │   │   ├── quickorder/        # 快速下单控制器
 │   │   │   ├── wiki/              # 符箓百科控制器
-│   │   │   └── wish/              # 如愿控制器
+│   │   │   ├── wish/              # 如愿控制器
+│   │   │   └── certificate/       # 一物一码控制器
 │   │   ├── service/               # 服务层
 │   │   └── view/default/          # 前台视图
 │   ├── admin/                     # 后台应用
@@ -154,7 +171,8 @@
 │       ├── freepick.sql          # 免费领取表
 │       ├── quick_order.sql       # 快速下单表
 │       ├── talisman_wiki.sql     # 符箓百科表
-│       └── wish.sql              # 如愿表
+│       ├── wish.sql              # 如愿表
+│       └── certificate.sql       # 一物一码表
 └── public/                        # Web根目录
 ```
 
@@ -182,6 +200,7 @@ mysql -u root -p < docs/database/ai_assistant.sql
 mysql -u root -p < docs/database/freepick.sql
 mysql -u root -p < docs/database/quick_order.sql
 mysql -u root -p < docs/database/wish.sql
+mysql -u root -p < docs/database/certificate.sql
 ```
 
 3. **配置站点**
@@ -216,6 +235,11 @@ return [
 | `sxo_wish_comment` | 如愿评论 | 评论表 |
 | `sxo_wish_like` | 如愿点赞 | 点赞表 |
 | `sxo_wish_category` | 如愿分类 | 4种类型 |
+| `sxo_certificate_template` | 证书模板 | 开光/鉴定/传承模板 |
+| `sxo_certificate_code` | 证书码 | 唯一码、状态、绑定 |
+| `sxo_certificate_verify_log` | 验证日志 | 扫码验证记录 |
+| `sxo_certificate_batch` | 生成批次 | 批量生成记录 |
+| `sxo_goods_certificate` | 商品绑定 | 商品证书关联 |
 
 ---
 

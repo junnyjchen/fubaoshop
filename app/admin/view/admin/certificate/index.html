@@ -1,0 +1,204 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a href="{:url('certificate/index')}">证书管理</a>
+            </span>
+        </div>
+        <div class="layui-card-body">
+            <!-- 搜索栏 -->
+            <div class="layui-form layui-form-pane" style="margin-bottom: 10px;">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键词</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keywords" placeholder="证书码" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">模板</label>
+                        <div class="layui-input-inline">
+                            <select name="template_id">
+                                <option value="">全部</option>
+                                {volist name="templates" id="t"}
+                                <option value="{$t.id}">{$t.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status">
+                                <option value="-1">全部</option>
+                                <option value="0">未激活</option>
+                                <option value="1">已激活</option>
+                                <option value="2">已绑定</option>
+                                <option value="3">已验证</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn" type="button" lay-filter="search" lay-submit>
+                            <i class="layui-icon layui-icon-search"></i> 搜索
+                        </button>
+                        <button class="layui-btn layui-btn-normal" type="button" onclick="location.href='{:url(\"generate\")}'">
+                            <i class="layui-icon layui-icon-add-1"></i> 生成证书
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <table class="layui-hide" id="table" lay-filter="table"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script type="text/html" id="statusTpl">
+    {{# if(d.status == 0){ }}
+    <span class="layui-badge layui-bg-gray">未激活</span>
+    {{# } else if(d.status == 1){ }}
+    <span class="layui-badge layui-bg-blue">已激活</span>
+    {{# } else if(d.status == 2){ }}
+    <span class="layui-badge layui-bg-orange">已绑定</span>
+    {{# } else if(d.status == 3){ }}
+    <span class="layui-badge layui-bg-green">已验证</span>
+    {{# } }}
+</script>
+{/block}
+
+{block name="script"}
+<script>
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+
+    // 渲染表格
+    var ins1 = table.render({
+        elem: '#table',
+        url: '{:url("index")}',
+        page: true,
+        cols: [[
+            {type: 'checkbox', fixed: 'left'},
+            {field: 'id', title: 'ID', width: 80},
+            {field: 'code', title: '证书码', width: 200},
+            {field: 'template_name', title: '模板', width: 120},
+            {field: 'status', title: '状态', width: 100, templet: '#statusTpl'},
+            {field: 'bind_time', title: '绑定时间', width: 160},
+            {field: 'add_time', title: '生成时间', width: 160},
+            {field: 'verify_count', title: '验证次数', width: 100},
+            {fixed: 'right', title: '操作', width: 120, toolbar: '#toolbar'}
+        ]],
+        parseData: function(res){
+            return {
+                "code": res.code,
+                "msg": res.msg,
+                "count": res.count,
+                "data": res.data
+            };
+        }
+    });
+
+    // 搜索
+    form.on('submit(search)', function(data){
+        ins1.reload({
+            where: data.field,
+            page: {curr: 1}
+        });
+        return false;
+    });
+
+    // 行工具栏
+    table.on('tool(table)', function(obj){
+        var data = obj.data;
+        var event = obj.event;
+
+        if(event === 'detail'){
+            location.href = '{:url("detail")}?id=' + data.id;
+        } else if(event === 'del'){
+            layer.confirm('确定删除该证书吗？', function(index){
+                $.post('{:url("delete")}', {ids: data.id}, function(res){
+                    if(res.code === 0){
+                        obj.del();
+                        layer.close(index);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            });
+        }
+    });
+
+    // 批量删除
+    $('.batch-delete').click(function(){
+        var checkStatus = table.checkStatus('table');
+        var data = checkStatus.data;
+        if(data.length === 0){
+            layer.msg('请选择要删除的数据');
+            return;
+        }
+        var ids = data.map(function(d){ return d.id; }).join(',');
+        layer.confirm('确定删除选中的证书吗？', function(index){
+            $.post('{:url("delete")}', {ids: ids}, function(res){
+                if(res.code === 0){
+                    ins1.reload();
+                    layer.close(index);
+                } else {
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    });
+
+    // 批量绑定商品
+    $('.batch-bind').click(function(){
+        var checkStatus = table.checkStatus('table');
+        var data = checkStatus.data;
+        if(data.length === 0){
+            layer.msg('请选择要绑定的证书');
+            return;
+        }
+        
+        // 弹出商品选择
+        layer.open({
+            type: 2,
+            title: '选择商品',
+            content: '{:url("goodsSelect")}',
+            area: ['80%', '80%'],
+            btn: ['确定', '取消'],
+            yes: function(index, layero){
+                var iframeWin = layero.find('iframe')[0].contentWindow;
+                var goods = iframeWin.getSelectedGoods();
+                if(!goods){
+                    layer.msg('请选择商品');
+                    return;
+                }
+                $.post('{:url("bindGoods")}', {
+                    ids: data.map(function(d){ return d.id; }).join(','),
+                    goods_id: goods.id
+                }, function(res){
+                    if(res.code === 0){
+                        layer.close(index);
+                        ins1.reload();
+                        layer.msg('绑定成功');
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{/block}

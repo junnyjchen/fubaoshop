@@ -1,0 +1,174 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a><cite>模板管理</cite></a>
+            </span>
+            <div style="float: right;">
+                <button class="layui-btn layui-btn-sm" id="addBtn">
+                    <i class="layui-icon layui-icon-add-1"></i> 添加模板
+                </button>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-hide" id="table" lay-filter="table"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 添加/编辑弹窗 -->
+<div id="editDialog" style="display: none; padding: 20px;">
+    <form class="layui-form" id="editForm">
+        <input type="hidden" name="id" value="0">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="required">*</span>模板名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="如：开光证书" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="required">*</span>模板编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="code" required lay-verify="required" placeholder="如：kaiguang" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">证书内容</label>
+            <div class="layui-input-block">
+                <textarea name="content" placeholder="支持HTML，可使用变量：{goods_name}、{kaiguang_date}、{temple_name}、{master_name}等" class="layui-textarea" style="height: 150px;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">背景图片</label>
+            <div class="layui-input-block">
+                <input type="text" name="image" placeholder="证书背景图片URL" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" name="sort" value="0" class="layui-input" style="width: 100px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">启用</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_enable" value="1" lay-skin="switch" lay-text="启用|禁用" checked>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script type="text/html" id="enableTpl">
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用" lay-filter="enableSwitch" {{d.is_enable == 1 ? 'checked' : ''}}>
+</script>
+{/block}
+
+{block name="script"}
+<script>
+var editDialog;
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+
+    // 渲染表格
+    table.render({
+        elem: '#table',
+        url: '{:url("template")}',
+        cols: [[
+            {field: 'id', title: 'ID', width: 80},
+            {field: 'name', title: '模板名称', width: 150},
+            {field: 'code', title: '编码', width: 120},
+            {field: 'sort', title: '排序', width: 80},
+            {field: 'is_enable_text', title: '状态', width: 100},
+            {field: 'add_time', title: '创建时间', width: 160},
+            {fixed: 'right', title: '操作', width: 120, toolbar: '#toolbar'}
+        ]],
+        parseData: function(res){
+            return {"code": res.code, "msg": res.msg, "data": res.data};
+        }
+    });
+
+    // 行工具栏
+    table.on('tool(table)', function(obj){
+        var data = obj.data;
+        var event = obj.event;
+
+        if(event === 'edit'){
+            showEditDialog(data);
+        } else if(event === 'del'){
+            layer.confirm('确定删除该模板吗？', function(index){
+                $.post('{:url("templateDelete")}', {id: data.id}, function(res){
+                    if(res.code === 0){
+                        obj.del();
+                        layer.close(index);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            });
+        }
+    });
+
+    // 启用切换
+    form.on('switch(enableSwitch)', function(obj){
+        var id = this.value;
+        var is_enable = obj.elem.checked ? 1 : 0;
+        $.post('{:url("templateSave")}', {id: id, is_enable: is_enable}, function(res){
+            if(res.code !== 0){
+                layer.msg(res.msg);
+            }
+        });
+    });
+
+    // 添加按钮
+    $('#addBtn').click(function(){
+        showEditDialog({id: 0, name: '', code: '', content: '', image: '', sort: 0, is_enable: 1});
+    });
+
+    // 显示编辑弹窗
+    function showEditDialog(data){
+        var form = layui.form;
+        $('#editForm')[0].reset();
+        $('#editForm [name=id]').val(data.id);
+        $('#editForm [name=name]').val(data.name);
+        $('#editForm [name=code]').val(data.code);
+        $('#editForm [name=content]').val(data.content);
+        $('#editForm [name=image]').val(data.image);
+        $('#editForm [name=sort]').val(data.sort || 0);
+        $('#editForm [name=is_enable]').prop('checked', data.is_enable == 1);
+        form.render('checkbox');
+
+        editDialog = layer.open({
+            type: 1,
+            title: data.id > 0 ? '编辑模板' : '添加模板',
+            content: $('#editDialog'),
+            area: ['600px', '500px'],
+            btn: ['保存', '取消'],
+            yes: function(index){
+                var formData = $('#editForm').serialize();
+                $.post('{:url("templateSave")}', formData, function(res){
+                    if(res.code === 0){
+                        layer.close(index);
+                        table.reload('table');
+                        layer.msg('保存成功');
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            }
+        });
+    }
+});
+</script>
+{/block}

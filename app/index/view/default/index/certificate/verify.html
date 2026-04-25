@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>证书验证 - 觅智商城</title>
+    <link rel="stylesheet" href="__PUBLIC__/static/common/css/talu-theme.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .verify-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .verify-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .verify-header h1 {
+            color: #d4af37;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .verify-header .symbol {
+            font-size: 48px;
+            color: #c41e3a;
+            margin-bottom: 10px;
+        }
+        .certificate-card {
+            background: linear-gradient(145deg, #1a1a2e, #0f0f23);
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .certificate-inner {
+            position: relative;
+            z-index: 1;
+        }
+        .cert-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .cert-title h2 {
+            color: #d4af37;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        .cert-title p {
+            color: #888;
+            font-size: 14px;
+        }
+        .cert-content {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: #fff;
+            line-height: 2;
+            font-size: 16px;
+        }
+        .cert-content strong {
+            color: #e63950;
+        }
+        .cert-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .cert-meta-item {
+            background: rgba(196, 30, 58, 0.1);
+            border: 1px solid rgba(196, 30, 58, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .cert-meta-item label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .cert-meta-item span {
+            color: #d4af37;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .cert-code {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .cert-code label {
+            color: #888;
+            font-size: 12px;
+        }
+        .cert-code span {
+            display: block;
+            color: #e63950;
+            font-size: 24px;
+            font-family: monospace;
+            letter-spacing: 3px;
+            margin-top: 5px;
+        }
+        .cert-status {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .status-valid {
+            background: linear-gradient(135deg, #c41e3a, #e63950);
+            color: #fff;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.4); }
+            50% { box-shadow: 0 0 20px 10px rgba(196, 30, 58, 0); }
+        }
+        .goods-section {
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            padding-top: 30px;
+        }
+        .goods-section h3 {
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .goods-card {
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .goods-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .goods-info h4 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .goods-info p {
+            color: #888;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .verify-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #c41e3a, #e63950);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(196, 30, 58, 0.4);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #d4af37;
+        }
+        /* 验证成功动画 */
+        .verify-success {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: #c41e3a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: verifyPop 0.5s ease-out;
+            z-index: 1000;
+        }
+        @keyframes verifyPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        .verify-success::after {
+            content: '✓';
+            font-size: 80px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <!-- 验证成功动画 -->
+        <div class="verify-success" id="verifySuccess"></div>
+        
+        <div class="verify-header">
+            <div class="symbol">☯</div>
+            <h1>觅智商城 · 证书认证</h1>
+            <p>一物一码 · 正品保障</p>
+        </div>
+        
+        <div class="certificate-card">
+            <div class="certificate-inner">
+                <div class="cert-title">
+                    <h2>{$template.name|default='认证证书'}</h2>
+                    <p> CERTIFICATE OF AUTHENTICATION</p>
+                </div>
+                
+                <div class="cert-content">
+                    {$content|raw}
+                </div>
+                
+                <div class="cert-meta">
+                    <div class="cert-meta-item">
+                        <label>验证次数</label>
+                        <span>{$cert.verify_count + 1}</span>
+                    </div>
+                    <div class="cert-meta-item">
+                        <label>最后验证</label>
+                        <span>{:date('Y-m-d H:i')}</span>
+                    </div>
+                    <div class="cert-meta-item">
+                        <label>绑定状态</label>
+                        <span>{:get_certificate_status($cert.status)}</span>
+                    </div>
+                </div>
+                
+                <div class="cert-code">
+                    <label>CERTIFICATE CODE</label>
+                    <span>{$cert.code}</span>
+                </div>
+                
+                <div class="cert-status">
+                    <span class="status-badge status-valid">
+                        <i class="layui-icon layui-icon-ok"></i> 正品认证
+                    </span>
+                </div>
+                
+                {notempty name="$goods"}
+                <div class="goods-section">
+                    <h3>认证商品</h3>
+                    <div class="goods-card">
+                        <img src="{$goods.images}" alt="{$goods.title}" class="goods-img">
+                        <div class="goods-info">
+                            <h4>{$goods.title}</h4>
+                            <p>商品编号：{$goods.id}</p>
+                            {notempty name="$sku"}
+                            <p>规格：{$sku.title|default='默认'}</p>
+                            {/notempty}
+                            <p>价格：¥{$goods.min_price}</p>
+                        </div>
+                    </div>
+                    <a href="{:url('index/goods/index', ['id'=>$goods.id])}" class="verify-btn">
+                        查看商品详情 →
+                    </a>
+                </div>
+                {/notempty}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© <a href="{:url('index/index/index')}">觅智商城</a> · 觅智文化 · 传承千年道家智慧</p>
+        </div>
+    </div>
+    
+    <script>
+    // 隐藏验证成功动画
+    setTimeout(function() {
+        document.getElementById('verifySuccess').style.display = 'none';
+    }, 1500);
+    </script>
+</body>
+</html>

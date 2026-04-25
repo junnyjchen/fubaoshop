@@ -1,0 +1,78 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a><cite>商品证书绑定</cite></a>
+            </span>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">选择证书模板</label>
+                    <div class="layui-input-block" id="templateList">
+                        {volist name="templates" id="t"}
+                        <input type="checkbox" name="template_ids" value="{$t.id}" title="{$t.name}" lay-skin="primary">
+                        {/volist}
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="save">保存绑定</button>
+                    </div>
+                </div>
+            </div>
+            
+            <blockquote class="layui-elem-quote" style="margin-top: 20px;">
+                <p><strong>说明：</strong></p>
+                <p>1. 勾选的证书模板将自动绑定到该商品</p>
+                <p>2. 商品发布时，系统将自动生成对应数量的证书码</p>
+                <p>3. 买家购买后可在订单详情中查看绑定证书</p>
+            </blockquote>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+var goods_id = {:$goods_id};
+var current_binds = {:json_encode($current_binds)};
+
+layui.use(['form'], function(){
+    var form = layui.form;
+    
+    // 回显已绑定模板
+    if (current_binds.length > 0) {
+        current_binds.forEach(function(bind) {
+            $('#templateList input[value="' + bind.template_id + '"]').prop('checked', true);
+        });
+    }
+    form.render('checkbox');
+    
+    // 保存
+    form.on('submit(save)', function(data){
+        var template_ids = [];
+        $('#templateList input[name="template_ids"]:checked').each(function(){
+            template_ids.push($(this).val());
+        });
+        
+        $.post('{:url("saveGoodsBind")}', {
+            goods_id: goods_id,
+            template_ids: template_ids
+        }, function(res){
+            if(res.code === 0){
+                layer.msg('保存成功');
+            } else {
+                layer.msg(res.msg);
+            }
+        });
+        return false;
+    });
+});
+</script>
+{/block}

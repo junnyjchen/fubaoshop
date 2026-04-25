@@ -4269,4 +4269,24 @@ if(!function_exists('str_ends_with'))
         return mb_substr($haystack, -1, $len, 'utf-8') === $needle;
     }
 }
+
+/**
+ * 获取证书状态文本
+ * @author  觅智文化
+ * @param   [int]          $status [状态码]
+ * @return  [string]               [状态文本]
+ */
+if(!function_exists('get_certificate_status'))
+{
+    function get_certificate_status($status)
+    {
+        $status_map = [
+            0 => '未激活',
+            1 => '已激活',
+            2 => '已绑定',
+            3 => '已验证',
+        ];
+        return $status_map[$status] ?? '未知';
+    }
+}
 ?>
