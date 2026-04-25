@@ -1,0 +1,434 @@
+{{:ModuleInclude('public/header')}}
+{{:ModuleInclude('public/header_top_nav')}}
+{{:ModuleInclude('public/nav_search')}}
+{{:ModuleInclude('public/header_nav')}}
+
+<!-- 发布如愿 -->
+<div class="wish-publish">
+    <div class="container">
+        <div class="publish-header">
+            <a href="{{:MyUrl('index/wish/index')}}" class="back-btn">
+                <span>←</span> 返回如願
+            </a>
+            <h1 class="page-title">☯ 發布如願</h1>
+            <p class="page-desc">分享您的心願達成，記錄美好時刻</p>
+        </div>
+        
+        <form class="publish-form" id="publishForm">
+            <!-- 选择类型 -->
+            <div class="form-group">
+                <label class="form-label">如願類型 <span class="required">*</span></label>
+                <div class="type-selector">
+                    <label class="type-option">
+                        <input type="radio" name="wish_type" value="1" checked>
+                        <div class="type-card">
+                            <span class="type-icon">📦</span>
+                            <span class="type-name">曬單分享</span>
+                            <span class="type-desc">分享開箱喜悅</span>
+                        </div>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="wish_type" value="2">
+                        <div class="type-card">
+                            <span class="type-icon">✨</span>
+                            <span class="type-name">心願達成</span>
+                            <span class="type-desc">記錄願望實現</span>
+                        </div>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="wish_type" value="3">
+                        <div class="type-card">
+                            <span class="type-icon">🙏</span>
+                            <span class="type-name">還願感謝</span>
+                            <span class="type-desc">感恩神靈庇佑</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 选择商品 -->
+            <div class="form-group">
+                <label class="form-label">關聯商品</label>
+                <select name="goods_id" class="form-select" id="goodsSelect">
+                    <option value="0">選擇關聯商品（可選）</option>
+                    {{foreach $goods_list as $goods}}
+                    <option value="{{$goods.id}}">{{$goods.title}}</option>
+                    {{/foreach}}
+                </select>
+            </div>
+            
+            <!-- 标题 -->
+            <div class="form-group">
+                <label class="form-label">標題 <span class="required">*</span></label>
+                <input type="text" name="title" class="form-input" placeholder="請輸入標題，如：🙏 如願以償！" maxlength="100" required>
+            </div>
+            
+            <!-- 内容 -->
+            <div class="form-group">
+                <label class="form-label">內容 <span class="required">*</span></label>
+                <textarea name="content" class="form-textarea" placeholder="請輸入詳細內容，分享您的故事..." rows="6" minlength="10" maxlength="2000" required></textarea>
+                <div class="form-hint">至少10個字，最多2000個字</div>
+            </div>
+            
+            <!-- 图片上传 -->
+            <div class="form-group">
+                <label class="form-label">曬圖 <span class="required">*</span></label>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-list" id="uploadList"></div>
+                    <div class="upload-btn" id="uploadBtn">
+                        <span class="upload-icon">+</span>
+                        <span class="upload-text">添加圖片</span>
+                    </div>
+                </div>
+                <div class="form-hint">最多上傳9張圖片，單張不超過5MB</div>
+                <input type="hidden" name="images" id="imagesInput" value="">
+            </div>
+            
+            <!-- 提交按钮 -->
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">發布如願</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{:ModuleInclude('public/footer')}}
+
+<style>
+.wish-publish {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    padding: 30px 0 60px;
+    color: #f5f5f5;
+}
+
+.publish-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #b8b8b8;
+    font-size: 14px;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.page-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 32px;
+    color: #d4af37;
+    margin-bottom: 12px;
+}
+
+.page-desc {
+    color: #6b6b6b;
+    font-size: 15px;
+}
+
+.publish-form {
+    max-width: 700px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 16px;
+    padding: 40px;
+}
+
+.form-group {
+    margin-bottom: 28px;
+}
+
+.form-label {
+    display: block;
+    font-size: 15px;
+    color: #f5f5f5;
+    margin-bottom: 12px;
+}
+
+.required {
+    color: #c41e3a;
+}
+
+/* 类型选择 */
+.type-selector {
+    display: flex;
+    gap: 16px;
+}
+
+.type-option {
+    flex: 1;
+    cursor: pointer;
+}
+
+.type-option input {
+    display: none;
+}
+
+.type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(212, 175, 55, 0.15);
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.type-option input:checked + .type-card {
+    background: rgba(196, 30, 58, 0.1);
+    border-color: #c41e3a;
+}
+
+.type-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.type-name {
+    font-size: 15px;
+    color: #f5f5f5;
+    margin-bottom: 4px;
+}
+
+.type-desc {
+    font-size: 12px;
+    color: #6b6b6b;
+}
+
+/* 表单元素 */
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    color: #f5f5f5;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: #d4af37;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.form-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6b6b6b;
+}
+
+/* 上传区域 */
+.upload-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.upload-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.upload-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.upload-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-item .delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-btn {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.upload-btn:hover {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.upload-icon {
+    font-size: 28px;
+    color: #d4af37;
+}
+
+.upload-text {
+    font-size: 12px;
+    color: #6b6b6b;
+    margin-top: 4px;
+}
+
+/* 提交按钮 */
+.form-actions {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.submit-btn {
+    padding: 16px 60px;
+    background: linear-gradient(135deg, #c41e3a, #e63950);
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(196, 30, 58, 0.4);
+}
+
+@media (max-width: 768px) {
+    .publish-form { padding: 24px; }
+    .type-selector { flex-direction: column; }
+}
+</style>
+
+<script>
+var uploadedImages = [];
+
+$(function() {
+    // 上传按钮点击
+    $('#uploadBtn').on('click', function() {
+        uploadImage();
+    });
+    
+    // 提交表单
+    $('#publishForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var title = $('input[name="title"]').val().trim();
+        var content = $('textarea[name="content"]').val().trim();
+        var images = uploadedImages.join(',');
+        
+        if (!title) {
+            Prompt('請輸入標題');
+            return;
+        }
+        if (content.length < 10) {
+            Prompt('內容至少10個字');
+            return;
+        }
+        if (uploadedImages.length === 0) {
+            Prompt('請上傳至少一張圖片');
+            return;
+        }
+        
+        var formData = {
+            goods_id: $('select[name="goods_id"]').val(),
+            wish_type: $('input[name="wish_type"]:checked').val(),
+            title: title,
+            content: content,
+            images: images
+        };
+        
+        $.ajax({
+            url: '{{:MyUrl("index/wish/publish")}}',
+            type: 'POST',
+            data: formData,
+            success: function(res) {
+                if (res.code == 0) {
+                    Prompt('發布成功', 'success');
+                    setTimeout(function() {
+                        location.href = '{{:MyUrl("index/wish/index")}}';
+                    }, 1500);
+                } else {
+                    Prompt(res.msg || '發布失敗');
+                }
+            }
+        });
+    });
+});
+
+// 模拟上传（实际项目请对接真实上传接口）
+function uploadImage() {
+    if (uploadedImages.length >= 9) {
+        Prompt('最多上傳9張圖片');
+        return;
+    }
+    
+    // 模拟上传，随机图片
+    var randomId = Math.random().toString(36).substr(2, 8);
+    var fakeUrl = 'https://picsum.photos/400/400?random=' + randomId;
+    
+    uploadedImages.push(fakeUrl);
+    renderImages();
+    
+    // 更新隐藏字段
+    $('#imagesInput').val(uploadedImages.join(','));
+}
+
+function renderImages() {
+    var html = '';
+    uploadedImages.forEach(function(url, index) {
+        html += '<div class="upload-item">';
+        html += '<img src="' + url + '" alt="">';
+        html += '<button type="button" class="delete-btn" onclick="deleteImage(' + index + ')">&times;</button>';
+        html += '</div>';
+    });
+    $('#uploadList').html(html);
+    
+    // 更新上传按钮状态
+    if (uploadedImages.length >= 9) {
+        $('#uploadBtn').hide();
+    } else {
+        $('#uploadBtn').show();
+    }
+}
+
+function deleteImage(index) {
+    uploadedImages.splice(index, 1);
+    renderImages();
+    $('#imagesInput').val(uploadedImages.join(','));
+}
+</script>

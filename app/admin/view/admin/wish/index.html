@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>如願管理 - <?php echo defined('SHOPXO_SITE_NAME') ? SHOPXO_SITE_NAME : ''; ?></title>
+    <?php include ROOT_PATH.'public/common/base.inc.php'; ?>
+    <link rel="stylesheet" href="/static/admin/css/talu-admin.css">
+</head>
+<body>
+<div class="talu-admin">
+    <!-- 头部 -->
+    <div class="admin-header">
+        <div class="header-left">
+            <a href="<?php echo MyUrl('admin/index/index'); ?>" class="logo">☯ <?php echo defined('SHOPXO_SITE_NAME') ? SHOPXO_SITE_NAME : 'ShopMX'; ?></a>
+        </div>
+        <div class="header-right">
+            <span class="user-name">管理員</span>
+            <a href="<?php echo MyUrl('admin/index/logout'); ?>" class="logout">退出</a>
+        </div>
+    </div>
+    
+    <div class="admin-container">
+        <!-- 侧边栏 -->
+        <div class="admin-sidebar">
+            <div class="sidebar-title">功能導航</div>
+            <ul class="sidebar-menu">
+                <li><a href="<?php echo MyUrl('admin/wish/index'); ?>">☯ 如願列表</a></li>
+                <li><a href="<?php echo MyUrl('admin/wish/category'); ?>">❋ 分類管理</a></li>
+                <li><a href="<?php echo MyUrl('admin/wish/comment'); ?>">💬 評論管理</a></li>
+            </ul>
+        </div>
+        
+        <!-- 主内容 -->
+        <div class="admin-content">
+            <div class="content-header">
+                <h1>☯ 如願管理</h1>
+            </div>
+            
+            <!-- 统计 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-num"><?php echo $stats['total']; ?></div>
+                    <div class="stat-label">全部如願</div>
+                </div>
+                <div class="stat-card stat-pending">
+                    <div class="stat-num"><?php echo $stats['pending']; ?></div>
+                    <div class="stat-label">待審核</div>
+                </div>
+                <div class="stat-card stat-published">
+                    <div class="stat-num"><?php echo $stats['published']; ?></div>
+                    <div class="stat-label">已發布</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num"><?php echo $stats['hidden']; ?></div>
+                    <div class="stat-label">已下架</div>
+                </div>
+            </div>
+            
+            <!-- 筛选 -->
+            <div class="filter-bar">
+                <form action="<?php echo MyUrl('admin/wish/index'); ?>" method="GET" class="filter-form">
+                    <select name="wish_type" class="form-select">
+                        <option value="">全部類型</option>
+                        <option value="1" <?php if($type == '1'): ?>selected<?php endif; ?>>曬單</option>
+                        <option value="2" <?php if($type == '2'): ?>selected<?php endif; ?>>心願</option>
+                        <option value="3" <?php if($type == '3'): ?>selected<?php endif; ?>>還願</option>
+                    </select>
+                    <select name="wish_status" class="form-select">
+                        <option value="">全部狀態</option>
+                        <option value="0" <?php if($status === '0'): ?>selected<?php endif; ?>>待審核</option>
+                        <option value="1" <?php if($status === '1'): ?>selected<?php endif; ?>>已發布</option>
+                        <option value="2" <?php if($status === '2'): ?>selected<?php endif; ?>>已下架</option>
+                    </select>
+                    <input type="text" name="keywords" value="<?php echo $keywords; ?>" placeholder="搜索標題/內容" class="form-input">
+                    <button type="submit" class="btn-search">搜索</button>
+                </form>
+            </div>
+            
+            <!-- 列表 -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th width="50">ID</th>
+                        <th width="80">封面</th>
+                        <th>標題</th>
+                        <th width="80">類型</th>
+                        <th width="80">狀態</th>
+                        <th width="100">點讚/評論</th>
+                        <th width="150">時間</th>
+                        <th width="150">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($list)): foreach ($list as $v): ?>
+                    <tr>
+                        <td><?php echo $v['id']; ?></td>
+                        <td>
+                            <?php if (!empty($v['first_image'])): ?>
+                            <img src="<?php echo $v['first_image']; ?>" class="table-thumb">
+                            <?php else: ?>
+                            <div class="table-thumb-placeholder">☯</div>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <div class="title-cell">
+                                <span class="title"><?php echo $v['title']; ?></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-type-<?php echo $v['wish_type']; ?>">
+                                <?php if ($v['wish_type'] == 1): ?>📦曬單<?php elseif ($v['wish_type'] == 2): ?>✨心願<?php else: ?>🙏還願<?php endif; ?>
+                            </span>
+                        </td>
+                        <td>
+                            <?php if ($v['wish_status'] == 0): ?>
+                            <span class="badge badge-pending">待審核</span>
+                            <?php elseif ($v['wish_status'] == 1): ?>
+                            <span class="badge badge-published">已發布</span>
+                            <?php else: ?>
+                            <span class="badge badge-hidden">已下架</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo $v['like_count']; ?>/<?php echo $v['comment_count']; ?></td>
+                        <td><?php echo $v['time_text']; ?></td>
+                        <td>
+                            <a href="<?php echo MyUrl('admin/wish/detail', ['id'=>$v['id']]); ?>" class="btn-link">查看</a>
+                            <a href="javascript:;" class="btn-link btn-danger" onclick="deleteWish(<?php echo $v['id']; ?>)">刪除</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; else: ?>
+                    <tr>
+                        <td colspan="8" class="empty-cell">暫無數據</td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            
+            <!-- 分页 -->
+            <div class="pagination">
+                <?php echo $list->render(); ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteWish(id) {
+    if (!confirm('確定要刪除嗎？')) return;
+    
+    $.ajax({
+        url: '<?php echo MyUrl("admin/wish/delete"); ?>',
+        type: 'POST',
+        data: { id: id },
+        success: function(res) {
+            if (res.code == 0) {
+                location.reload();
+            } else {
+                alert(res.msg || '操作失敗');
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>

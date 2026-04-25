@@ -83,7 +83,20 @@
 
 **访问地址**: `/wiki`
 
-### 5. 营销弹窗
+### 5. 如愿功能
+
+评论聚合、晒图、晒视频功能模块。
+
+| 功能 | 说明 |
+|------|------|
+| 如愿类型 | 晒单分享、心愿达成、还愿感谢 |
+| 内容形式 | 支持图片、视频晒单 |
+| 互动功能 | 点赞、评论、分享 |
+| 审核管理 | 后台审核、推荐、排序 |
+
+**访问地址**: `/wish`
+
+### 6. 营销弹窗
 
 商品详情页智能营销组件。
 
@@ -92,7 +105,7 @@
 | 下单提示 | 5秒后 | 显示其他用户购买动态 |
 | 优惠券 | 10秒后 | 领取新人专享券 |
 
-### 6. 觅智商城主题
+### 7. 觅智商城主题
 
 玄学文化主题 UI 组件。
 
@@ -103,7 +116,7 @@
 | 字体 | Noto Serif TC（中文）+ Noto Sans TC |
 | 动效 | 古韵过渡动画 |
 
-### 7. 多语言支持
+### 8. 多语言支持
 
 内置多语言切换功能。
 
@@ -124,7 +137,8 @@
 │   │   │   ├── ai_assistant/      # AI助手控制器
 │   │   │   ├── freepick/          # 免费领取控制器
 │   │   │   ├── quickorder/        # 快速下单控制器
-│   │   │   └── wiki/              # 符箓百科控制器
+│   │   │   ├── wiki/              # 符箓百科控制器
+│   │   │   └── wish/              # 如愿控制器
 │   │   ├── service/               # 服务层
 │   │   └── view/default/          # 前台视图
 │   ├── admin/                     # 后台应用
@@ -139,7 +153,8 @@
 │       ├── ai_assistant.sql      # AI助手表
 │       ├── freepick.sql          # 免费领取表
 │       ├── quick_order.sql       # 快速下单表
-│       └── talisman_wiki.sql     # 符箓百科表
+│       ├── talisman_wiki.sql     # 符箓百科表
+│       └── wish.sql              # 如愿表
 └── public/                        # Web根目录
 ```
 
@@ -166,6 +181,7 @@ cd fubaoshop
 mysql -u root -p < docs/database/ai_assistant.sql
 mysql -u root -p < docs/database/freepick.sql
 mysql -u root -p < docs/database/quick_order.sql
+mysql -u root -p < docs/database/wish.sql
 ```
 
 3. **配置站点**
@@ -196,6 +212,10 @@ return [
 | `sxo_quick_order` | 快速订单 | 无登录订单 |
 | `sxo_wiki_category` | 百科分类 | 8大知识分类 |
 | `sxo_wiki_article` | 百科文章 | 知识文章 |
+| `sxo_wish` | 如愿晒单 | 评论聚合主表 |
+| `sxo_wish_comment` | 如愿评论 | 评论表 |
+| `sxo_wish_like` | 如愿点赞 | 点赞表 |
+| `sxo_wish_category` | 如愿分类 | 4种类型 |
 
 ---
 
