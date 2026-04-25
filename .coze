@@ -1,11 +1,12 @@
 [project]
-entrypoint = "index.php"
-requires = ["php-8.1"]
+requires = ["nodejs-24"]
 
 [dev]
-build = ["php", "--version"]
-run = ["php", "-S", "0.0.0.0:5000", "-t", "public"]
+build = []
+run = ["python3", "-m", "http.server", "5000"]
+cwd = "public/demo"
 
 [deploy]
-build = ["php", "--version"]
-run = ["php", "-S", "0.0.0.0:5000", "-t", "public"]
+build = []
+run = ["python3", "-m", "http.server", "5000"]
+cwd = "public/demo"
