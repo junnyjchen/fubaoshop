@@ -1,0 +1,11 @@
+[project]
+entrypoint = "index.php"
+requires = ["php-8.1"]
+
+[dev]
+build = ["php", "--version"]
+run = ["php", "-S", "0.0.0.0:5000", "-t", "public"]
+
+[deploy]
+build = ["php", "--version"]
+run = ["php", "-S", "0.0.0.0:5000", "-t", "public"]
