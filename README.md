@@ -1,14 +1,15 @@
 <p align="center">
 
-# ☯ 觅智商城
+# ☯ 符宝网
 
-觅智商城 - 觅智文化 · 传承千年道家智慧
+符宝网 - 符宝网版权所有 · 传承千年道法智慧
 
 基于 ShopMX 开源电商系统的道家文化主题商城平台
 
 [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/junnyjchen/fubaoshop/blob/main/LICENSE)
 [![ShopMX](https://img.shields.io/badge/ShopMX-v6.8.0-blue)](https://github.com/gongfuxiang/shopxo)
 [![PHP](https://img.shields.io/badge/PHP-7.4+-purple)](https://www.php.net/)
+[![备案号](https://img.shields.io/badge/备案号-粤ICP备2026045883--2号-blue)](https://beian.miit.gov.cn/)
 
 </p>
 
@@ -16,7 +17,7 @@
 
 ## 📖 项目简介
 
-觅智商城是基于 ShopMX 开源电商系统打造的道家文化主题商城。融合传统道家文化元素与现代电商技术，提供正授符箓、开光法器等传统文化产品。
+符宝网是基于 ShopMX 开源电商系统打造的道家文化主题商城。融合传统道家文化元素与现代电商技术，提供正授符箓、开光法器等传统文化产品。
 
 ### 技术栈
 
@@ -266,7 +267,7 @@ WHERE `id` = 1;
 ### 主题配色
 
 ```css
-/* 修改觅智主题颜色 */
+/* 修改符宝网主题颜色 */
 :root {
     --talu-black: #1a1a2e;
     --talu-red: #c41e3a;
@@ -280,10 +281,10 @@ WHERE `id` = 1;
 
 | 项目 | 内容 |
 |------|------|
-| 项目名称 | 觅智商城 |
-| 版权方 | 觅智文化 |
-| 官方网站 | https://mizhi.com |
-| 技术支持 | service@mizhi.com |
+| 网站名称 | 符宝网 |
+| 版权方 | 符宝网版权所有 |
+| 备案号 | 粤ICP备2026045883-2号 |
+| 官方网站 | https://fubao.com |
 
 ---
 

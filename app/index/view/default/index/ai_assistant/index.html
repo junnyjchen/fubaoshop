@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{$ai_config.ai_name|default='道玄'} AI - 觅智商城</title>
+  <title>{$ai_config.ai_name|default='道玄'} AI - 符宝网</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -501,7 +501,7 @@
     <!-- 头部 -->
     <header class="header">
       <h1 class="header__logo">{$ai_config.ai_avatar|default='☯'} {$ai_config.ai_name|default='道玄'} AI</h1>
-      <p class="header__subtitle">觅智商城 · 智能助手</p>
+      <p class="header__subtitle">符宝网 · 智能助手</p>
       <div class="header__actions">
         <button class="header__btn" onclick="clearChat()" title="清空会话">
           <span>🗑</span> 清空会话
@@ -513,7 +513,7 @@
     <div class="mode-selector" id="modeSelector">
       <button class="mode-btn active" data-mode="chat"><span>☯</span> 道法闲聊</button>
       <button class="mode-btn" data-mode="bazi"><span>✦</span> 八字命理</button>
-      <button class="mode-btn" data-mode="fulu"><span>❋</span> 觅智知识</button>
+      <button class="mode-btn" data-mode="fulu"><span>❋</span> 道玄知识</button>
       <button class="mode-btn" data-mode="fengshui"><span>⬡</span> 风水调理</button>
       <button class="mode-btn" data-mode="fashi"><span>⬢</span> 开光法器</button>
     </div>
@@ -525,11 +525,11 @@
         <div class="welcome" id="welcome">
           <div class="welcome__icon">{$ai_config.ai_avatar|default='☯'}</div>
           <h2 class="welcome__title">善信有缘，{$ai_config.ai_name|default='道玄'}在此恭候</h2>
-          <p class="welcome__text">{$ai_config.welcome_message|default='吾通晓八字命理、觅智之道，愿为施主答疑解惑。'}</p>
+          <p class="welcome__text">{$ai_config.welcome_message|default='吾通晓八字命理、道法命理，愿为施主答疑解惑。'}</p>
           <div class="welcome__features">
-            <span class="welcome__feature">☯ 觅智文化</span>
+            <span class="welcome__feature">☯ 道法传承</span>
             <span class="welcome__feature">✦ 八字命理</span>
-            <span class="welcome__feature">❋ 觅智知识</span>
+            <span class="welcome__feature">❋ 道玄知识</span>
             <span class="welcome__feature">⬡ 风水调理</span>
           </div>
           
@@ -620,7 +620,7 @@
       const hints = {
         chat: '切换到道法闲聊模式',
         bazi: '切换到八字命理模式',
-        fulu: '切换到觅智知识模式',
+        fulu: '切换到道玄知识模式',
         fengshui: '切换到风水调理模式',
         fashi: '切换到开光法器模式'
       };
