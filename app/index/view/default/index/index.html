@@ -16,8 +16,8 @@
 <!-- goods category -->
 {{:ModuleInclude('public/goods_category')}}
 
-<!-- 玄门首页主内容 -->
-<div class="xuanmen-home">
+<!-- 符宝网首页主内容 -->
+<div class="fubao-home">
 
     <!-- Banner轮播 -->
     {{:ModuleInclude('public/home_banner')}}
@@ -26,21 +26,29 @@
     <div class="quick-nav">
         <div class="am-container">
             <div class="quick-nav-inner">
-                <a href="{{:MyUrl('index/search/index')}}" class="quick-item">
-                    <div class="quick-icon"><i class="layui-icon layui-icon-cart"></i></div>
-                    <span>宝品商城</span>
-                </a>
                 <a href="{{:MyUrl('index/wiki/index')}}" class="quick-item">
-                    <div class="quick-icon"><i class="layui-icon layui-icon-read"></i></div>
+                    <div class="quick-icon"><i class="layui-icon layui-icon-chart"></i></div>
                     <span>符箓百科</span>
                 </a>
-                <a href="{{:MyUrl('index/aiassistant/index')}}" class="quick-item">
-                    <div class="quick-icon"><i class="layui-icon layui-icon-engine"></i></div>
-                    <span>AI道玄</span>
+                <a href="{{:MyUrl('index/wiki/index')}}" class="quick-item">
+                    <div class="quick-icon"><i class="layui-icon layui-icon-survey"></i></div>
+                    <span>玄门百科</span>
                 </a>
                 <a href="{{:MyUrl('index/wish/index')}}" class="quick-item">
                     <div class="quick-icon"><i class="layui-icon layui-icon-notice"></i></div>
                     <span>玄门动态</span>
+                </a>
+                <a href="{{:MyUrl('index/wiki/index')}}" class="quick-item">
+                    <div class="quick-icon"><i class="layui-icon layui-icon-read"></i></div>
+                    <span>玄门学堂</span>
+                </a>
+                <a href="{{:MyUrl('index/search/index')}}" class="quick-item">
+                    <div class="quick-icon"><i class="layui-icon layui-icon-cart"></i></div>
+                    <span>宝品商城</span>
+                </a>
+                <a href="{{:MyUrl('index/aiassistant/index')}}" class="quick-item">
+                    <div class="quick-icon"><i class="layui-icon layui-icon-engine"></i></div>
+                    <span>AI道玄</span>
                 </a>
                 <a href="{{:MyUrl('index/freepick/index')}}" class="quick-item">
                     <div class="quick-icon"><i class="layui-icon layui-icon-gift"></i></div>
@@ -54,18 +62,19 @@
         </div>
     </div>
 
-    <!-- 核心功能区域：符箓科普 + 玄门百科 -->
+    <!-- ========== 核心功能区域：符箓科普 + 玄门百科 ========== -->
     <div class="core-section">
         <div class="am-container">
             <div class="section-header">
-                <h1 class="section-title"><span class="title-icon">☯</span> 道法传承</h1>
+                <h2 class="section-title"><span class="title-icon">☯</span> 道法传承</h2>
                 <p class="section-desc">千年道法智慧 · 正统符箓传承</p>
             </div>
             <div class="core-grid">
-                <!-- 符箓科普 -->
+                <!-- 符箓科普 - 核心功能 -->
                 <div class="core-card talisman-card">
                     <div class="core-card-header">
                         <h3><i class="layui-icon layui-icon-chart"></i> 符箓科普</h3>
+                        <span class="core-badge">核心功能</span>
                         <a href="{{:MyUrl('index/wiki/index')}}" class="more-link">查看更多 →</a>
                     </div>
                     <div class="core-card-body">
@@ -78,35 +87,43 @@
                             <a href="{{:MyUrl('index/wiki/index', ['category'=>6])}}" class="category-tag">健康符</a>
                         </div>
                         <div class="talisman-list">
-                            <div class="talisman-item">
+                            <a href="{{:MyUrl('index/wiki/detail', ['id'=>1])}}" class="talisman-item">
                                 <div class="talisman-icon">☯</div>
                                 <div class="talisman-info">
                                     <h4>平安符</h4>
                                     <p>护佑出入平安，驱邪避祸</p>
                                 </div>
-                            </div>
-                            <div class="talisman-item">
+                            </a>
+                            <a href="{{:MyUrl('index/wiki/detail', ['id'=>2])}}" class="talisman-item">
                                 <div class="talisman-icon">✦</div>
                                 <div class="talisman-info">
                                     <h4>财神符</h4>
                                     <p>招财进宝，财运亨通</p>
                                 </div>
-                            </div>
-                            <div class="talisman-item">
+                            </a>
+                            <a href="{{:MyUrl('index/wiki/detail', ['id'=>3])}}" class="talisman-item">
                                 <div class="talisman-icon">❋</div>
                                 <div class="talisman-info">
                                     <h4>文昌符</h4>
                                     <p>开启智慧，学业进步</p>
                                 </div>
-                            </div>
+                            </a>
+                            <a href="{{:MyUrl('index/wiki/detail', ['id'=>4])}}" class="talisman-item">
+                                <div class="talisman-icon">☸</div>
+                                <div class="talisman-info">
+                                    <h4>太岁符</h4>
+                                    <p>化解冲太岁，趋吉避凶</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- 玄门百科 -->
+                <!-- 玄门百科 - 核心功能 -->
                 <div class="core-card wiki-card">
                     <div class="core-card-header">
                         <h3><i class="layui-icon layui-icon-survey"></i> 玄门百科</h3>
+                        <span class="core-badge">核心功能</span>
                         <a href="{{:MyUrl('index/wiki/index')}}" class="more-link">查看更多 →</a>
                     </div>
                     <div class="core-card-body">
@@ -131,6 +148,10 @@
                                 <span class="article-tag">进阶</span>
                                 <span class="article-title">开光仪式的正确流程</span>
                             </a>
+                            <a href="{{:MyUrl('index/wiki/detail', ['id'=>6])}}" class="wiki-article">
+                                <span class="article-tag">入门</span>
+                                <span class="article-title">如何辨别符箓真伪</span>
+                            </a>
                         </div>
                         <div class="wiki-stats">
                             <div class="stat-item">
@@ -152,7 +173,7 @@
         </div>
     </div>
 
-    <!-- 突出功能区域 -->
+    <!-- ========== 突出功能区域 ========== -->
     <div class="featured-section">
         <div class="am-container">
             <div class="section-header">
@@ -160,6 +181,7 @@
                 <p class="section-desc">多元化体验 · 全方位守护</p>
             </div>
             <div class="featured-grid">
+                
                 <!-- 玄门动态 -->
                 <div class="featured-card dynamic-card">
                     <div class="featured-icon">☯</div>
@@ -178,6 +200,13 @@
                             <div class="dynamic-text">
                                 <p class="dynamic-title">李师兄 · 3小时前</p>
                                 <p class="dynamic-content">文昌符真的很灵，孩子这次考试进步了...</p>
+                            </div>
+                        </div>
+                        <div class="dynamic-item">
+                            <span class="user-avatar">✦</span>
+                            <div class="dynamic-text">
+                                <p class="dynamic-title">王师兄 · 5小时前</p>
+                                <p class="dynamic-content">太岁符化解太岁，感谢道玄指点迷津...</p>
                             </div>
                         </div>
                     </div>
@@ -227,7 +256,12 @@
                             <div class="chat-bubble user">请问如何选择护身符？</div>
                             <div class="chat-bubble ai">
                                 <span class="ai-avatar">☯</span>
-                                <div class="ai-text">选择护身符需根据个人需求...</div>
+                                <div class="ai-text">选择护身符需根据个人需求：平安符适合所有人...</div>
+                            </div>
+                            <div class="chat-bubble user">太岁年要注意什么？</div>
+                            <div class="chat-bubble ai">
+                                <span class="ai-avatar">☯</span>
+                                <div class="ai-text">本命年犯太岁，建议恭请太岁符化解...</div>
                             </div>
                         </div>
                     </div>
@@ -270,7 +304,7 @@
         </div>
     </div>
 
-    <!-- 商品展示区域 -->
+    <!-- ========== 商品展示区域 ========== -->
     {{if !empty($goods_floor_list) and is_array($goods_floor_list)}}
     <div class="goods-section">
         <div class="am-container">
@@ -280,7 +314,7 @@
             </div>
             <div class="goods-grid">
                 {{foreach $goods_floor_list as $key=>$floor}}
-                    {{if $key < 2}}
+                    {{if $key < 4}}
                     {{foreach $floor.goods as $goods}}
                     <div class="goods-card">
                         <a href="{{:MyUrl('index/goods/index', ['id'=>$goods.id])}}" class="goods-link">
@@ -312,7 +346,7 @@
     </div>
     {{/if}}
 
-    <!-- 底部免费领取推广 -->
+    <!-- ========== 底部免费领取推广 ========== -->
     <div class="free-pick-banner">
         <div class="am-container">
             <div class="free-pick-content">
@@ -339,7 +373,7 @@
         </div>
     </div>
 
-    <!-- 信任保障 -->
+    <!-- ========== 信任保障 ========== -->
     <div class="trust-section">
         <div class="am-container">
             <div class="trust-grid">
@@ -366,26 +400,27 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- 底部 -->
 {{:ModuleInclude('public/footer')}}
 
-<!-- 玄门首页样式 -->
+<!-- 符宝网首页样式 -->
 <style>
 /* 基础变量 */
 :root {
-    --talu-black: #1a1a2e;
-    --talu-black-light: #16213e;
-    --talu-black-dark: #0f0f23;
-    --talu-red: #c41e3a;
-    --talu-red-light: #e63950;
-    --talu-gold: #d4af37;
-    --talu-gold-light: #f4d160;
+    --fubao-black: #1a1a2e;
+    --fubao-black-light: #16213e;
+    --fubao-black-dark: #0f0f23;
+    --fubao-red: #c41e3a;
+    --fubao-red-light: #e63950;
+    --fubao-gold: #d4af37;
+    --fubao-gold-light: #f4d160;
 }
 
-/* 玄门首页容器 */
-.xuanmen-home {
+/* 符宝网首页容器 */
+.fubao-home {
     background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
     min-height: 100vh;
 }
@@ -401,34 +436,37 @@
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    gap: 10px;
 }
 .quick-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 12px 20px;
     color: #d4af37;
     text-decoration: none;
     transition: all 0.3s;
+    border-radius: 12px;
 }
 .quick-item:hover {
     transform: translateY(-3px);
     color: #e63950;
+    background: rgba(212, 175, 55, 0.1);
 }
 .quick-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
+    background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
     color: #fff;
 }
 .quick-item span {
-    font-size: 14px;
+    font-size: 13px;
     color: #888;
 }
 
@@ -436,7 +474,7 @@
 .section-header {
     text-align: center;
     margin-bottom: 40px;
-    padding-top: 40px;
+    padding-top: 50px;
 }
 .section-title {
     font-size: 32px;
@@ -473,8 +511,8 @@
     transition: all 0.3s;
 }
 .core-card:hover {
-    border-color: var(--talu-gold);
-    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+    border-color: var(--fubao-gold);
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
 }
 .core-card-header {
     display: flex;
@@ -483,6 +521,8 @@
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 .core-card-header h3 {
     color: #d4af37;
@@ -491,6 +531,14 @@
     align-items: center;
     gap: 8px;
 }
+.core-badge {
+    background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+}
 .more-link {
     color: #888;
     font-size: 14px;
@@ -498,7 +546,7 @@
     transition: color 0.3s;
 }
 .more-link:hover {
-    color: var(--talu-red);
+    color: var(--fubao-red);
 }
 
 /* 符箓科普 */
@@ -511,7 +559,7 @@
 .category-tag {
     padding: 6px 16px;
     background: rgba(196, 30, 58, 0.2);
-    border: 1px solid var(--talu-red);
+    border: 1px solid var(--fubao-red);
     border-radius: 20px;
     color: #e63950;
     text-decoration: none;
@@ -519,13 +567,13 @@
     transition: all 0.3s;
 }
 .category-tag:hover {
-    background: var(--talu-red);
+    background: var(--fubao-red);
     color: #fff;
 }
 .talisman-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 .talisman-item {
     display: flex;
@@ -536,6 +584,7 @@
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s;
+    text-decoration: none;
 }
 .talisman-item:hover {
     background: rgba(196, 30, 58, 0.1);
@@ -544,7 +593,7 @@
 .talisman-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
+    background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -583,15 +632,19 @@
 }
 .article-tag {
     padding: 2px 8px;
-    background: var(--talu-red);
+    background: var(--fubao-red);
     border-radius: 4px;
     color: #fff;
     font-size: 11px;
+    flex-shrink: 0;
 }
 .article-title {
     color: #ccc;
     font-size: 14px;
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .wiki-stats {
     display: flex;
@@ -605,7 +658,7 @@
 .stat-num {
     display: block;
     font-size: 28px;
-    color: var(--talu-gold);
+    color: var(--fubao-gold);
     font-weight: bold;
 }
 .stat-label {
@@ -644,13 +697,13 @@
 }
 .featured-card:hover {
     transform: translateY(-5px);
-    border-color: var(--talu-gold);
+    border-color: var(--fubao-gold);
     box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
 }
 .featured-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
+    background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -670,23 +723,24 @@
     margin-bottom: 15px;
 }
 .featured-content {
-    min-height: 120px;
+    min-height: 140px;
+    text-align: left;
 }
 .featured-more {
     display: inline-block;
     margin-top: 15px;
     padding: 8px 20px;
     background: transparent;
-    border: 1px solid var(--talu-gold);
+    border: 1px solid var(--fubao-gold);
     border-radius: 20px;
-    color: var(--talu-gold);
+    color: var(--fubao-gold);
     text-decoration: none;
     font-size: 13px;
     transition: all 0.3s;
 }
 .featured-more:hover {
-    background: var(--talu-gold);
-    color: var(--talu-black);
+    background: var(--fubao-gold);
+    color: var(--fubao-black);
 }
 
 /* 玄门动态 */
@@ -695,7 +749,7 @@
     gap: 10px;
     padding: 10px;
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 .user-avatar {
     width: 32px;
@@ -705,7 +759,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 .dynamic-title {
     font-size: 12px;
@@ -716,6 +771,9 @@
     font-size: 13px;
     color: #ccc;
     line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* 玄门学堂 */
@@ -735,18 +793,22 @@
 .course-cover {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
+    background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     color: #fff;
+    flex-shrink: 0;
 }
 .course-info h4 {
     color: #ccc;
     font-size: 13px;
     margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .course-info p {
     color: #666;
@@ -755,14 +817,16 @@
 
 /* AI道玄 */
 .ai-chat-demo {
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 .chat-bubble {
-    max-width: 85%;
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    font-size: 13px;
+    max-width: 90%;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.4;
 }
 .chat-bubble.user {
     background: rgba(196, 30, 58, 0.3);
@@ -779,11 +843,16 @@
     gap: 8px;
 }
 .ai-avatar {
-    font-size: 16px;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 .ai-text {
     flex: 1;
-    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 /* 宝品商城 */
@@ -804,20 +873,24 @@
 .goods-img {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
+    background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     color: #fff;
+    flex-shrink: 0;
 }
 .goods-name {
     color: #ccc;
     font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .goods-price {
-    color: var(--talu-red);
+    color: var(--fubao-red);
     font-size: 14px;
     font-weight: bold;
 }
@@ -850,7 +923,7 @@
 }
 .goods-card:hover {
     transform: translateY(-5px);
-    border-color: var(--talu-gold);
+    border-color: var(--fubao-gold);
 }
 .goods-link {
     text-decoration: none;
@@ -870,14 +943,14 @@
 }
 .goods-placeholder {
     font-size: 48px;
-    color: var(--talu-gold);
+    color: var(--fubao-gold);
 }
 .goods-tag {
     position: absolute;
     top: 10px;
     left: 10px;
     padding: 4px 10px;
-    background: var(--talu-red);
+    background: var(--fubao-red);
     border-radius: 4px;
     color: #fff;
     font-size: 11px;
@@ -899,7 +972,7 @@
     align-items: center;
 }
 .goods-price {
-    color: var(--talu-red);
+    color: var(--fubao-red);
     font-size: 18px;
     font-weight: bold;
 }
@@ -915,16 +988,16 @@
     display: inline-block;
     padding: 12px 40px;
     background: transparent;
-    border: 2px solid var(--talu-gold);
+    border: 2px solid var(--fubao-gold);
     border-radius: 30px;
-    color: var(--talu-gold);
+    color: var(--fubao-gold);
     text-decoration: none;
     font-size: 15px;
     transition: all 0.3s;
 }
 .more-btn:hover {
-    background: var(--talu-gold);
-    color: var(--talu-black);
+    background: var(--fubao-gold);
+    color: var(--fubao-black);
 }
 
 /* 免费领取推广 */
@@ -1003,7 +1076,7 @@
     display: inline-block;
     padding: 15px 50px;
     background: #fff;
-    color: var(--talu-red);
+    color: var(--fubao-red);
     border-radius: 30px;
     text-decoration: none;
     font-size: 18px;
@@ -1050,7 +1123,7 @@
 /* 信任保障 */
 .trust-section {
     background: rgba(15, 15, 35, 0.95);
-    padding: 40px 0;
+    padding: 50px 0;
     border-top: 1px solid rgba(212, 175, 55, 0.2);
 }
 .trust-grid {
@@ -1062,6 +1135,7 @@
 .trust-item {
     text-align: center;
     padding: 20px;
+    min-width: 150px;
 }
 .trust-icon {
     width: 60px;
@@ -1073,7 +1147,7 @@
     align-items: center;
     justify-content: center;
     font-size: 28px;
-    color: var(--talu-gold);
+    color: var(--fubao-gold);
     margin: 0 auto 15px;
 }
 .trust-item h4 {
