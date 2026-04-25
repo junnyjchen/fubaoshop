@@ -44,7 +44,462 @@
 
 {{:ModuleInclude('public/footer')}}
 
+<!-- ==================== 营销弹窗提示 ==================== -->
+
+<!-- 其他用户下单提示 -->
+<div id="order-popup" class="talu-popup-overlay" style="display:none;">
+    <div class="talu-popup-box talu-popup-order">
+        <button class="talu-popup-close" onclick="closePopup('order-popup')">&times;</button>
+        <div class="talu-popup-icon talu-popup-icon-order">📦</div>
+        <div class="talu-popup-content">
+            <p class="talu-popup-user" id="order-user">广东 · 深圳的张师兄</p>
+            <p class="talu-popup-action">刚刚购买了此商品</p>
+            <p class="talu-popup-time" id="order-time">3分钟前</p>
+        </div>
+        <div class="talu-popup-product" id="order-product">
+            <img src="{{$goods.images[0]['image'] ?: ''}}" alt="" onerror="this.src='/static/common/images/default-images.jpg'">
+            <div class="talu-popup-product-info">
+                <p class="talu-popup-product-name">{{$goods.title}}</p>
+                <p class="talu-popup-product-price">¥{{$goods.min_price}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 优惠券领取提示 -->
+<div id="coupon-popup" class="talu-popup-overlay" style="display:none;">
+    <div class="talu-popup-box talu-popup-coupon">
+        <button class="talu-popup-close" onclick="closePopup('coupon-popup')">&times;</button>
+        <div class="talu-popup-header">
+            <span class="talu-popup-badge">🎁</span>
+            <h3>专属优惠券</h3>
+        </div>
+        <div class="talu-popup-coupon-list" id="coupon-list">
+            <div class="talu-coupon-item" data-id="1">
+                <div class="talu-coupon-left">
+                    <span class="talu-coupon-price">¥<em>20</em></span>
+                    <span class="talu-coupon-desc">满100可用</span>
+                </div>
+                <div class="talu-coupon-right">
+                    <span class="talu-coupon-name">新人专享券</span>
+                    <button class="talu-coupon-btn" onclick="receiveCoupon(this)">立即领取</button>
+                </div>
+            </div>
+            <div class="talu-coupon-item" data-id="2">
+                <div class="talu-coupon-left">
+                    <span class="talu-coupon-price">¥<em>50</em></span>
+                    <span class="talu-coupon-desc">满300可用</span>
+                </div>
+                <div class="talu-coupon-right">
+                    <span class="talu-coupon-name">限时满减券</span>
+                    <button class="talu-coupon-btn" onclick="receiveCoupon(this)">立即领取</button>
+                </div>
+            </div>
+        </div>
+        <div class="talu-popup-coupon-tip">优惠券数量有限，领完即止</div>
+    </div>
+</div>
+
+<!-- 优惠券领取成功提示 -->
+<div id="coupon-success-popup" class="talu-popup-overlay" style="display:none;">
+    <div class="talu-popup-box talu-popup-success">
+        <div class="talu-success-icon">✓</div>
+        <h3>领取成功</h3>
+        <p>优惠券已放入您的账户</p>
+        <button class="talu-popup-btn" onclick="closePopup('coupon-success-popup')">好的</button>
+    </div>
+</div>
+
+<style>
+/* 弹窗基础样式 */
+.talu-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: talu-fadeIn 0.3s ease;
+}
+
+@keyframes talu-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes talu-slideIn {
+    from { opacity: 0; transform: translateY(-30px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.talu-popup-box {
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    animation: talu-slideIn 0.4s ease;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.talu-popup-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    color: #b8b8b8;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    line-height: 1;
+}
+
+.talu-popup-close:hover {
+    background: rgba(196, 30, 58, 0.3);
+    color: #c41e3a;
+}
+
+/* 下单提示样式 */
+.talu-popup-order {
+    width: 320px;
+    text-align: center;
+}
+
+.talu-popup-icon-order {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: talu-bounce 1s ease infinite;
+}
+
+@keyframes talu-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.talu-popup-user {
+    color: #d4af37;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.talu-popup-action {
+    color: #f5f5f5;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.talu-popup-time {
+    color: #6b6b6b;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.talu-popup-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+}
+
+.talu-popup-product img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.talu-popup-product-name {
+    color: #f5f5f5;
+    font-size: 13px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+}
+
+.talu-popup-product-price {
+    color: #c41e3a;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* 优惠券弹窗样式 */
+.talu-popup-coupon {
+    width: 360px;
+}
+
+.talu-popup-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.talu-popup-badge {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.talu-popup-header h3 {
+    color: #d4af37;
+    font-size: 20px;
+    font-family: 'Noto Serif TC', serif;
+    letter-spacing: 2px;
+}
+
+.talu-popup-coupon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.talu-coupon-item {
+    display: flex;
+    background: linear-gradient(90deg, rgba(196,30,58,0.2) 0%, rgba(196,30,58,0.1) 100%);
+    border: 1px dashed rgba(212,175,55,0.4);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.talu-coupon-left {
+    width: 100px;
+    padding: 16px;
+    background: rgba(196,30,58,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.talu-coupon-price {
+    color: #f4d160;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.talu-coupon-price em {
+    font-style: normal;
+    font-size: 28px;
+}
+
+.talu-coupon-desc {
+    color: #b8b8b8;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.talu-coupon-right {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.talu-coupon-name {
+    color: #f5f5f5;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.talu-coupon-btn {
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #c41e3a, #e63950);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.talu-coupon-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(196,30,58,0.4);
+}
+
+.talu-coupon-btn.received {
+    background: #333;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.talu-popup-coupon-tip {
+    text-align: center;
+    color: #6b6b6b;
+    font-size: 12px;
+}
+
+/* 成功提示样式 */
+.talu-popup-success {
+    width: 280px;
+    text-align: center;
+    padding: 40px 30px;
+}
+
+.talu-success-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #008080, #00a0a0);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    margin: 0 auto 20px;
+}
+
+.talu-popup-success h3 {
+    color: #d4af37;
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-family: 'Noto Serif TC', serif;
+}
+
+.talu-popup-success p {
+    color: #b8b8b8;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.talu-popup-btn {
+    padding: 12px 40px;
+    background: linear-gradient(135deg, #c41e3a, #e63950);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.talu-popup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(196,30,58,0.4);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .talu-popup-order { width: 300px; }
+    .talu-popup-coupon { width: 320px; padding: 24px; }
+}
+</style>
+
 <script type="text/javascript">
+// 随机用户数据
+var orderUsers = [
+    {city: '广东', city2: '深圳', name: '张师兄'},
+    {city: '北京', city2: '朝阳', name: '李道友'},
+    {city: '上海', city2: '浦东', name: '王居士'},
+    {city: '浙江', city2: '杭州', name: '刘道长'},
+    {city: '江苏', city2: '南京', name: '陈善信'},
+    {city: '四川', city2: '成都', name: '赵师兄'},
+    {city: '湖北', city2: '武汉', name: '孙道友'},
+    {city: '福建', city2: '厦门', name: '周居士'},
+    {city: '广州', city2: '天河', name: '吴善信'},
+    {city: '深圳', city2: '南山', name: '郑师兄'}
+];
+
+var orderTimes = ['1分钟前', '3分钟前', '5分钟前', '8分钟前', '10分钟前', '刚刚'];
+
+// 弹窗是否已显示（防止重复）
+var orderPopupShown = false;
+var couponPopupShown = false;
+
+// 关闭弹窗
+function closePopup(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+// 点击遮罩关闭
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('talu-popup-overlay')) {
+        e.target.style.display = 'none';
+    }
+});
+
+// 显示下单提示
+function showOrderPopup() {
+    if (orderPopupShown) return;
+    orderPopupShown = true;
+    
+    // 随机选择用户
+    var user = orderUsers[Math.floor(Math.random() * orderUsers.length)];
+    var time = orderTimes[Math.floor(Math.random() * orderTimes.length)];
+    
+    document.getElementById('order-user').textContent = user.city + ' · ' + user.city2 + '的' + user.name;
+    document.getElementById('order-time').textContent = time;
+    
+    document.getElementById('order-popup').style.display = 'flex';
+    
+    // 15秒后自动关闭
+    setTimeout(function() {
+        closePopup('order-popup');
+    }, 15000);
+}
+
+// 显示优惠券提示
+function showCouponPopup() {
+    if (couponPopupShown) return;
+    couponPopupShown = true;
+    
+    // 重置优惠券按钮状态
+    document.querySelectorAll('.talu-coupon-btn').forEach(function(btn) {
+        btn.classList.remove('received');
+        btn.textContent = '立即领取';
+    });
+    
+    document.getElementById('coupon-popup').style.display = 'flex';
+    
+    // 20秒后自动关闭
+    setTimeout(function() {
+        closePopup('coupon-popup');
+    }, 20000);
+}
+
+// 领取优惠券
+function receiveCoupon(btn) {
+    if (btn.classList.contains('received')) return;
+    
+    btn.classList.add('received');
+    btn.textContent = '已领取';
+    
+    // 显示成功提示
+    setTimeout(function() {
+        closePopup('coupon-popup');
+        document.getElementById('coupon-success-popup').style.display = 'flex';
+        
+        // 2秒后关闭成功提示
+        setTimeout(function() {
+            closePopup('coupon-success-popup');
+        }, 2000);
+    }, 500);
+}
+
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    // 5秒后显示下单提示
+    setTimeout(showOrderPopup, 5000);
+    
+    // 10秒后显示优惠券提示
+    setTimeout(showCouponPopup, 10000);
+});
+
 // 购物车回调
 function CartSubmitBack(e)
 {
@@ -55,6 +510,9 @@ function CartSubmitBack(e)
 
         // 展示购物车成功提示弹窗
         HomeUserCartSuccessModal(e.data.buy_number);
+        
+        // 购买成功后显示下单提示
+        setTimeout(showOrderPopup, 3000);
     } else {
         Prompt(e.msg);
     }
