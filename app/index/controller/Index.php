@@ -23,6 +23,7 @@ use app\service\BrandService;
 use app\service\LinkService;
 use app\service\LayoutService;
 use app\service\ThemeAdminService;
+use think\View;
 
 /**
  * 首页
@@ -58,140 +59,33 @@ class Index extends Common
      */
     public function Index()
     {
+        // 强制使用符宝网自定义首页模板
+        return $this->fubaoHome();
+    }
+    
+    /**
+     * 符宝网自定义首页
+     * @author   符宝网
+     */
+    public function fubaoHome()
+    {
         $assign = [
             // 手机默认下导航
             'navigation'  => IsMobile() ? AppHomeNavService::AppHomeNav() : [],
             // 友情链接
             'link_list'   => LinkService::HomeLinkList(),
         ];
-        // 首页是否主题数据模式
-        $home_is_theme_data_mode = ThemeAdminService::HomeIsThemeDataMode($this->default_theme);
-        // 如果是、则不走站点设置首页的数据模式（自动模式、手动模式、拖拽模式）
-        if(!$home_is_theme_data_mode)
-        {
-            // 数据模式
-            $floor_data_type = MyC('home_index_floor_data_type', 0, true);
-
-            // 是否设计模式
-            $admin = AdminService::LoginInfo();
-            $is_design = (!empty($this->data_request['save_url']) && isset($this->data_request['is_design']) && $this->data_request['is_design'] == 1 && $floor_data_type == 2 && !empty($admin)) ? 1 : 0;
-
-            // 模板数据
-            $assign = array_merge($assign, [
-                // 数据模式
-                'floor_data_type'   => $floor_data_type,
-                // 是否设计模式
-                'is_design'         => $is_design,
-                // 首页轮播
-                'banner_list'       => SlideService::SlideList(),
-                // 文章
-                'article_list'      => ArticleService::RecommendedArticleList(),
-            ]);
-
-            // 用户订单状态
-            $user_order_status = OrderService::OrderStatusStepTotal(['user_type'=>'user', 'user'=>$this->user, 'is_comments'=>1]);
-            $assign['user_order_status'] = $user_order_status['data'];
-
-            // 是否设计模式
-            if($is_design == 1)
-            {
-                // 商品分类
-                $goods_category = GoodsCategoryService::GoodsCategoryAll();
-
-                // 保存数据地址
-                $assign['layout_save_url'] = base64_decode(urldecode($this->data_request['save_url']));
-
-                // 设计配置数据
-                $assign['layout_data'] = LayoutService::LayoutConfigAdminData('home');
-
-                // 页面列表
-                $assign['pages_list'] = LayoutModule::PagesList();
-
-                // 商品分类
-                $assign['goods_category_list'] = $goods_category;
-
-                // 商品搜索分类（分类）
-                $assign['layout_goods_category'] = $goods_category;
-                $assign['layout_goods_category_field'] = 'gci.category_id';
-
-                // 品牌
-                $assign['brand_list'] = BrandService::CategoryBrand();
-
-                // 静态数据
-                $assign['border_style_type_list'] = LayoutModule::ConstData('border_style_type_list');
-                $assign['goods_view_list_show_style'] = LayoutModule::ConstData('goods_view_list_show_style');
-                $assign['many_images_view_list_show_style'] = LayoutModule::ConstData('many_images_view_list_show_style');
-                $assign['images_text_view_list_show_style'] = LayoutModule::ConstData('images_text_view_list_show_style');
-                $assign['images_magic_cube_view_list_show_style'] = LayoutModule::ConstData('images_magic_cube_view_list_show_style');
-
-                // 首页商品排序规则
-                $assign['common_goods_order_by_type_list'] = MyConst('common_goods_order_by_type_list');
-                $assign['common_data_order_by_rule_list'] = MyConst('common_data_order_by_rule_list');
-
-                // 浏览器名称
-                $assign['home_seo_site_title'] = SeoService::BrowserSeoTitle(MyLang('index.design_base_nav_title'), 1);
-
-                // 编辑器文件存放地址定义
-                $assign['editor_path_type'] = 'index-design';
-
-                // 加载布局样式+管理
-                $assign['is_load_layout'] = 1;
-                $assign['is_load_layout_admin'] = 1;
-            } else {
-                // 数据模式
-                if($floor_data_type == 2)
-                {
-                    // 设计配置数据
-                    $assign['layout_data'] = LayoutService::LayoutConfigData('home');
-
-                    // 加载布局样式
-                    $assign['is_load_layout'] = 1;
-                } else {
-                    // 楼层数据
-                    $assign['goods_floor_list'] = GoodsService::HomeFloorList();
-                }
-            }
-        }
-        // 数据赋值
+        // 首页楼层数据
+        $assign['goods_floor_list'] = GoodsService::HomeFloorList();
+        // 楼层数据顶部钩子
+        $assign['plugins_view_home_floor_top_data'] = MyEventTrigger('plugins_view_home_floor_top', [
+            'hook_name'    => 'plugins_view_home_floor_top',
+            'is_backend'    => false,
+            'user'          => $this->user,
+        ]);
+        
         MyViewAssign($assign);
-
-        // 钩子
-        $this->PluginsHook();
-        return MyView();
-    }
-
-    /**
-     * 钩子处理
-     * @author   Devil
-     * @blog    http://gong.gg/
-     * @version 1.0.0
-     * @date    2019-04-22
-     * @desc    description
-     * @param   [array]           $params [输入参数]
-     */
-    private function PluginsHook($params = [])
-    {
-        $hook_arr = [
-            // 楼层数据顶部钩子
-            'plugins_view_home_floor_top',
-
-            // 楼层数据底部钩子
-            'plugins_view_home_floor_bottom',
-
-            // 轮播混合数据底部钩子
-            'plugins_view_home_banner_mixed_bottom',
-        ];
-        $assign = [];
-        foreach($hook_arr as $hook_name)
-        {
-            $assign[$hook_name.'_data'] = MyEventTrigger($hook_name,
-                [
-                    'hook_name'    => $hook_name,
-                    'is_backend'    => false,
-                    'user'          => $this->user,
-                ]);
-        }
-        MyViewAssign($assign);
+        return View('index');
     }
 }
 ?>
