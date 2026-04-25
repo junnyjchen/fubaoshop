@@ -1,139 +1,266 @@
 <p align="center">
-<img src="https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/logo.jpg" width="360" />
+
+# ☯ 觅智商城
+
+觅智商城 - 觅智文化 · 传承千年道家智慧
+
+基于 ShopMX 开源电商系统的道家文化主题商城平台
+
+[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/junnyjchen/fubaoshop/blob/main/LICENSE)
+[![ShopMX](https://img.shields.io/badge/ShopMX-v6.8.0-blue)](https://github.com/gongfuxiang/shopxo)
+[![PHP](https://img.shields.io/badge/PHP-7.4+-purple)](https://www.php.net/)
+
 </p>
 
-<div align="center">
+---
 
-[![Gitee star](https://gitee.com/zongzhige/shopxo/badge/star.svg?theme=gvp)](https://gitee.com/zongzhige/shopxo/stargazers)
-[![Gitee fork](https://gitee.com/zongzhige/shopxo/badge/fork.svg?theme=gvp)](https://gitee.com/zongzhige/shopxo/members)
-[![GitHub star](https://img.shields.io/github/stars/gongfuxiang/shopxo?logo=github)](https://github.com/gongfuxiang/shopxo/stargazers)
-[![GitHub fork](https://img.shields.io/github/forks/gongfuxiang/shopxo?logo=github)](https://github.com/gongfuxiang/shopxo/network)
-[![License](https://img.shields.io/badge/license-MIT-green)](https://gitee.com/zongzhige/shopxo/blob/master/LICENSE) 
+## 📖 项目简介
 
-</div>
+觅智商城是基于 ShopMX 开源电商系统打造的道家文化主题商城。融合传统道家文化元素与现代电商技术，提供正授符箓、开光法器等传统文化产品。
 
-<h3 align="center">ShopXO企业级免费开源电商系统</h3>
+### 技术栈
 
-<div align="center">
+| 技术 | 版本 | 说明 |
+|------|------|------|
+| ShopMX | v6.8.0 | 基于 ShopXO 的开源电商系统 |
+| ThinkPHP | 5.1 | PHP MVC 框架 |
+| MySQL | 5.7+ | 数据库 |
+| jQuery/LayUI | - | 前端框架 |
 
-```shell
-如果对您有帮助，您可以点右上角 “Star” 收藏一下 ，获取第一时间更新，谢谢！
+---
+
+## ✨ 核心功能
+
+### 1. AI助手「道玄」
+
+智能问答助手，精通道家文化与命理玄学。
+
+| 特性 | 说明 |
+|------|------|
+| 知识库 | 30+ 条专业知识，涵盖6大分类 |
+| 咨询模式 | 道法闲聊、八字命理、符箓知识、风水调理、开光法器 |
+| 交互方式 | 打字机效果、会话记忆、快捷提问 |
+| 技术实现 | 知识库检索增强 + 预设问答 |
+
+**访问地址**: `/aiassistant`
+
+### 2. 免费领取功能
+
+限时免费领取活动模块。
+
+| 功能 | 说明 |
+|------|------|
+| 活动管理 | 创建、管理免费领取活动 |
+| 领取审核 | 用户申请、后台审核流程 |
+| 领取记录 | 追踪用户的领取历史 |
+| 库存管理 | 控制免费商品库存 |
+
+**访问地址**: `/freepick`
+
+### 3. 快速下单
+
+无需注册，快速下单模块。
+
+| 功能 | 说明 |
+|------|------|
+| 免登录 | 无需注册即可下单 |
+| 短信验证 | 手机号验证码确认 |
+| 订单查询 | 订单号快速查询 |
+| 简化流程 | 一步完成购买 |
+
+**访问地址**: `/quickorder`
+
+### 4. 符箓百科
+
+道家文化知识库模块。
+
+| 功能 | 说明 |
+|------|------|
+| 8大分类 | 涵盖道家文化各方面知识 |
+| 文章系统 | 发布、管理知识文章 |
+| 评论互动 | 用户可参与评论讨论 |
+| SEO优化 | 有利于搜索引擎收录 |
+
+**访问地址**: `/wiki`
+
+### 5. 营销弹窗
+
+商品详情页智能营销组件。
+
+| 弹窗 | 触发时间 | 功能 |
+|------|---------|------|
+| 下单提示 | 5秒后 | 显示其他用户购买动态 |
+| 优惠券 | 10秒后 | 领取新人专享券 |
+
+### 6. 觅智商城主题
+
+玄学文化主题 UI 组件。
+
+| 元素 | 设计 |
+|------|------|
+| 主色调 | 玄黑 #1a1a2e + 朱砂红 #c41e3a + 金色 #d4af37 |
+| 图标 | 觅智文化符号 ☯ ❋ ✦ ⬡ ⬢ |
+| 字体 | Noto Serif TC（中文）+ Noto Sans TC |
+| 动效 | 古韵过渡动画 |
+
+### 7. 多语言支持
+
+内置多语言切换功能。
+
+| 语言 | 状态 | 文件 |
+|------|------|------|
+| 繁体中文 | 默认 | `app/lang/mizhi_cht.php` |
+| 英文 | 已配置 | `app/lang/mizhi_en.php` |
+
+---
+
+## 📁 项目结构
+
+```
+/workspace/projects/
+├── app/                           # 应用目录
+│   ├── index/                     # 前台应用
+│   │   ├── controller/            # 控制器
+│   │   │   ├── ai_assistant/      # AI助手控制器
+│   │   │   ├── freepick/          # 免费领取控制器
+│   │   │   ├── quickorder/        # 快速下单控制器
+│   │   │   └── wiki/              # 符箓百科控制器
+│   │   ├── service/               # 服务层
+│   │   └── view/default/          # 前台视图
+│   ├── admin/                     # 后台应用
+│   ├── api/                       # API应用
+│   └── service/                   # 公共服务
+│       └── AIAssistantService.php # AI助手服务
+├── config/                        # 系统配置
+│   └── mizhi_site_config.php     # 觅智商城配置
+├── public/demo/                   # 演示页面
+├── docs/                         # 项目文档
+│   └── database/                 # 数据库脚本
+│       ├── ai_assistant.sql      # AI助手表
+│       ├── freepick.sql          # 免费领取表
+│       ├── quick_order.sql       # 快速下单表
+│       └── talisman_wiki.sql     # 符箓百科表
+└── public/                        # Web根目录
 ```
 
-</div>
+---
 
-------------------------------------------------------------------------
+## 🚀 快速开始
 
-### 项目介绍
-#### ShopXO国内企业级免费开源电商系统！
-* 求实进取、创新专注、自主研发、专注于企业信息化、数字化、电商一体化解决方案。
-* 遵循MIT开源协议发布，无需授权、可商用、可二次开发、满足99%的电商运营需求。
-* 支持PC+手机自适应，独立H5、小程序（支付宝、微信、百度、头条&抖音、QQ、快手），APP（IOS、Android）
-* 支持多仓库，多商户，多门店，进销存（组件插件化、即插即用），可视化DIY拖拽装修。
+### 环境要求
 
-### 体验码
-![二维码](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/demo-qrcode.jpg "qrcode.jpg")
+- PHP 7.4+ 或 PHP 8.1+
+- MySQL 5.7+ 或 MySQL 8.0+
+- Nginx / Apache
 
+### 安装步骤
 
-### 基础信息
-| 名称 | 地址 | 名称 | 地址 |
-|----|----|----|----|
-| 演示地址 | [https://demo.shopxo.net/](https://demo.shopxo.net/) | 安装教程 | [https://install.shopxo.net/](https://install.shopxo.net/) |
-| 更新日志 | [https://log.shopxo.net/](https://log.shopxo.net/) | 文档地址 | [https://doc.shopxo.net/](https://doc.shopxo.net/) |
-| 开源协议 | [https://license.shopxo.net/](https://license.shopxo.net/) | 手机端 | [https://uniapp.shopxo.net/](https://uniapp.shopxo.net/) |
+1. **克隆项目**
+```bash
+git clone https://github.com/junnyjchen/fubaoshop.git
+cd fubaoshop
+```
 
-### 官方QQ群、答案`shopxo.net`
-|  官方1群 | 官方2群  |  官方3群 |  官方4群 |  官方多商户群 |  官方多门店群 |  官方进销存群 |  官方uniapp群 |  官方DIY群 |
-|---|---|---|---|---|---|---|---|---|
-|  833531593 | 641730223  | 1127073697  |  323523483  | 782971010  | 281418967  | 719894308  | 679303149  | 934312116  |
+2. **导入数据库**
+```bash
+mysql -u root -p < docs/database/ai_assistant.sql
+mysql -u root -p < docs/database/freepick.sql
+mysql -u root -p < docs/database/quick_order.sql
+```
 
-### 当前项目源代码平台
-| 平台 | 地址 |
-|----|----|
-| Gitee | [https://gitee.com/zongzhige/shopxo](https://gitee.com/zongzhige/shopxo) |
-| GitHub | [https://github.com/gongfuxiang/shopxo](https://github.com/gongfuxiang/shopxo) |
-| Coding | [https://zongzhige.coding.net/public/shopxo/shopxo/git](https://zongzhige.coding.net/public/shopxo/shopxo/git) |
-| GitCode | [https://gitcode.com/zongzhige/shopxo](https://gitcode.com/zongzhige/shopxo) |
+3. **配置站点**
+```php
+// config/mizhi_site_config.php
+return [
+    'home_site_name' => '觅智商城',
+    'home_copyright' => '觅智文化',
+];
+```
 
-### uniapp手机端源代码平台
-| 平台 | 地址 |
-|----|----|
-| Gitee | [https://gitee.com/zongzhige/shopxo-uniapp](https://gitee.com/zongzhige/shopxo-uniapp) |
-| GitHub | [https://github.com/gongfuxiang/shopxo-uniapp](https://github.com/gongfuxiang/shopxo-uniapp) |
-| Coding | [https://zongzhige.coding.net/public/shopxo/uniapp/git](https://zongzhige.coding.net/public/shopxo/uniapp/git) |
-| GitCode | [https://gitcode.com/zongzhige/shopxo-uniapp](https://gitcode.com/zongzhige/shopxo-uniapp) |
-| uni-app | [https://ext.dcloud.net.cn/plugin?id=6380](https://ext.dcloud.net.cn/plugin?id=6380) |
+4. **访问网站**
+- 前台：https://yoursite.com/
+- 后台：https://yoursite.com/admin
+- AI助手：https://yoursite.com/aiassistant
 
-### DIY装修源代码平台
-| 平台 | 地址 |
-|----|----|
-| Gitee | [https://gitee.com/zongzhige/shopxo-diy](https://gitee.com/zongzhige/shopxo-diy) |
-| GitHub | [https://github.com/gongfuxiang/shopxo-diy](https://github.com/gongfuxiang/shopxo-diy) |
-| GitCode | [https://gitcode.com/zongzhige/shopxo-diy](https://gitcode.com/zongzhige/shopxo-diy) |
+---
 
-### 部分功能特性
-| 名称 | 描述 |
-|---------|-------------------------------------------------|
-| 多种模式 | 销售+自提+虚拟+展示+销售/自提，多仓库独立库存管理、可视化DIY拖拽装修 |
-| 分销 | 可配置1~3级、分享赚取佣金、小程序商品海报、取货点、佣金可配置具体到SKU(比例和固定金额) |
-| 会员等级 | 等级折扣(具体到商品规格)、满减、手动设置会员等级、付费购买+续费+三级返佣 |
-| 限时秒杀 | 独立秒杀中心、商品详情秒杀倒计时、自动开始结束 |
-| 优惠券 | 满减劵、折扣劵、注册送、用户领取、管理员发放 |
-| 钱包 | 用户钱包，在线充值（固定金额或比例赠送+自定义赠送），申请提现 |
-| 微信小程序直播 | 海报分享、web端展示直播列表，支持分身独立多商户模式 |
-| 积分商城+签到 | 积分抵扣、积分兑换、无限发布签到活动获取积分 |
-| 多商户 | 商家入驻、独立店铺（二级域名/保证金/代理模式）、店铺等级（购买/升级/功能限制）、可视化DIY拖拽装修+页面设计、不同商家自动拆单，店铺、商品（可选择平台商品）、分类、结算、订单管理、评论回复、运费设置、数据统计，支持插件结合使用（电子面单批量导出及发货、微信小程序直播、分销、优惠券、限时秒杀）|
-| 多门店 | 派单+转单+核销+代客下单+商品(独立售价+库存+商品)+批次+次卡+员工和薪水自动抽成+充值+收银+桌码+O2O店铺运营模式，线上线下完美结合、适用（社区+餐饮+美容美发+在线预约+门店消费+自提+外送+快递）、支持达达配送 |
-| 批发 | 阶梯售价、新购+复购单独配置、自由配置无限极数量阶梯售价、可以具体到规格 |
-| 客服 | 统一多端在线客服系统、支持（表情/图片/视频/快捷消息）、好友上下线实时通知、实时输入状态、支持网页及小程序直接发起即时咨询、客服离线（短信+邮件实时通知）、支持商品卡片、可打包工作台客服APP |
-| 进销存ERP | 采购(入库/退货)、销售(发货/退货)、自定义模板打印+导出Excel+PDF、产品excel批量导入+多单位+多仓库仓位、仓库盘点+调拨、其他出入库、客商+会员等级、采销收付款、商城商品与产品双向同步、商城订单自动同步批量发货|
-| 组合搭配 | 多个商品组合打包一口价或折扣销售、商品套餐组合搭配用户可选2件起下单、商品关联营销、捆绑销售提高成交率，支持多商户 |
-| 配送员 | 同城自建物流团队配送系统，骑手管理、调度中心（地图方圆画圈批量派单及打印、实时观察订单及骑手位置）、配送员微信小程序端实时定位 |
-* 更多查看应用商店 ( https://store.shopxo.net/ )
+## 📊 数据库表
 
-### 系统特性
-![系统特性](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/core.jpg "系统特性")
+| 表名 | 功能 | 说明 |
+|------|------|------|
+| `sxo_ai_knowledge_category` | AI知识分类 | 6大分类 |
+| `sxo_ai_knowledge_item` | AI知识条目 | 30+条知识 |
+| `sxo_ai_chat_config` | AI配置 | 助手名称、提示词等 |
+| `sxo_freepick_activity` | 领取活动 | 免费领取活动 |
+| `sxo_freepick_record` | 领取记录 | 用户领取记录 |
+| `sxo_quick_order` | 快速订单 | 无登录订单 |
+| `sxo_wiki_category` | 百科分类 | 8大知识分类 |
+| `sxo_wiki_article` | 百科文章 | 知识文章 |
 
-### 全平台支持
-![全平台支持](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/platform.jpg "全平台支持")
+---
 
+## 🔧 开发指南
 
-#### 小程序支持多种配色
-![多种配色](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/app/color.png "配色.jpg")
+### 添加知识库条目
 
-#### 小程序效果图片
-![小程序页面](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/app/page.png "小程序页面.jpg")
+```php
+// 在知识库管理后台添加，或执行SQL
+INSERT INTO `sxo_ai_knowledge_item` 
+(`category_id`, `title`, `question`, `answer`, `tags`) 
+VALUES (1, '护身符功效', '护身符|功效', '护身符功效说明...', '护身符,功效');
+```
 
+### 自定义AI助手名称
 
-### PC端展示
-![前端](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/index/main.jpg "前端")
+```php
+// 后台配置或修改配置表
+UPDATE `sxo_ai_chat_config` 
+SET `ai_name` = '道玄', `ai_avatar` = '☯' 
+WHERE `id` = 1;
+```
 
+### 主题配色
 
-### 后台管理展示
-![后端](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/admin/main.jpg "首页")
+```css
+/* 修改觅智主题颜色 */
+:root {
+    --talu-black: #1a1a2e;
+    --talu-red: #c41e3a;
+    --talu-gold: #d4af37;
+}
+```
 
+---
 
-### 手机DIY装修展示
-![手机DIY装修](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/diy/diy.jpg "手机DIY装修")
+## 📝 品牌信息
 
+| 项目 | 内容 |
+|------|------|
+| 项目名称 | 觅智商城 |
+| 版权方 | 觅智文化 |
+| 官方网站 | https://mizhi.com |
+| 技术支持 | service@mizhi.com |
 
-### 可视化DIY拖拽装修展示
-![可视化拖拽](https://doc.shopxo.net/upload/image/20210727/1627370212919280.gif "可视化DIY拖拽装修")
+---
 
+## 📄 开源协议
 
-### Gitee 荣获GVP证书
-![Gitee荣誉证书](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/gitee-gvp.jpg "Gitee荣誉证书")
+本项目基于 [MIT](https://opensource.org/licenses/MIT) 开源协议发布。
 
-### GitCode 荣获G-Star证书
-![GitCode荣誉证书](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/gotcode-star.jpg "GitCode荣誉证书")
+基于 [ShopXO](https://github.com/gongfuxiang/shopxo) 开源电商系统开发。
 
-### GitCode 荣获2024年度十大新锐项目
-![GitCode2024年度十大新锐项目](https://shopxoserver.oss-cn-beijing.aliyuncs.com/demo/system/gitcode-2024.png "GitCode2024年度十大新锐项目")
+---
 
+## 🙏 致谢
 
-### 如何参与项目
-非常欢迎您对ShopXO的开发作出贡献！你可以选择以下方式向ShopXO贡献：
-- [Github - 发布issue进行问题反馈和建议](https://github.com/gongfuxiang/shopxo/pulls)
-- [Gitee - 发布issue进行问题反馈和建议](https://gitee.com/zongzhige/shopxo/pulls)
-- [Gitcode - 发布issue进行问题反馈和建议](https://gitcode.com/zongzhige/shopxo/merge_requests)
-> 通过Pull Request提交修复、完善我们的文档和例子
+- [ShopXO](https://github.com/gongfuxiang/shopxo) - 开源电商系统
+- [ThinkPHP](https://www.thinkphp.cn/) - PHP框架
+- [Google Fonts](https://fonts.google.com/) - 开源字体
+
+---
+
+<p align="center">
+
+**☯ 觅智商城 - 觅智文化 · 传承千年道家智慧**
+
+</p>
