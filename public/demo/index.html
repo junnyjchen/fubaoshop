@@ -1,691 +1,896 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>觅智商城 - 觅智文化</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --talu-black: #1a1a2e;
-      --talu-black-light: #16213e;
-      --talu-black-dark: #0f0f23;
-      --talu-red: #c41e3a;
-      --talu-red-light: #e63950;
-      --talu-gold: #d4af37;
-      --talu-gold-light: #f4d160;
-      --talu-cyan: #008080;
-      --text-primary: #f5f5f5;
-      --text-secondary: #b8b8b8;
-      --text-muted: #6b6b6b;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Noto Sans TC', 'PingFang SC', sans-serif;
-      background: linear-gradient(135deg, var(--talu-black-dark) 0%, var(--talu-black) 50%, var(--talu-black-light) 100%);
-      color: var(--text-primary);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* 背景装饰 */
-    .bg-pattern {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 20% 80%, rgba(196, 30, 58, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* 导航栏 */
-    .navbar {
-      padding: 20px 0;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .navbar__logo {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--talu-gold);
-      letter-spacing: 3px;
-      text-decoration: none;
-    }
-
-    .navbar__links {
-      display: flex;
-      gap: 30px;
-      list-style: none;
-    }
-
-    .navbar__link {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 15px;
-      transition: color 0.3s;
-    }
-
-    .navbar__link:hover { color: var(--talu-gold); }
-
-    .navbar__cta {
-      padding: 10px 24px;
-      background: linear-gradient(135deg, var(--talu-red), var(--talu-red-light));
-      border: none;
-      border-radius: 25px;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .navbar__cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(196, 30, 58, 0.4);
-    }
-
-    /* Hero区域 */
-    .hero {
-      padding: 80px 0;
-      text-align: center;
-      position: relative;
-    }
-
-    .hero__badge {
-      display: inline-block;
-      padding: 8px 20px;
-      background: rgba(212, 175, 55, 0.1);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 30px;
-      font-size: 13px;
-      color: var(--talu-gold);
-      margin-bottom: 30px;
-    }
-
-    .hero__title {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 56px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 20px;
-      letter-spacing: 8px;
-    }
-
-    .hero__title span {
-      color: var(--talu-gold);
-    }
-
-    .hero__subtitle {
-      font-size: 20px;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto 40px;
-      line-height: 1.8;
-    }
-
-    .hero__actions {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-    }
-
-    .hero__btn {
-      padding: 14px 32px;
-      border-radius: 30px;
-      font-size: 15px;
-      text-decoration: none;
-      transition: all 0.3s;
-      cursor: pointer;
-    }
-
-    .hero__btn--primary {
-      background: linear-gradient(135deg, var(--talu-red), var(--talu-red-light));
-      color: white;
-      border: none;
-    }
-
-    .hero__btn--secondary {
-      background: transparent;
-      color: var(--talu-gold);
-      border: 1px solid var(--talu-gold);
-    }
-
-    .hero__btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-    }
-
-    /* 功能卡片 */
-    .features {
-      padding: 60px 0;
-    }
-
-    .section__title {
-      text-align: center;
-      font-family: 'Noto Serif TC', serif;
-      font-size: 32px;
-      color: var(--talu-gold);
-      margin-bottom: 50px;
-    }
-
-    .features__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .feature-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      border-radius: 16px;
-      padding: 30px;
-      transition: all 0.3s;
-    }
-
-    .feature-card:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: var(--talu-gold);
-      transform: translateY(-5px);
-    }
-
-    .feature-card__icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
-
-    .feature-card__title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .feature-card__desc {
-      color: var(--text-secondary);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    /* AI助手演示 */
-    .ai-demo {
-      padding: 80px 0;
-      background: rgba(0,0,0,0.2);
-      margin: 40px 0;
-      border-radius: 24px;
-    }
-
-    .ai-demo__content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .ai-demo__info h2 {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 32px;
-      color: var(--talu-gold);
-      margin-bottom: 20px;
-    }
-
-    .ai-demo__info p {
-      color: var(--text-secondary);
-      line-height: 1.8;
-      margin-bottom: 20px;
-    }
-
-    .ai-demo__features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .ai-demo__tag {
-      padding: 8px 16px;
-      background: rgba(212, 175, 55, 0.1);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 20px;
-      font-size: 13px;
-      color: var(--talu-gold);
-    }
-
-    /* 聊天界面预览 */
-    .chat-preview {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
-
-    .chat-preview__header {
-      padding: 16px 20px;
-      background: rgba(196, 30, 58, 0.1);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .chat-preview__avatar {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-    }
-
-    .chat-preview__info h3 {
-      font-size: 16px;
-      color: var(--talu-gold);
-    }
-
-    .chat-preview__info p {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .chat-preview__body {
-      padding: 20px;
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .chat-preview__msg {
-      max-width: 80%;
-      padding: 14px 18px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.6;
-      animation: fadeInUp 0.5s ease;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .chat-preview__msg--ai {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      border-radius: 4px 16px 16px 16px;
-      align-self: flex-start;
-    }
-
-    .chat-preview__msg--user {
-      background: linear-gradient(135deg, var(--talu-cyan), #00a0a0);
-      align-self: flex-end;
-      border-radius: 16px 4px 16px 16px;
-    }
-
-    .chat-preview__input {
-      padding: 16px 20px;
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
-      display: flex;
-      gap: 12px;
-    }
-
-    .chat-preview__input input {
-      flex: 1;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-size: 14px;
-    }
-
-    .chat-preview__input button {
-      padding: 12px 20px;
-      background: var(--talu-red);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-    }
-
-    /* 统计 */
-    .stats {
-      padding: 60px 0;
-    }
-
-    .stats__grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-
-    .stat-card {
-      text-align: center;
-      padding: 30px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(212, 175, 55, 0.1);
-      border-radius: 16px;
-    }
-
-    .stat-card__number {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 42px;
-      font-weight: 700;
-      color: var(--talu-gold);
-      margin-bottom: 8px;
-    }
-
-    .stat-card__label {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    /* 页脚 */
-    .footer {
-      padding: 40px 0;
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
-      text-align: center;
-    }
-
-    .footer__logo {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 20px;
-      color: var(--talu-gold);
-      margin-bottom: 16px;
-    }
-
-    .footer__text {
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    /* 响应式 */
-    @media (max-width: 768px) {
-      .navbar { flex-direction: column; gap: 20px; }
-      .navbar__links { flex-wrap: wrap; justify-content: center; }
-      .hero__title { font-size: 36px; }
-      .hero__actions { flex-direction: column; }
-      .ai-demo__content { grid-template-columns: 1fr; }
-      .stats__grid { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>符宝网 - 传承千年道法智慧</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fubao-black: #1a1a2e;
+            --fubao-black-light: #16213e;
+            --fubao-black-dark: #0f0f23;
+            --fubao-red: #c41e3a;
+            --fubao-red-light: #e63950;
+            --fubao-gold: #d4af37;
+            --fubao-gold-light: #f4d160;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b8b8b8;
+            --text-muted: #6b6b6b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans TC', 'PingFang SC', sans-serif;
+            background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* 导航栏 */
+        .navbar {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .navbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--fubao-gold);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon { font-size: 32px; }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+        .nav-link:hover { color: var(--fubao-gold); }
+        
+        /* 快捷导航 */
+        .quick-nav {
+            padding: 30px 0;
+            background: rgba(26, 26, 46, 0.5);
+        }
+        .quick-nav-inner {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .quick-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .quick-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+        }
+        .quick-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .quick-item span {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* 区块标题 */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-top: 50px;
+        }
+        .section-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 36px;
+            color: var(--fubao-gold);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+        
+        /* 核心功能区域 */
+        .core-section { padding-bottom: 50px; }
+        .core-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .core-grid { grid-template-columns: 1fr; }
+        }
+        .core-card {
+            background: rgba(22, 33, 62, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        .core-card:hover {
+            border-color: var(--fubao-gold);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+        }
+        .core-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .core-card-header h3 {
+            color: var(--fubao-gold);
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .core-badge {
+            background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .more-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .more-link:hover { color: var(--fubao-red); }
+        
+        /* 符箓分类标签 */
+        .talisman-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .category-tag {
+            padding: 6px 16px;
+            background: rgba(196, 30, 58, 0.2);
+            border: 1px solid var(--fubao-red);
+            border-radius: 20px;
+            color: var(--fubao-red-light);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .category-tag:hover {
+            background: var(--fubao-red);
+            color: #fff;
+        }
+        
+        /* 符箓列表 */
+        .talisman-list { display: flex; flex-direction: column; gap: 12px; }
+        .talisman-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .talisman-item:hover {
+            background: rgba(196, 30, 58, 0.1);
+            transform: translateX(5px);
+        }
+        .talisman-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .talisman-info h4 { color: var(--fubao-gold); margin-bottom: 5px; }
+        .talisman-info p { color: var(--text-muted); font-size: 13px; }
+        
+        /* 百科文章 */
+        .wiki-articles { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .wiki-article {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .wiki-article:hover { background: rgba(212, 175, 55, 0.1); }
+        .article-tag {
+            padding: 3px 10px;
+            background: var(--fubao-red);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .article-title {
+            color: var(--text-secondary);
+            font-size: 14px;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .wiki-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 15px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .stat-item { text-align: center; }
+        .stat-num {
+            display: block;
+            font-size: 30px;
+            color: var(--fubao-gold);
+            font-weight: bold;
+        }
+        .stat-label { color: var(--text-muted); font-size: 12px; }
+        
+        /* 特色服务区域 */
+        .featured-section {
+            background: rgba(15, 15, 35, 0.8);
+            padding-bottom: 50px;
+        }
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 992px) {
+            .featured-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 576px) {
+            .featured-grid { grid-template-columns: 1fr; }
+        }
+        .featured-card {
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .featured-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--fubao-gold);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
+        }
+        .featured-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 15px;
+        }
+        .featured-card h3 { color: var(--fubao-gold); font-size: 18px; margin-bottom: 8px; }
+        .featured-card > p { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; }
+        
+        /* 玄门动态 */
+        .dynamic-item {
+            display: flex;
+            gap: 10px;
+            text-align: left;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: rgba(196, 30, 58, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .dynamic-title { font-size: 12px; color: var(--text-muted); margin-bottom: 3px; }
+        .dynamic-content { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+        
+        /* 玄门学堂 */
+        .course-list { display: flex; flex-direction: column; gap: 10px; }
+        .course-item {
+            display: flex;
+            gap: 10px;
+            text-align: left;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        .course-cover {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .course-info h4 { color: var(--text-secondary); font-size: 13px; margin-bottom: 3px; }
+        .course-info p { color: var(--text-muted); font-size: 11px; }
+        
+        /* AI道玄 */
+        .ai-chat-demo { text-align: left; }
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .chat-bubble.user {
+            background: rgba(196, 30, 58, 0.3);
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.ai {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--text-secondary);
+        }
+        .ai-avatar { font-size: 14px; margin-right: 8px; }
+        
+        /* 宝品商城 */
+        .goods-preview { display: flex; flex-direction: column; gap: 10px; }
+        .goods-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        .goods-img {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--fubao-red), var(--fubao-gold));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .goods-name { color: var(--text-secondary); font-size: 13px; }
+        .goods-price { color: var(--fubao-red); font-size: 14px; font-weight: bold; margin-top: 3px; }
+        
+        .featured-more {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: transparent;
+            border: 1px solid var(--fubao-gold);
+            border-radius: 20px;
+            color: var(--fubao-gold);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .featured-more:hover {
+            background: var(--fubao-gold);
+            color: var(--fubao-black);
+        }
+        
+        /* 免费领取推广 */
+        .free-pick-banner {
+            background: linear-gradient(135deg, #c41e3a 0%, #1a1a2e 50%, #d4af37 100%);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .free-pick-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .free-pick-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        @media (max-width: 768px) {
+            .free-pick-content { flex-direction: column; text-align: center; }
+        }
+        .free-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .free-pick-left h2 { color: #fff; font-size: 42px; margin-bottom: 10px; }
+        .free-pick-left > p { color: rgba(255, 255, 255, 0.8); font-size: 16px; margin-bottom: 25px; }
+        .free-pick-features {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 576px) {
+            .free-pick-features { flex-direction: column; gap: 10px; }
+        }
+        .free-pick-features span { color: rgba(255, 255, 255, 0.9); font-size: 15px; }
+        .free-pick-btn {
+            display: inline-block;
+            padding: 18px 60px;
+            background: #fff;
+            color: var(--fubao-red);
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .free-pick-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        .free-pick-right {
+            flex: 0 0 300px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .free-pick-right { margin-top: 40px; }
+        }
+        .free-symbol {
+            font-size: 100px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .free-items { display: flex; gap: 15px; justify-content: center; }
+        .free-item {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+        }
+        
+        /* 信任保障 */
+        .trust-section {
+            background: rgba(15, 15, 35, 0.95);
+            padding: 60px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .trust-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        .trust-item { text-align: center; padding: 20px; min-width: 150px; }
+        .trust-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.3), rgba(212, 175, 55, 0.3));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: var(--fubao-gold);
+            margin: 0 auto 15px;
+        }
+        .trust-item h4 { color: var(--fubao-gold); font-size: 18px; margin-bottom: 5px; }
+        .trust-item p { color: var(--text-muted); font-size: 14px; }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .footer p { color: var(--text-muted); font-size: 13px; }
+        .footer a { color: var(--fubao-gold); text-decoration: none; }
+    </style>
 </head>
 <body>
-  <div class="bg-pattern"></div>
-  
-  <div class="container">
     <!-- 导航栏 -->
-    <nav class="navbar">
-      <a href="#" class="navbar__logo">☯ 觅智商城</a>
-      <ul class="navbar__links">
-        <li><a href="#features" class="navbar__link">功能介绍</a></li>
-        <li><a href="#ai-assistant" class="navbar__link">AI助手</a></li>
-        <li><a href="#products" class="navbar__link">觅智产品</a></li>
-        <li><a href="#about" class="navbar__link">关于我们</a></li>
-      </ul>
-      <button class="navbar__cta" onclick="openAI()">☯ 体验AI助手</button>
-    </nav>
-
-    <!-- Hero区域 -->
-    <section class="hero">
-      <span class="hero__badge">☯ 觅智文化 · 传承千年道家智慧</span>
-      <h1 class="hero__title">觅智<span>商城</span></h1>
-      <p class="hero__subtitle">
-        基于 ShopMX 开源电商系统，融合传统道家文化元素打造的智能商城平台。
-        提供正授符箓、开光法器，让科技与文化完美交融。
-      </p>
-      <div class="hero__actions">
-        <button class="hero__btn hero__btn--primary" onclick="openAI()">☯ 开启智能问道</button>
-        <button class="hero__btn hero__btn--secondary">了解更多</button>
-      </div>
-    </section>
-
-    <!-- 功能介绍 -->
-    <section class="features" id="features">
-      <h2 class="section__title">☯ 核心功能</h2>
-      <div class="features__grid">
-        <div class="feature-card">
-          <div class="feature-card__icon">☯</div>
-          <h3 class="feature-card__title">AI助手「道玄」</h3>
-          <p class="feature-card__desc">
-            智能问答助手，精通道家文化、八字命理、符箓知识。
-            24小时在线，为您答疑解惑。
-          </p>
+    <div class="navbar">
+        <div class="container navbar-inner">
+            <a href="/" class="logo">
+                <span class="logo-icon">☯</span>
+                <span>符宝网</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/wiki" class="nav-link">符箓百科</a></li>
+                <li><a href="/wiki" class="nav-link">玄门百科</a></li>
+                <li><a href="/wish" class="nav-link">玄门动态</a></li>
+                <li><a href="/search" class="nav-link">宝品商城</a></li>
+                <li><a href="/aiassistant" class="nav-link">AI道玄</a></li>
+            </ul>
         </div>
-        <div class="feature-card">
-          <div class="feature-card__icon">✦</div>
-          <h3 class="feature-card__title">八字命理</h3>
-          <p class="feature-card__desc">
-            专业命理分析，解读人生运势。
-            提供五行、十神、大运流年等全方位命理咨询。
-          </p>
+    </div>
+    
+    <!-- 快捷导航 -->
+    <div class="quick-nav">
+        <div class="container quick-nav-inner">
+            <a href="/wiki" class="quick-item">
+                <div class="quick-icon">☯</div>
+                <span>符箓百科</span>
+            </a>
+            <a href="/wiki" class="quick-item">
+                <div class="quick-icon">✦</div>
+                <span>玄门百科</span>
+            </a>
+            <a href="/wish" class="quick-item">
+                <div class="quick-icon">☸</div>
+                <span>玄门动态</span>
+            </a>
+            <a href="/wiki" class="quick-item">
+                <div class="quick-icon">❋</div>
+                <span>玄门学堂</span>
+            </a>
+            <a href="/search" class="quick-item">
+                <div class="quick-icon">⬢</div>
+                <span>宝品商城</span>
+            </a>
+            <a href="/aiassistant" class="quick-item">
+                <div class="quick-icon">⚙</div>
+                <span>AI道玄</span>
+            </a>
+            <a href="/freepick" class="quick-item">
+                <div class="quick-icon">🎁</div>
+                <span>免费领取</span>
+            </a>
+            <a href="/certificate" class="quick-item">
+                <div class="quick-icon">✓</div>
+                <span>证书验证</span>
+            </a>
         </div>
-        <div class="feature-card">
-          <div class="feature-card__icon">❋</div>
-          <h3 class="feature-card__title">符箓知识</h3>
-          <p class="feature-card__desc">
-            详细介绍各类符箓的功效、使用方法和注意事项。
-            护身符、招财符、姻缘符、文昌符等。
-          </p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-card__icon">⬡</div>
-          <h3 class="feature-card__title">风水调理</h3>
-          <p class="feature-card__desc">
-            专业家居风水建议，覆盖商铺、办公室、卧室等。
-            助您营造最佳风水格局。
-          </p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-card__icon">⬢</div>
-          <h3 class="feature-card__title">开光法器</h3>
-          <p class="feature-card__desc">
-            各类开光法器知识，貔貅、文昌塔、水晶球等。
-            详细讲解功效与正确使用方法。
-          </p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-card__icon">☸</div>
-          <h3 class="feature-card__title">道家文化</h3>
-          <p class="feature-card__desc">
-            传承千年道家智慧，涵盖《道德经》、《易经》等经典。
-            学习道法自然、天人合一的哲学思想。
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI助手演示 -->
-    <section class="ai-demo" id="ai-assistant">
-      <div class="ai-demo__content">
-        <div class="ai-demo__info">
-          <h2>☯ 道玄 AI 助手</h2>
-          <p>
-            道玄是觅智商城自主研发的智能助手，精通道家文化、命理玄学。
-            基于知识库检索增强，提供专业、准确的咨询服务。
-          </p>
-          <p>
-            支持多种咨询模式：道法闲聊、八字命理、符箓知识、风水调理、开光法器。
-            无论您有何疑问，道玄都将竭诚为您解答。
-          </p>
-          <div class="ai-demo__features">
-            <span class="ai-demo__tag">☯ 道法闲聊</span>
-            <span class="ai-demo__tag">✦ 八字命理</span>
-            <span class="ai-demo__tag">❋ 符箓知识</span>
-            <span class="ai-demo__tag">⬡ 风水调理</span>
-            <span class="ai-demo__tag">⬢ 开光法器</span>
-          </div>
+    </div>
+    
+    <!-- 核心功能区域 -->
+    <div class="container core-section">
+        <div class="section-header">
+            <h2 class="section-title"><span>☯</span> 道法传承</h2>
+            <p class="section-desc">千年道法智慧 · 正统符箓传承</p>
         </div>
         
-        <div class="chat-preview">
-          <div class="chat-preview__header">
-            <div class="chat-preview__avatar">☯</div>
-            <div class="chat-preview__info">
-              <h3>道玄 AI</h3>
-              <p>觅智商城 · 智能助手</p>
+        <div class="core-grid">
+            <!-- 符箓科普 -->
+            <div class="core-card">
+                <div class="core-card-header">
+                    <h3>☯ 符箓科普 <span class="core-badge">核心功能</span></h3>
+                    <a href="/wiki" class="more-link">查看更多 →</a>
+                </div>
+                <div class="talisman-categories">
+                    <a href="/wiki?category=1" class="category-tag">护身符</a>
+                    <a href="/wiki?category=2" class="category-tag">招财符</a>
+                    <a href="/wiki?category=3" class="category-tag">镇宅符</a>
+                    <a href="/wiki?category=4" class="category-tag">姻缘符</a>
+                    <a href="/wiki?category=5" class="category-tag">学业符</a>
+                    <a href="/wiki?category=6" class="category-tag">健康符</a>
+                </div>
+                <div class="talisman-list">
+                    <a href="/wiki/detail/1" class="talisman-item">
+                        <div class="talisman-icon">☯</div>
+                        <div class="talisman-info">
+                            <h4>平安符</h4>
+                            <p>护佑出入平安，驱邪避祸</p>
+                        </div>
+                    </a>
+                    <a href="/wiki/detail/2" class="talisman-item">
+                        <div class="talisman-icon">✦</div>
+                        <div class="talisman-info">
+                            <h4>财神符</h4>
+                            <p>招财进宝，财运亨通</p>
+                        </div>
+                    </a>
+                    <a href="/wiki/detail/3" class="talisman-item">
+                        <div class="talisman-icon">❋</div>
+                        <div class="talisman-info">
+                            <h4>文昌符</h4>
+                            <p>开启智慧，学业进步</p>
+                        </div>
+                    </a>
+                    <a href="/wiki/detail/4" class="talisman-item">
+                        <div class="talisman-icon">☸</div>
+                        <div class="talisman-info">
+                            <h4>太岁符</h4>
+                            <p>化解冲太岁，趋吉避凶</p>
+                        </div>
+                    </a>
+                </div>
             </div>
-          </div>
-          <div class="chat-preview__body" id="chatBody">
-            <div class="chat-preview__msg chat-preview__msg--ai">
-              善信有缘，道玄在此恭候多时。吾通晓八字命理、符箓之道，愿为施主答疑解惑。
+            
+            <!-- 玄门百科 -->
+            <div class="core-card">
+                <div class="core-card-header">
+                    <h3>✦ 玄门百科 <span class="core-badge">核心功能</span></h3>
+                    <a href="/wiki" class="more-link">查看更多 →</a>
+                </div>
+                <div class="wiki-articles">
+                    <a href="/wiki/detail/1" class="wiki-article">
+                        <span class="article-tag">入门</span>
+                        <span class="article-title">道家基础理论：阴阳五行与八卦</span>
+                    </a>
+                    <a href="/wiki/detail/2" class="wiki-article">
+                        <span class="article-tag">进阶</span>
+                        <span class="article-title">符箓的制作与使用讲究</span>
+                    </a>
+                    <a href="/wiki/detail/3" class="wiki-article">
+                        <span class="article-tag">大师</span>
+                        <span class="article-title">风水布局与命理测算</span>
+                    </a>
+                    <a href="/wiki/detail/4" class="wiki-article">
+                        <span class="article-tag">入门</span>
+                        <span class="article-title">道教正一派与全真派的区别</span>
+                    </a>
+                    <a href="/wiki/detail/5" class="wiki-article">
+                        <span class="article-tag">进阶</span>
+                        <span class="article-title">开光仪式的正确流程</span>
+                    </a>
+                    <a href="/wiki/detail/6" class="wiki-article">
+                        <span class="article-tag">入门</span>
+                        <span class="article-title">如何辨别符箓真伪</span>
+                    </a>
+                </div>
+                <div class="wiki-stats">
+                    <div class="stat-item">
+                        <span class="stat-num">128</span>
+                        <span class="stat-label">知识条目</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">8</span>
+                        <span class="stat-label">知识分类</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">10K+</span>
+                        <span class="stat-label">学习人次</span>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="chat-preview__input">
-            <input type="text" placeholder="输入您的问题，道玄为您解答..." id="chatInput" onkeypress="handleKeypress(event)">
-            <button onclick="sendMessage()">➤</button>
-          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- 统计 -->
-    <section class="stats">
-      <div class="stats__grid">
-        <div class="stat-card">
-          <div class="stat-card__number">30+</div>
-          <div class="stat-card__label">知识库条目</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__number">6</div>
-          <div class="stat-card__label">咨询模式</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__number">24/7</div>
-          <div class="stat-card__label">在线服务</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__number">100%</div>
-          <div class="stat-card__label">道家正统</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 页脚 -->
-    <footer class="footer" id="about">
-      <div class="footer__logo">☯ 觅智商城</div>
-      <p class="footer__text">
-        觅智商城 - 觅智文化 · 传承千年道家智慧<br>
-        基于 ShopMX 开源电商系统<br><br>
-        © 2024 觅智文化 All Rights Reserved.
-      </p>
-    </footer>
-  </div>
-
-  <!-- AI对话弹窗 -->
-  <div id="aiModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-    <div style="width:90%; max-width:500px; background:#1a1a2e; border-radius:16px; overflow:hidden; border:1px solid rgba(212,175,55,0.3);">
-      <div style="padding:16px 20px; background:rgba(196,30,58,0.1); border-bottom:1px solid rgba(212,175,55,0.1); display:flex; justify-content:space-between; align-items:center;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:40px; height:40px; background:linear-gradient(135deg,#c41e3a,#d4af37); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;">☯</div>
-          <div>
-            <div style="font-size:16px; color:#d4af37;">道玄 AI</div>
-            <div style="font-size:12px; color:#6b6b6b;">觅智商城 · 智能助手</div>
-          </div>
-        </div>
-        <button onclick="closeAI()" style="background:none; border:none; color:#b8b8b8; font-size:24px; cursor:pointer;">×</button>
-      </div>
-      <div id="modalChatBody" style="padding:20px; min-height:350px; max-height:400px; overflow-y:auto;">
-        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.15); padding:14px 18px; border-radius:4px 16px 16px 16px; margin-bottom:16px;">
-          善信有缘，道玄在此恭候多时。吾通晓八字命理、符箓之道，愿为施主答疑解惑。
-        </div>
-      </div>
-      <div style="padding:16px 20px; background:rgba(255,255,255,0.02); border-top:1px solid rgba(212,175,55,0.1); display:flex; gap:12px;">
-        <input type="text" id="modalChatInput" placeholder="输入您的问题..." style="flex:1; padding:12px 16px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:8px; color:#f5f5f5; font-size:14px;" onkeypress="handleModalKeypress(event)">
-        <button onclick="sendModalMessage()" style="padding:12px 20px; background:#c41e3a; border:none; border-radius:8px; color:white; cursor:pointer;">➤</button>
-      </div>
     </div>
-  </div>
-
-  <script>
-    // 预设问答
-    const faqDatabase = {
-      '护身符': '护身符乃道家最常见的符箓之一，用于保护佩戴者平安吉祥。\n\n主要功效：\n1. 辟邪挡灾\n2. 保佑平安\n3. 化解小人\n\n注意事项：需正规开光，佩戴时保持恭敬心。',
-      '八字': '八字，又称四柱，是由出生年、月、日、时四个时间点，各配天干地支，共八字以论命。\n\n若要细论命盘，还需施主告知出生年月日时（阳历或农历皆可），吾可为你分析一二。✦',
-      '招财': '招财符是道教常用的增益符咒，用于招引财气、改善财运。\n\n使用方法：\n1. 将招财符贴于家中财位\n2. 或随身携带钱包中\n3. 配合诚心诵念\n\n需开光后使用效果更佳。⚡',
-      '貔貅': '貔貅是著名的招财神兽，开光后具有招财聚财的功效。\n\n佩戴方法：头朝上佩戴为招财，左手佩戴为佳。\n\n注意事项：需开光，不让别人触碰，经常抚摸头部和尾部。',
-      '风水': '风水学是研究环境与人的关系的学问，核心理念是「藏风聚气，得水为上」。\n\n家居风水要点：\n1. 大门不可正对电梯或楼梯\n2. 客厅沙发背后宜有靠山\n3. 卧室床不宜正对镜子\n\n施主若有具体疑问，可详细说来。⬡',
-      '五行': '五行乃命理之基，金木水火土相生相克。\n\n五行缺失补救：\n- 缺金：多穿白色金色\n- 缺木：多穿绿色青色\n- 缺水：多穿黑色蓝色\n- 缺火：多穿红色紫色\n- 缺土：多穿黄色棕色\n\n需专业命理师根据八字分析。'
-    };
-
-    function getResponse(message) {
-      for (const [key, value] of Object.entries(faqDatabase)) {
-        if (message.includes(key)) {
-          return value;
-        }
-      }
-      return '施主所言，道玄已悉。吾虽通晓命理符箓，然天机不可尽泄。施主不妨换个问法，或说说心中所惑。☯\n\n例如：\n- 护身符有什么功效？\n- 如何看八字？\n- 家居风水有什么讲究？';
-    }
-
-    function addMessage(role, content, target = 'chatBody') {
-      const body = document.getElementById(target);
-      const div = document.createElement('div');
-      div.className = 'chat-preview__msg chat-preview__msg--' + role;
-      div.textContent = content;
-      body.appendChild(div);
-      body.scrollTop = body.scrollHeight;
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const message = input.value.trim();
-      if (!message) return;
-      
-      addMessage('user', message);
-      input.value = '';
-      
-      setTimeout(() => {
-        addMessage('ai', getResponse(message));
-      }, 800);
-    }
-
-    function sendModalMessage() {
-      const input = document.getElementById('modalChatInput');
-      const message = input.value.trim();
-      if (!message) return;
-      
-      addMessage('user', message, 'modalChatBody');
-      input.value = '';
-      
-      setTimeout(() => {
-        addMessage('ai', getResponse(message), 'modalChatBody');
-      }, 800);
-    }
-
-    function handleKeypress(e) {
-      if (e.key === 'Enter') sendMessage();
-    }
-
-    function handleModalKeypress(e) {
-      if (e.key === 'Enter') sendModalMessage();
-    }
-
-    function openAI() {
-      document.getElementById('aiModal').style.display = 'flex';
-    }
-
-    function closeAI() {
-      document.getElementById('aiModal').style.display = 'none';
-    }
-  </script>
+    
+    <!-- 特色服务区域 -->
+    <div class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><span>✦</span> 特色服务</h2>
+                <p class="section-desc">多元化体验 · 全方位守护</p>
+            </div>
+            
+            <div class="featured-grid">
+                <!-- 玄门动态 -->
+                <div class="featured-card">
+                    <div class="featured-icon">☯</div>
+                    <h3>玄门动态</h3>
+                    <p>道友心得分享 · 如愿见证</p>
+                    <div class="dynamic-item">
+                        <span class="user-avatar">🙏</span>
+                        <div>
+                            <p class="dynamic-title">张师兄 · 1小时前</p>
+                            <p class="dynamic-content">佩戴平安符后，工作顺利，家庭和睦...</p>
+                        </div>
+                    </div>
+                    <div class="dynamic-item">
+                        <span class="user-avatar">☸</span>
+                        <div>
+                            <p class="dynamic-title">李师兄 · 3小时前</p>
+                            <p class="dynamic-content">文昌符真的很灵，孩子这次考试进步了...</p>
+                        </div>
+                    </div>
+                    <div class="dynamic-item">
+                        <span class="user-avatar">✦</span>
+                        <div>
+                            <p class="dynamic-title">王师兄 · 5小时前</p>
+                            <p class="dynamic-content">太岁符化解太岁，感谢道玄指点迷津...</p>
+                        </div>
+                    </div>
+                    <a href="/wish" class="featured-more">进入社区 →</a>
+                </div>
+                
+                <!-- 玄门学堂 -->
+                <div class="featured-card">
+                    <div class="featured-icon">✦</div>
+                    <h3>玄门学堂</h3>
+                    <p>系统学习 · 道法研修</p>
+                    <div class="course-list">
+                        <div class="course-item">
+                            <div class="course-cover">☯</div>
+                            <div class="course-info">
+                                <h4>道家基础入门</h4>
+                                <p>12课时 · 已有3200人学习</p>
+                            </div>
+                        </div>
+                        <div class="course-item">
+                            <div class="course-cover">☸</div>
+                            <div class="course-info">
+                                <h4>符箓使用指南</h4>
+                                <p>8课时 · 已有1800人学习</p>
+                            </div>
+                        </div>
+                        <div class="course-item">
+                            <div class="course-cover">❋</div>
+                            <div class="course-info">
+                                <h4>风水实战案例</h4>
+                                <p>15课时 · 已有2500人学习</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/wiki" class="featured-more">开始学习 →</a>
+                </div>
+                
+                <!-- AI道玄 -->
+                <div class="featured-card">
+                    <div class="featured-icon">☯</div>
+                    <h3>AI助手「道玄」</h3>
+                    <p>智能问答 · 随时解惑</p>
+                    <div class="ai-chat-demo">
+                        <div class="chat-bubble user">请问如何选择护身符？</div>
+                        <div class="chat-bubble ai">
+                            <span class="ai-avatar">☯</span>
+                            选择护身符需根据个人需求...
+                        </div>
+                        <div class="chat-bubble user">太岁年要注意什么？</div>
+                        <div class="chat-bubble ai">
+                            <span class="ai-avatar">☯</span>
+                            本命年犯太岁，建议恭请太岁符化解...
+                        </div>
+                    </div>
+                    <a href="/aiassistant" class="featured-more">开始咨询 →</a>
+                </div>
+                
+                <!-- 宝品商城 -->
+                <div class="featured-card">
+                    <div class="featured-icon">❋</div>
+                    <h3>宝品商城</h3>
+                    <p>开光法器 · 正统传承</p>
+                    <div class="goods-preview">
+                        <div class="goods-item">
+                            <div class="goods-img">☯</div>
+                            <div>
+                                <p class="goods-name">开光平安符</p>
+                                <p class="goods-price">¥299</p>
+                            </div>
+                        </div>
+                        <div class="goods-item">
+                            <div class="goods-img">✦</div>
+                            <div>
+                                <p class="goods-name">紫檀念珠</p>
+                                <p class="goods-price">¥899</p>
+                            </div>
+                        </div>
+                        <div class="goods-item">
+                            <div class="goods-img">☸</div>
+                            <div>
+                                <p class="goods-name">开光貔貅</p>
+                                <p class="goods-price">¥1299</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/search" class="featured-more">逛商城 →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 免费领取推广 -->
+    <div class="free-pick-banner">
+        <div class="container free-pick-content">
+            <div class="free-pick-left">
+                <span class="free-badge">限时免费</span>
+                <h2>免费领取开光符箓</h2>
+                <p>新用户专属福利 · 每日限量领取</p>
+                <div class="free-pick-features">
+                    <span>✓ 正统开光</span>
+                    <span>✓ 免费邮寄</span>
+                    <span>✓ 灵力加持</span>
+                </div>
+                <a href="/freepick" class="free-pick-btn">立即领取</a>
+            </div>
+            <div class="free-pick-right">
+                <div class="free-symbol">☯</div>
+                <div class="free-items">
+                    <div class="free-item">平安符</div>
+                    <div class="free-item">招财符</div>
+                    <div class="free-item">学业符</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 信任保障 -->
+    <div class="trust-section">
+        <div class="container">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-icon">☯</div>
+                    <h4>正统传承</h4>
+                    <p>道家正一派授权</p>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">✦</div>
+                    <h4>开光加持</h4>
+                    <p>高功法师亲自主持</p>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">❋</div>
+                    <h4>正品保障</h4>
+                    <p>一物一码防伪溯源</p>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">☸</div>
+                    <h4>专业指导</h4>
+                    <p>AI道玄全程答疑</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="container">
+            <p>© 2024 <a href="/">符宝网</a> 版权所有 · 备案号：粤ICP备2026045883-2号</p>
+        </div>
+    </div>
 </body>
 </html>
