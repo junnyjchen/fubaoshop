@@ -130,4 +130,24 @@ mysql -u root -p mizhi_shop < docs/database/ai_assistant.sql
 
 ---
 
-**觅智商城 - 觅智文化 · 传承千年道家智慧**
+## 移动端H5
+
+### 预览地址
+- **首页**: https://90e2281d-220d-4a22-b921-85a47bbdda53.dev.coze.site/
+- **后台配置**: https://90e2281d-220d-4a22-b921-85a47bbdda53.dev.coze.site/admin/bottom-bar.html
+
+### 功能特性
+- 底部固定菜单栏（首页/百科/动态/购物车/我的）
+- 底部浮动下单栏（可配置内容）
+- 菜单栏显示逻辑：下拉超一屏或上拉时显示
+- 浮动栏显示逻辑：下拉超过200px显示，上拉延迟2秒隐藏
+
+### 更新脚本
+```bash
+# 一键更新
+bash scripts/deploy.sh full
+```
+
+---
+
+**符宝网 - 传承千年道法智慧**

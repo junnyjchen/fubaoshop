@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>符宝网 - 传承千年道法智慧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b8b8b8;
+            --text-muted: #6b6b6b;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            font-family: 'Noto Sans TC', -apple-system, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { display: none; }
+        .app-container {
+            max-width: 100%;
+            min-height: 100vh;
+            padding-bottom: calc(80px + var(--safe-bottom));
+        }
+        
+        /* 顶部导航 */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(180deg, var(--dark) 0%, rgba(26, 26, 46, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* 快捷入口 */
+        .quick-nav {
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .quick-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            width: 64px;
+        }
+        .quick-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.3);
+        }
+        .quick-item span {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        /* 区块 */
+        .section {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 18px;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-badge {
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+        }
+        .section-more {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-decoration: none;
+        }
+        
+        /* 符箓卡片 */
+        .talisman-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .talisman-card {
+            background: rgba(22, 33, 62, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .talisman-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+        .talisman-icon { font-size: 32px; margin-bottom: 8px; }
+        .talisman-name { color: var(--gold); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .talisman-desc { color: var(--text-muted); font-size: 12px; }
+        
+        /* 百科列表 */
+        .wiki-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .wiki-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(22, 33, 62, 0.6);
+            border-radius: 10px;
+            text-decoration: none;
+        }
+        .wiki-tag {
+            background: var(--primary);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+        .wiki-title {
+            color: var(--text-secondary);
+            font-size: 13px;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* AI入口 */
+        .ai-banner {
+            margin: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.3), rgba(22, 33, 62, 0.9));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+        .ai-icon { font-size: 40px; margin-bottom: 10px; }
+        .ai-title { color: var(--gold); font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .ai-desc { color: var(--text-muted); font-size: 12px; }
+        
+        /* 商品 */
+        .goods-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .goods-card {
+            flex-shrink: 0;
+            width: 140px;
+            background: rgba(22, 33, 62, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+        }
+        .goods-img {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, var(--dark-light), var(--dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            position: relative;
+        }
+        .goods-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--primary);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+        .goods-info { padding: 10px; }
+        .goods-name { color: var(--text-secondary); font-size: 12px; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .goods-price { color: var(--primary-light); font-size: 14px; font-weight: bold; }
+        
+        /* 免费领取 */
+        .free-banner {
+            margin: 16px;
+            padding: 24px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 50%, var(--gold) 100%);
+            border-radius: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .free-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+        .free-title { color: #fff; font-size: 22px; font-weight: bold; margin-bottom: 6px; position: relative; }
+        .free-subtitle { color: rgba(255,255,255,0.8); font-size: 13px; margin-bottom: 16px; position: relative; }
+        .free-btn {
+            display: inline-block;
+            background: #fff;
+            color: var(--primary);
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        /* 底部浮动栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 8px 16px;
+            padding-bottom: calc(8px + var(--safe-bottom));
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .bottom-bar.show { transform: translateY(0); }
+        .bottom-bar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .bottom-info { flex: 1; }
+        .bottom-title { color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .bottom-desc { color: var(--text-muted); font-size: 12px; }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
+        }
+        
+        /* 底部菜单栏 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + var(--safe-bottom));
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .tab-bar.show { transform: translateY(0); }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: color 0.3s;
+            padding: 4px 12px;
+        }
+        .tab-item.active { color: var(--gold); }
+        .tab-icon { font-size: 22px; }
+        .tab-text { font-size: 10px; }
+    </style>
+</head>
+<body>
+    <div class="app-container" id="app">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span>☯</span>
+                    <span>符宝网</span>
+                </a>
+            </div>
+        </header>
+        
+        <!-- 快捷入口 -->
+        <div class="quick-nav">
+            <a href="/wiki" class="quick-item">
+                <div class="quick-icon">☯</div>
+                <span>符箓百科</span>
+            </a>
+            <a href="/wiki" class="quick-item">
+                <div class="quick-icon">✦</div>
+                <span>玄门百科</span>
+            </a>
+            <a href="/wish" class="quick-item">
+                <div class="quick-icon">☸</div>
+                <span>玄门动态</span>
+            </a>
+            <a href="/search" class="quick-item">
+                <div class="quick-icon">❋</div>
+                <span>宝品商城</span>
+            </a>
+            <a href="/aiassistant" class="quick-item">
+                <div class="quick-icon">⚙</div>
+                <span>AI道玄</span>
+            </a>
+        </div>
+        
+        <!-- 符箓科普 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>☯</span> 符箓科普
+                    <span class="section-badge">核心</span>
+                </h2>
+                <a href="/wiki" class="section-more">更多 →</a>
+            </div>
+            <div class="talisman-grid">
+                <a href="/wiki/detail/1" class="talisman-card">
+                    <div class="talisman-icon">☯</div>
+                    <div class="talisman-name">平安符</div>
+                    <div class="talisman-desc">护佑出入平安，驱邪避祸</div>
+                </a>
+                <a href="/wiki/detail/2" class="talisman-card">
+                    <div class="talisman-icon">✦</div>
+                    <div class="talisman-name">财神符</div>
+                    <div class="talisman-desc">招财进宝，财运亨通</div>
+                </a>
+                <a href="/wiki/detail/3" class="talisman-card">
+                    <div class="talisman-icon">❋</div>
+                    <div class="talisman-name">文昌符</div>
+                    <div class="talisman-desc">开启智慧，学业进步</div>
+                </a>
+                <a href="/wiki/detail/4" class="talisman-card">
+                    <div class="talisman-icon">☸</div>
+                    <div class="talisman-name">太岁符</div>
+                    <div class="talisman-desc">化解冲太岁，趋吉避凶</div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- 玄门百科 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>✦</span> 玄门百科
+                    <span class="section-badge">核心</span>
+                </h2>
+                <a href="/wiki" class="section-more">更多 →</a>
+            </div>
+            <div class="wiki-list">
+                <a href="/wiki/detail/1" class="wiki-item">
+                    <span class="wiki-tag">入门</span>
+                    <span class="wiki-title">道家基础理论：阴阳五行与八卦</span>
+                </a>
+                <a href="/wiki/detail/2" class="wiki-item">
+                    <span class="wiki-tag">进阶</span>
+                    <span class="wiki-title">符箓的制作与使用讲究</span>
+                </a>
+                <a href="/wiki/detail/3" class="wiki-item">
+                    <span class="wiki-tag">大师</span>
+                    <span class="wiki-title">风水布局与命理测算</span>
+                </a>
+            </div>
+        </section>
+        
+        <!-- AI助手 -->
+        <a href="/aiassistant" class="ai-banner">
+            <div class="ai-icon">☯</div>
+            <div class="ai-title">AI助手「道玄」</div>
+            <div class="ai-desc">智能问答，随时解惑</div>
+        </a>
+        
+        <!-- 精选商品 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title"><span>❋</span> 精选宝品</h2>
+                <a href="/search" class="section-more">更多 →</a>
+            </div>
+            <div class="goods-scroll">
+                <a href="/goods/1" class="goods-card">
+                    <div class="goods-img">☯<span class="goods-tag">开光</span></div>
+                    <div class="goods-info">
+                        <div class="goods-name">开光平安符</div>
+                        <div class="goods-price">¥299</div>
+                    </div>
+                </a>
+                <a href="/goods/2" class="goods-card">
+                    <div class="goods-img">✦<span class="goods-tag">开光</span></div>
+                    <div class="goods-info">
+                        <div class="goods-name">紫檀念珠</div>
+                        <div class="goods-price">¥899</div>
+                    </div>
+                </a>
+                <a href="/goods/3" class="goods-card">
+                    <div class="goods-img">☸<span class="goods-tag">开光</span></div>
+                    <div class="goods-info">
+                        <div class="goods-name">开光貔貅</div>
+                        <div class="goods-price">¥1299</div>
+                    </div>
+                </a>
+                <a href="/goods/4" class="goods-card">
+                    <div class="goods-img">❋<span class="goods-tag">开光</span></div>
+                    <div class="goods-info">
+                        <div class="goods-name">黄铜葫芦</div>
+                        <div class="goods-price">¥599</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- 免费领取 -->
+        <a href="/freepick" class="free-banner">
+            <div class="free-badge">限时免费</div>
+            <div class="free-title">免费领取开光符箓</div>
+            <div class="free-subtitle">新用户专属福利 · 每日限量领取</div>
+            <span class="free-btn">立即领取</span>
+        </a>
+        
+        <!-- 底部浮动下单栏 -->
+        <div class="bottom-bar" id="bottomBar">
+            <div class="bottom-bar-content">
+                <div class="bottom-info">
+                    <div class="bottom-title" id="bottomTitle">免费领取开光符箓</div>
+                    <div class="bottom-desc" id="bottomDesc">新用户专属福利，灵力加持</div>
+                </div>
+                <a href="/freepick" class="btn btn-primary">立即领取</a>
+            </div>
+        </div>
+        
+        <!-- 底部菜单栏 -->
+        <nav class="tab-bar" id="tabBar">
+            <a href="/" class="tab-item active">
+                <span class="tab-icon">🏠</span>
+                <span class="tab-text">首页</span>
+            </a>
+            <a href="/wiki" class="tab-item">
+                <span class="tab-icon">☯</span>
+                <span class="tab-text">百科</span>
+            </a>
+            <a href="/wish" class="tab-item">
+                <span class="tab-icon">☸</span>
+                <span class="tab-text">动态</span>
+            </a>
+            <a href="/cart" class="tab-item">
+                <span class="tab-icon">🛒</span>
+                <span class="tab-text">购物车</span>
+            </a>
+            <a href="/user" class="tab-item">
+                <span class="tab-icon">👤</span>
+                <span class="tab-text">我的</span>
+            </a>
+        </nav>
+    </div>
+    
+    <script>
+        // 一屏高度
+        const ONE_SCREEN = window.innerHeight || 667;
+        
+        // 底部菜单栏
+        const tabBar = document.getElementById('tabBar');
+        let tabBarVisible = false;
+        
+        // 底部浮动栏
+        const bottomBar = document.getElementById('bottomBar');
+        const bottomTitle = document.getElementById('bottomTitle');
+        const bottomDesc = document.getElementById('bottomDesc');
+        let lastScrollY = 0;
+        let bottomBarVisible = false;
+        let hideTimer = null;
+        
+        // 配置
+        const config = {
+            title: '免费领取开光符箓',
+            desc: '新用户专属福利，灵力加持',
+            url: '/freepick',
+            show: true
+        };
+        
+        // 更新浮动栏内容
+        function updateBottomBar() {
+            if (config.show) {
+                bottomTitle.textContent = config.title;
+                bottomDesc.textContent = config.desc;
+            }
+        }
+        
+        // 显示/隐藏浮动栏
+        function showBottomBar() {
+            if (!config.show) return;
+            bottomBar.classList.add('show');
+            bottomBarVisible = true;
+            if (hideTimer) clearTimeout(hideTimer);
+        }
+        
+        function hideBottomBar() {
+            bottomBar.classList.remove('show');
+            bottomBarVisible = false;
+        }
+        
+        function delayHideBottomBar() {
+            hideTimer = setTimeout(hideBottomBar, 2000);
+        }
+        
+        // 显示/隐藏菜单栏
+        function showTabBar() {
+            tabBar.classList.add('show');
+            tabBarVisible = true;
+        }
+        
+        function hideTabBar() {
+            tabBar.classList.remove('show');
+            tabBarVisible = false;
+        }
+        
+        // 滚动监听
+        window.addEventListener('scroll', () => {
+            const curY = window.scrollY;
+            const dir = curY > lastScrollY ? 'down' : 'up';
+            const dist = Math.abs(curY - lastScrollY);
+            
+            // 浮动栏：下拉显示，上拉延迟隐藏
+            if (dir === 'down' && dist > 50 && curY > 200) showBottomBar();
+            if (dir === 'up' && dist > 30) delayHideBottomBar();
+            
+            // 菜单栏：下拉超一屏显示，上拉也显示
+            const pastOneScreen = curY > ONE_SCREEN;
+            if (dir === 'down' && dist > 50 && pastOneScreen) showTabBar();
+            if (dir === 'up' && dist > 30) showTabBar();
+            
+            // 回顶部附近隐藏菜单栏
+            if (curY < ONE_SCREEN / 2) hideTabBar();
+            
+            lastScrollY = curY;
+        });
+        
+        // 触摸事件
+        document.addEventListener('touchend', () => {
+            if (bottomBarVisible) delayHideBottomBar();
+        });
+        
+        // 初始化
+        updateBottomBar();
+        setTimeout(() => {
+            if (window.scrollY > 100) showBottomBar();
+        }, 3000);
+    </script>
+</body>
+</html>

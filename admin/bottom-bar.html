@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>底部栏配置 - 符宝网管理后台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --gold: #d4af37;
+            --dark: #1a1a2e;
+            --dark-bg: #0f0f23;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b8b8b8;
+            --border: rgba(212, 175, 55, 0.2);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .page-title { font-size: 24px; color: var(--gold); margin-bottom: 8px; }
+        .page-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+        
+        .card {
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .card-title { font-size: 16px; color: var(--gold); margin-bottom: 16px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 6px; }
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--dark-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .form-input:focus { outline: none; border-color: var(--gold); }
+        
+        .switch { display: flex; align-items: center; gap: 10px; }
+        .switch input { display: none; }
+        .switch .slider {
+            width: 44px; height: 24px;
+            background: var(--dark-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .switch .slider:before {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            left: 2px; top: 2px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .switch input:checked + .slider { background: var(--primary); border-color: var(--primary); }
+        .switch input:checked + .slider:before { transform: translateX(20px); background: #fff; }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #e63950);
+            color: #fff;
+        }
+        
+        .preview-box {
+            background: #111;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        .preview-header {
+            text-align: center;
+            padding: 8px;
+            background: var(--dark);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .preview-content {
+            height: 200px;
+            background: rgba(26,26,46,0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+        .preview-bar {
+            background: rgba(15,15,35,0.98);
+            border-top: 1px solid var(--border);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 8px;
+        }
+        .preview-bar-info { flex: 1; }
+        .preview-bar-title { font-size: 12px; color: var(--text-primary); }
+        .preview-bar-desc { font-size: 10px; color: var(--text-secondary); }
+        .preview-btn {
+            background: var(--primary);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">📱 底部浮动栏配置</h1>
+        <p class="page-desc">配置H5移动端底部浮动下单栏的内容</p>
+        
+        <form id="form">
+            <div class="card">
+                <h2 class="card-title">显示设置</h2>
+                <label class="switch">
+                    <input type="checkbox" id="enable" checked>
+                    <span class="slider"></span>
+                    <span style="color: var(--text-secondary)">启用底部浮动栏</span>
+                </label>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">内容设置</h2>
+                <div class="form-group">
+                    <label class="form-label">标题</label>
+                    <input type="text" class="form-input" id="title" value="免费领取开光符箓">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">描述</label>
+                    <input type="text" class="form-input" id="desc" value="新用户专属福利，灵力加持">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">按钮文字</label>
+                    <input type="text" class="form-input" id="btnText" value="立即领取">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">跳转链接</label>
+                    <input type="text" class="form-input" id="btnUrl" value="/freeppick">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">💾 保存配置</button>
+        </form>
+        
+        <div class="preview-box">
+            <div class="preview-header">📱 手机预览</div>
+            <div class="preview-content">向下滚动查看效果</div>
+            <div class="preview-bar" id="previewBar">
+                <div class="preview-bar-info">
+                    <div class="preview-bar-title" id="pTitle">免费领取开光符箓</div>
+                    <div class="preview-bar-desc" id="pDesc">新用户专属福利，灵力加持</div>
+                </div>
+                <div class="preview-btn" id="pBtn">立即领取</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">✅ 配置已保存</div>
+    
+    <script>
+        const form = document.getElementById('form');
+        const title = document.getElementById('title');
+        const desc = document.getElementById('desc');
+        const btnText = document.getElementById('btnText');
+        const btnUrl = document.getElementById('btnUrl');
+        const enable = document.getElementById('enable');
+        const pTitle = document.getElementById('pTitle');
+        const pDesc = document.getElementById('pDesc');
+        const pBtn = document.getElementById('pBtn');
+        const previewBar = document.getElementById('previewBar');
+        const toast = document.getElementById('toast');
+        
+        // 实时预览
+        title.addEventListener('input', update);
+        desc.addEventListener('input', update);
+        btnText.addEventListener('input', update);
+        enable.addEventListener('change', update);
+        
+        function update() {
+            pTitle.textContent = title.value || '符宝网';
+            pDesc.textContent = desc.value || '';
+            pBtn.textContent = btnText.value || '点击';
+            previewBar.style.display = enable.checked ? 'flex' : 'none';
+        }
+        
+        // 保存
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const data = {
+                title: title.value,
+                desc: desc.value,
+                btnText: btnText.value,
+                btnUrl: btnUrl.value,
+                enable: enable.checked
+            };
+            localStorage.setItem('bottomBarConfig', JSON.stringify(data));
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
+        });
+        
+        // 初始化
+        const saved = localStorage.getItem('bottomBarConfig');
+        if (saved) {
+            const d = JSON.parse(saved);
+            title.value = d.title || '免费领取开光符箓';
+            desc.value = d.desc || '新用户专属福利，灵力加持';
+            btnText.value = d.btnText || '立即领取';
+            btnUrl.value = d.btnUrl || '/freepick';
+            enable.checked = d.enable !== false;
+        }
+        update();
+    </script>
+</body>
+</html>
