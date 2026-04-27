@@ -322,6 +322,28 @@
         .stat-value { font-size: 20px; font-weight: 700; color: var(--gold); }
         .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
         
+        /* 社交平台 */
+        .social-platforms { display: flex; flex-direction: column; gap: 10px; }
+        .platform-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--dark-light);
+            border-radius: 10px;
+        }
+        .platform-icon {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .platform-name { flex: 1; font-size: 13px; color: var(--text); }
+        
         /* 提示 */
         .tip {
             background: rgba(212, 175, 55, 0.1);
@@ -438,8 +460,66 @@
                 <div class="switch active" id="hideOnUpSwitch"></div>
             </div>
             
+            <div class="switch-row">
+                <span class="switch-label">显示分享按钮</span>
+                <div class="switch active" id="showShareSwitch"></div>
+            </div>
+            
             <div class="tip">
                 <strong>提示：</strong>配置会自动保存到本地存储，刷新页面后生效。
+            </div>
+        </div>
+        
+        <!-- 社交分享配置 -->
+        <div class="card">
+            <div class="card-title">🔗 社交分享配置</div>
+            
+            <div class="social-platforms">
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:#1877f2;">f</span>
+                    <span class="platform-name">Facebook</span>
+                    <div class="switch active" data-platform="facebook"></div>
+                </div>
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:#4285f4;">G</span>
+                    <span class="platform-name">Google</span>
+                    <div class="switch active" data-platform="google"></div>
+                </div>
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:#000;">𝕏</span>
+                    <span class="platform-name">X (Twitter)</span>
+                    <div class="switch active" data-platform="twitter"></div>
+                </div>
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:linear-gradient(135deg,#00f2ea,#ff0050);">♪</span>
+                    <span class="platform-name">TikTok</span>
+                    <div class="switch" data-platform="tiktok"></div>
+                </div>
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743);">📷</span>
+                    <span class="platform-name">Instagram</span>
+                    <div class="switch" data-platform="instagram"></div>
+                </div>
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:#07c160;">💬</span>
+                    <span class="platform-name">微信</span>
+                    <div class="switch active" data-platform="wechat"></div>
+                </div>
+                <div class="platform-item">
+                    <span class="platform-icon" style="background:#e6162d;">📱</span>
+                    <span class="platform-name">微博</span>
+                    <div class="switch active" data-platform="weibo"></div>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">分享标题</label>
+                <input type="text" class="form-input" id="shareTitle" placeholder="分享时显示的标题" value="符宝网 - 传承千年道法智慧">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">分享描述</label>
+                <input type="text" class="form-input" id="shareDesc" placeholder="分享时显示的描述" value="专业提供开光符箓、道家法器，正品开光认证">
             </div>
         </div>
         
@@ -520,6 +600,7 @@
         const enableSwitch = document.getElementById('enableSwitch');
         const showOnDownSwitch = document.getElementById('showOnDownSwitch');
         const hideOnUpSwitch = document.getElementById('hideOnUpSwitch');
+        const showShareSwitch = document.getElementById('showShareSwitch');
         const previewTitle = document.getElementById('previewTitle');
         const previewDesc = document.getElementById('previewDesc');
         const previewBtn = document.getElementById('previewBtn');
@@ -556,6 +637,17 @@
             enableSwitch.classList.toggle('active', config.enable);
             showOnDownSwitch.classList.toggle('active', config.showOnDown);
             hideOnUpSwitch.classList.toggle('active', config.hideOnUp);
+            showShareSwitch.classList.toggle('active', config.showShare !== false);
+            
+            // 加载分享配置
+            document.getElementById('shareTitle').value = config.shareTitle || '符宝网 - 传承千年道法智慧';
+            document.getElementById('shareDesc').value = config.shareDesc || '专业提供开光符箓、道家法器，正品开光认证';
+            
+            // 加载平台开关状态
+            const platforms = config.platforms || { facebook: true, google: true, twitter: true, tiktok: false, instagram: false, wechat: true, weibo: true };
+            document.querySelectorAll('[data-platform]').forEach(sw => {
+                sw.classList.toggle('active', platforms[sw.dataset.platform]);
+            });
             
             updatePreview();
         }
@@ -572,6 +664,12 @@
         
         // ==================== 保存配置 ====================
         function saveConfig(isAuto = false) {
+            // 收集平台状态
+            const platforms = {};
+            document.querySelectorAll('[data-platform]').forEach(sw => {
+                platforms[sw.dataset.platform] = sw.classList.contains('active');
+            });
+            
             const config = {
                 title: titleInput.value,
                 desc: descInput.value,
@@ -580,6 +678,10 @@
                 enable: enableSwitch.classList.contains('active'),
                 showOnDown: showOnDownSwitch.classList.contains('active'),
                 hideOnUp: hideOnUpSwitch.classList.contains('active'),
+                showShare: showShareSwitch.classList.contains('active'),
+                shareTitle: document.getElementById('shareTitle').value,
+                shareDesc: document.getElementById('shareDesc').value,
+                platforms: platforms,
                 show: enableSwitch.classList.contains('active'),
                 updatedAt: Date.now()
             };
@@ -701,6 +803,22 @@
                 });
             });
             
+            // 分享开关
+            if (showShareSwitch) {
+                showShareSwitch.addEventListener('click', () => {
+                    showShareSwitch.classList.toggle('active');
+                    saveConfig();
+                });
+            }
+            
+            // 平台开关
+            document.querySelectorAll('[data-platform]').forEach(sw => {
+                sw.addEventListener('click', () => {
+                    sw.classList.toggle('active');
+                    saveConfig();
+                });
+            });
+            
             // 输入
             [titleInput, descInput, btnTextInput].forEach(input => {
                 input.addEventListener('input', () => {
@@ -710,6 +828,10 @@
             });
             
             urlInput.addEventListener('change', () => saveConfig(true));
+            
+            // 分享配置输入
+            document.getElementById('shareTitle').addEventListener('input', () => saveConfig(true));
+            document.getElementById('shareDesc').addEventListener('input', () => saveConfig(true));
             
             // 保存按钮
             document.getElementById('saveBtn').addEventListener('click', () => saveConfig());
@@ -721,6 +843,11 @@
             
             // 导出
             document.getElementById('exportBtn').addEventListener('click', () => {
+                const platforms = {};
+                document.querySelectorAll('[data-platform]').forEach(sw => {
+                    platforms[sw.dataset.platform] = sw.classList.contains('active');
+                });
+                
                 const config = {
                     title: titleInput.value,
                     desc: descInput.value,
@@ -728,14 +855,18 @@
                     url: urlInput.value,
                     enable: enableSwitch.classList.contains('active'),
                     showOnDown: showOnDownSwitch.classList.contains('active'),
-                    hideOnUp: hideOnUpSwitch.classList.contains('active')
+                    hideOnUp: hideOnUpSwitch.classList.contains('active'),
+                    showShare: showShareSwitch.classList.contains('active'),
+                    shareTitle: document.getElementById('shareTitle').value,
+                    shareDesc: document.getElementById('shareDesc').value,
+                    platforms: platforms
                 };
                 
                 const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `bottom-bar-config-${Date.now()}.json`;
+                a.download = `fubao-config-${Date.now()}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
                 
@@ -762,6 +893,18 @@
                         enableSwitch.classList.toggle('active', config.enable !== false);
                         showOnDownSwitch.classList.toggle('active', config.showOnDown !== false);
                         hideOnUpSwitch.classList.toggle('active', config.hideOnUp !== false);
+                        showShareSwitch.classList.toggle('active', config.showShare !== false);
+                        document.getElementById('shareTitle').value = config.shareTitle || '';
+                        document.getElementById('shareDesc').value = config.shareDesc || '';
+                        
+                        // 恢复平台状态
+                        if (config.platforms) {
+                            Object.entries(config.platforms).forEach(([platform, active]) => {
+                                const sw = document.querySelector(`[data-platform="${platform}"]`);
+                                if (sw) sw.classList.toggle('active', active);
+                            });
+                        }
+                        
                         updatePreview();
                         saveConfig();
                         showToast('导入成功');

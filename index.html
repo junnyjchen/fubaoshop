@@ -643,7 +643,26 @@
         .share-icon.weibo { background: #e6162d; }
         .share-icon.copy { background: var(--gold); }
         .share-icon.qrcode { background: var(--primary); }
+        .share-icon.facebook { background: #1877f2; }
+        .share-icon.google { background: #4285f4; }
+        .share-icon.twitter { background: #000; }
+        .share-icon.tiktok { background: linear-gradient(135deg, #00f2ea, #ff0050); }
+        .share-icon.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .share-icon.more { background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.3); }
         .share-label { font-size: 11px; color: var(--text-muted); }
+        
+        /* 分享统计 */
+        .share-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        .share-stat { text-align: center; }
+        .share-stat-value { font-size: 18px; font-weight: 700; color: var(--gold); }
+        .share-stat-label { font-size: 10px; color: var(--text-muted); }
         
         /* ==================== 遮罩 ==================== */
         .mask {
@@ -985,22 +1004,58 @@
             <button class="share-close" id="shareClose" aria-label="关闭">✕</button>
         </div>
         <div class="share-buttons">
-            <button class="share-btn" id="shareWechat">
+            <button class="share-btn" onclick="shareTo('facebook')">
+                <span class="share-icon facebook">f</span>
+                <span class="share-label">Facebook</span>
+            </button>
+            <button class="share-btn" onclick="shareTo('google')">
+                <span class="share-icon google">G</span>
+                <span class="share-label">Google</span>
+            </button>
+            <button class="share-btn" onclick="shareTo('twitter')">
+                <span class="share-icon twitter">𝕏</span>
+                <span class="share-label">X</span>
+            </button>
+            <button class="share-btn" onclick="shareTo('tiktok')">
+                <span class="share-icon tiktok">♪</span>
+                <span class="share-label">TikTok</span>
+            </button>
+            <button class="share-btn" onclick="shareTo('instagram')">
+                <span class="share-icon instagram">📷</span>
+                <span class="share-label">Instagram</span>
+            </button>
+        </div>
+        <div class="share-buttons" style="margin-top: 16px;">
+            <button class="share-btn" onclick="shareTo('wechat')">
                 <span class="share-icon wechat">💬</span>
                 <span class="share-label">微信</span>
             </button>
-            <button class="share-btn" id="shareWeibo">
+            <button class="share-btn" onclick="shareTo('weibo')">
                 <span class="share-icon weibo">📱</span>
                 <span class="share-label">微博</span>
             </button>
-            <button class="share-btn" id="shareCopy">
+            <button class="share-btn" onclick="shareTo('copy')">
                 <span class="share-icon copy">🔗</span>
                 <span class="share-label">复制链接</span>
             </button>
-            <button class="share-btn" id="shareQR">
+            <button class="share-btn" onclick="shareTo('qrcode')">
                 <span class="share-icon qrcode">📲</span>
                 <span class="share-label">二维码</span>
             </button>
+            <button class="share-btn" onclick="shareTo('more')">
+                <span class="share-icon more">⋯</span>
+                <span class="share-label">更多</span>
+            </button>
+        </div>
+        <div class="share-stats">
+            <div class="share-stat">
+                <div class="share-stat-value" id="shareCount">0</div>
+                <div class="share-stat-label">分享次数</div>
+            </div>
+            <div class="share-stat">
+                <div class="share-stat-value" id="visitCount">0</div>
+                <div class="share-stat-label">访问量</div>
+            </div>
         </div>
     </div>
     
@@ -1082,9 +1137,18 @@
         });
         
         // ==================== 分享面板 ====================
+        // 分享内容配置
+        const shareConfig = {
+            title: '符宝网 - 传承千年道法智慧',
+            desc: '专业提供开光符箓、道家法器，正品开光认证，支持一物一码查验',
+            url: window.location.href,
+            image: 'https://www.fubao.ltd/images/og-image.jpg'
+        };
+        
         function openShare() {
             sharePanel.classList.add('show');
             mask.classList.add('show');
+            updateShareStats();
         }
         
         function closeShare() {
@@ -1096,26 +1160,132 @@
         shareClose.addEventListener('click', closeShare);
         mask.addEventListener('click', closeShare);
         
-        // 分享功能
-        document.getElementById('shareWechat').addEventListener('click', () => {
-            alert('请点击右上角分享到微信');
-        });
+        // 更新分享统计
+        function updateShareStats() {
+            const stats = JSON.parse(localStorage.getItem('shareStats') || '{"shareCount":0,"visitCount":0}');
+            document.getElementById('shareCount').textContent = stats.shareCount;
+            document.getElementById('visitCount').textContent = stats.visitCount;
+        }
         
-        document.getElementById('shareWeibo').addEventListener('click', () => {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://service.weibo.com/share/share.php?url=${url}&title=符宝网-传承千年道法智慧`);
-        });
+        // 记录访问
+        function recordVisit() {
+            const stats = JSON.parse(localStorage.getItem('shareStats') || '{"shareCount":0,"visitCount":0}');
+            stats.visitCount++;
+            localStorage.setItem('shareStats', JSON.stringify(stats));
+        }
+        recordVisit();
         
-        document.getElementById('shareCopy').addEventListener('click', () => {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                alert('链接已复制到剪贴板');
+        // 记录分享
+        function recordShare(platform) {
+            const stats = JSON.parse(localStorage.getItem('shareStats') || '{"shareCount":0,"visitCount":0}');
+            stats.shareCount++;
+            const shares = JSON.parse(localStorage.getItem('sharePlatforms') || '{}');
+            shares[platform] = (shares[platform] || 0) + 1;
+            localStorage.setItem('sharePlatforms', JSON.stringify(shares));
+            localStorage.setItem('shareStats', JSON.stringify(stats));
+            updateShareStats();
+        }
+        
+        // Toast提示
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            toast.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--dark);border:1px solid rgba(212,175,55,0.3);padding:10px 20px;border-radius:8px;font-size:13px;color:var(--text);z-index:9999;opacity:0;transition:opacity 0.3s';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.style.opacity = '1', 10);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
+        }
+        
+        // 第三方分享
+        function shareTo(platform) {
+            const url = encodeURIComponent(shareConfig.url);
+            const title = encodeURIComponent(shareConfig.title);
+            const desc = encodeURIComponent(shareConfig.desc);
+            const image = encodeURIComponent(shareConfig.image);
+            
+            const shareUrls = {
+                // Facebook
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${title}`,
+                
+                // Google+
+                google: `https://plus.google.com/share?url=${url}`,
+                
+                // X (Twitter)
+                twitter: `https://twitter.com/intent/tweet?url=${url}&text=${title}&hashtags=符宝网,道家`,
+                
+                // TikTok (跳转播放页)
+                tiktok: `https://www.tiktok.com/share?url=${url}`,
+                
+                // Instagram (跳转APP)
+                instagram: `instagram://library?AssetPath=${url}`,
+                
+                // 微信提示
+                wechat: 'wechat',
+                
+                // 微博
+                weibo: `https://service.weibo.com/share/share.php?url=${url}&title=${title}&pic=${image}`,
+                
+                // 复制链接
+                copy: 'clipboard',
+                
+                // 二维码
+                qrcode: 'qrcode',
+                
+                // 更多
+                more: 'more'
+            };
+            
+            const action = shareUrls[platform];
+            
+            if (action === 'wechat') {
+                showToast('请点击右上角菜单分享到微信');
+            } else if (action === 'clipboard') {
+                navigator.clipboard.writeText(shareConfig.url).then(() => {
+                    showToast('链接已复制到剪贴板');
+                    recordShare('copy');
+                    closeShare();
+                }).catch(() => {
+                    // 降级方案
+                    const input = document.createElement('input');
+                    input.value = shareConfig.url;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
+                    showToast('链接已复制到剪贴板');
+                    recordShare('copy');
+                    closeShare();
+                });
+            } else if (action === 'qrcode') {
+                showToast('长按图片保存二维码');
+                recordShare('qrcode');
                 closeShare();
-            });
-        });
+            } else if (action === 'more') {
+                if (navigator.share) {
+                    navigator.share({
+                        title: shareConfig.title,
+                        text: shareConfig.desc,
+                        url: shareConfig.url
+                    }).then(() => {
+                        showToast('分享成功');
+                        recordShare('native');
+                        closeShare();
+                    });
+                } else {
+                    showToast('请使用浏览器分享功能');
+                }
+            } else if (action) {
+                window.open(action, '_blank', 'width=600,height=500,scrollbars=yes');
+                showToast('正在打开分享页面...');
+                recordShare(platform);
+                closeShare();
+            }
+        }
         
-        document.getElementById('shareQR').addEventListener('click', () => {
-            alert('二维码功能开发中');
-        });
+        // Web Share API (如果浏览器支持)
+        if (navigator.share) {
+            document.querySelector('.share-btn[onclick="shareTo(\'more\')"]')?.setAttribute('title', '系统分享');
         
         // ==================== 下拉刷新 ====================
         document.addEventListener('touchstart', (e) => {
