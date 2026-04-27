@@ -1,11 +1,12 @@
-# 觅智商城 - 项目开发规范
+# 符宝网 - 项目开发规范
 
-觅智商城 ShopMX 项目开发规范文档。
+符宝网 ShopMX 项目开发规范文档。
 
 ## 项目概述
 
-- **项目名称**: 觅智商城
-- **版权方**: 觅智文化
+- **项目名称**: 符宝网
+- **版权方**: 符宝网版权所有
+- **备案号**: 粤ICP备2026045883-2号
 - **技术栈**: ShopMX (ShopXO v6.8.0) + ThinkPHP 5.1 + MySQL
 - **主题**: 道家文化玄学风格
 
@@ -34,7 +35,36 @@ app/
 - XSS使用 `htmlspecialchars`
 - CSRF使用框架验证
 
-## 核心功能模块
+---
+
+## 功能模块总览
+
+### 核心功能
+| 模块 | 路由 | 说明 |
+|------|------|------|
+| AI助手「道玄」 | `/aiassistant` | 智能问答 |
+| 符箓百科 | `/wiki` | 符箓知识库 |
+| 玄门百科 | `/wiki/category/xuanmen` | 道家理论 |
+| 玄门动态 | `/wish` | 用户分享 |
+| 玄门学堂 | `/school` | 教学课程 |
+
+### 营销功能
+| 模块 | 路由 | 说明 |
+|------|------|------|
+| 免费领取 | `/freepick` | 限时免费活动 |
+| 快速下单 | `/quickorder` | 便捷购物 |
+| 营销弹窗 | 内置 | 5秒下单提示、10秒优惠券 |
+
+### 特色功能
+| 模块 | 路由 | 说明 |
+|------|------|------|
+| 如愿晒单 | `/wish` | 用户评价聚合 |
+| 一物一码 | `/certificate` | 正品认证 |
+| 证书查验 | `/certificate/check` | 扫码验真 |
+
+---
+
+## 核心功能详情
 
 ### 1. AI助手「道玄」
 - **路由**: `/aiassistant`
@@ -43,51 +73,78 @@ app/
 - **API**: `app/index/controller/api/AIChat.php`
 - **视图**: `app/index/view/default/index/ai_assistant/index.html`
 - **知识库**: `sxo_ai_knowledge_item` 表
+- **功能**: 智能问答，知识库检索，道法咨询
 
 ### 2. 免费领取
 - **路由**: `/freepick`
 - **控制器**: `app/index/controller/Freepick.php`
 - **视图**: `app/index/view/default/index/freepick/index.html`
 - **表**: `sxo_freepick_activity`, `sxo_freepick_record`
+- **功能**: 新用户免费领取，限时活动
 
 ### 3. 快速下单
 - **路由**: `/quickorder`
 - **控制器**: `app/index/controller/Quickorder.php`
 - **视图**: `app/index/view/default/index/quickorder/index.html`
 - **表**: `sxo_quick_order`
+- **功能**: 便捷下单，指定商品快速购买
 
 ### 4. 符箓百科
 - **路由**: `/wiki`
 - **控制器**: `app/index/controller/Wiki.php`
 - **视图**: `app/index/view/default/index/wiki/index.html`
 - **表**: `sxo_wiki_category`, `sxo_wiki_article`
+- **功能**: 符箓知识科普，分类浏览
+
+### 5. 如愿晒单
+- **路由**: `/wish`
+- **控制器**: `app/index/controller/Wish.php`
+- **视图**: `app/index/view/default/index/wish/index.html`
+- **表**: `sxo_wish`, `sxo_wish_images`
+- **功能**: 用户评价聚合，晒图晒视频
+
+### 6. 一物一码
+- **路由**: `/certificate`
+- **控制器**: `app/index/controller/Certificate.php`
+- **视图**: `app/index/view/default/index/certificate/index.html`
+- **表**: `sxo_certificate`
+- **功能**: 正品认证，扫码查验
+
+---
 
 ## 主题规范
 
-### 觅智商城主题色
+### 符宝网主题色
 ```css
 :root {
-    --talu-black: #1a1a2e;      /* 玄黑 */
-    --talu-black-light: #16213e;
-    --talu-black-dark: #0f0f23;
-    --talu-red: #c41e3a;         /* 朱砂红 */
-    --talu-red-light: #e63950;
-    --talu-gold: #d4af37;        /* 金色 */
-    --talu-gold-light: #f4d160;
-    --talu-cyan: #008080;
+    --primary: #c41e3a;         /* 朱砂红 */
+    --primary-light: #e63950;
+    --gold: #d4af37;            /* 金色 */
+    --gold-light: #f4d160;
+    --dark: #1a1a2e;            /* 玄黑 */
+    --dark-light: #16213e;
+    --dark-bg: #0f0f23;
 }
 ```
 
+### 品牌符号
+- ☯ 道家阴阳
+- ✦ 五行星
+- ❋ 八卦
+- ☸ 万字符
+
 ### 品牌关键词
-- 项目名: 觅智商城
-- 版权: 觅智文化
+- 项目名: 符宝网
+- 版权: 符宝网版权所有
 - 系统名: ShopMX
+
+---
 
 ## 数据库规范
 
 ### 表前缀
 - 默认: `sxo_`
-- 觅智特色表: `sxo_ai_*`, `sxo_freepick_*`, `sxo_quick_*`, `sxo_wiki_*`
+- 特色表: `sxo_ai_*`, `sxo_freepick_*`, `sxo_quick_*`, `sxo_wiki_*`, `sxo_wish_*`, `sxo_certificate_*`
 
 ### 常见表
 | 表名 | 说明 |
@@ -100,33 +157,9 @@ app/
 | `sxo_quick_order` | 快速订单 |
 | `sxo_wiki_category` | 百科分类 |
 | `sxo_wiki_article` | 百科文章 |
-
-## 多语言配置
-
-- 繁体中文: `app/lang/mizhi_cht.php`
-- 英文: `app/lang/mizhi_en.php`
-- 站点配置: `config/mizhi_site_config.php`
-
-## 开发命令
-
-```bash
-# 启动开发服务器
-php think run
-
-# 清除缓存
-rm -rf runtime/cache/*
-rm -rf runtime/log/*
-
-# 更新数据库
-mysql -u root -p mizhi_shop < docs/database/ai_assistant.sql
-```
-
-## 注意事项
-
-1. **禁止硬编码**: 使用配置文件或数据库存储
-2. **安全第一**: 所有输入必须验证
-3. **品牌一致**: 所有文本使用"觅智商城"和"觅智文化"
-4. **主题统一**: 使用觅智商城主题色和规范
+| `sxo_wish` | 如愿晒单 |
+| `sxo_wish_images` | 晒单图片 |
+| `sxo_certificate` | 一物一码证书 |
 
 ---
 
@@ -136,17 +169,84 @@ mysql -u root -p mizhi_shop < docs/database/ai_assistant.sql
 - **首页**: https://90e2281d-220d-4a22-b921-85a47bbdda53.dev.coze.site/
 - **后台配置**: https://90e2281d-220d-4a22-b921-85a47bbdda53.dev.coze.site/admin/bottom-bar.html
 
-### 功能特性
-- 底部固定菜单栏（首页/百科/动态/购物车/我的）
-- 底部浮动下单栏（可配置内容）
-- 菜单栏显示逻辑：下拉超一屏或上拉时显示
-- 浮动栏显示逻辑：下拉超过200px显示，上拉延迟2秒隐藏
+### H5功能特性
+| 功能 | 说明 |
+|------|------|
+| 底部固定菜单栏 | 首页/百科/动态/购物车/我的 |
+| 底部浮动下单栏 | 可配置内容 |
+| 菜单栏显示逻辑 | 下拉超一屏或上拉时显示 |
+| 浮动栏显示逻辑 | 下拉超过200px显示，上拉延迟2秒隐藏 |
 
-### 更新脚本
-```bash
-# 一键更新
-bash scripts/deploy.sh full
+### H5文件结构
 ```
+/ (项目根目录)
+├── index.html              # H5移动端首页
+├── admin/
+│   └── bottom-bar.html     # 底部栏配置后台
+└── scripts/
+    └── deploy.sh           # 一键更新脚本
+```
+
+### 底部浮动栏配置表
+```sql
+CREATE TABLE `sxo_bottom_bar_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT '免费领取开光符箓' COMMENT '标题',
+  `desc` varchar(200) DEFAULT '新用户专属福利' COMMENT '描述',
+  `btn_text` varchar(50) DEFAULT '立即领取' COMMENT '按钮文字',
+  `btn_url` varchar(200) DEFAULT '/freeppick' COMMENT '跳转链接',
+  `trigger_down` tinyint(1) DEFAULT 1 COMMENT '下拉触发',
+  `trigger_up` tinyint(1) DEFAULT 1 COMMENT '上拉触发',
+  `show_delay` int(11) DEFAULT 0 COMMENT '显示延迟(秒)',
+  `hide_delay` int(11) DEFAULT 2 COMMENT '隐藏延迟(秒)',
+  `is_enable` tinyint(1) DEFAULT 1 COMMENT '是否启用',
+  `update_time` int(11) DEFAULT 0 COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+---
+
+## 服务器部署
+
+### 一键更新脚本
+```bash
+# 上传到服务器后执行
+cd /www/wwwroot/fubao
+bash scripts/deploy.sh full    # 完整更新
+bash scripts/deploy.sh code   # 仅更新代码
+bash scripts/deploy.sh cache  # 仅清理缓存
+```
+
+### 开发命令
+```bash
+# 启动开发服务器
+php think run
+
+# 清除缓存
+rm -rf runtime/cache/*
+rm -rf runtime/log/*
+
+# 更新数据库
+mysql -u root -p mizhi_shop < docs/database/*.sql
+```
+
+---
+
+## 多语言配置
+
+- 繁体中文: `app/lang/mizhi_cht.php`
+- 英文: `app/lang/mizhi_en.php`
+- 站点配置: `config/mizhi_site_config.php`
+
+---
+
+## 注意事项
+
+1. **禁止硬编码**: 使用配置文件或数据库存储
+2. **安全第一**: 所有输入必须验证
+3. **品牌一致**: 所有文本使用"符宝网"和"符宝网版权所有"
+4. **主题统一**: 使用符宝网主题色和规范
 
 ---
 
