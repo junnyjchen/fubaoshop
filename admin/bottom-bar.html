@@ -10,6 +10,7 @@
             --primary: #c41e3a;
             --primary-light: #e63950;
             --gold: #d4af37;
+            --gold-light: #f4d160;
             --dark: #1a1a2e;
             --dark-light: #16213e;
             --dark-bg: #0f0f23;
@@ -27,7 +28,7 @@
             padding: 24px;
         }
         
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
         
         /* 页面标题 */
         .page-header {
@@ -43,15 +44,12 @@
             align-items: center;
             gap: 10px;
         }
-        .page-desc {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+        .page-desc { color: var(--text-muted); font-size: 14px; }
         
         /* 快捷导航 */
         .quick-nav {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 24px;
             flex-wrap: wrap;
         }
@@ -77,7 +75,6 @@
             border-color: var(--gold);
             color: var(--gold);
         }
-        .quick-link-icon { font-size: 18px; }
         
         /* 卡片 */
         .card {
@@ -90,13 +87,73 @@
         .card-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(212, 175, 55, 0.1);
         }
-        .card-icon { font-size: 20px; }
-        .card-title { font-size: 16px; color: var(--gold); font-weight: 600; }
+        .card-title {
+            font-size: 16px;
+            color: var(--gold);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 预设模板 */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .template-item {
+            background: var(--dark-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .template-item:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+        .template-item.active {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .template-item.active::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--gold);
+            color: var(--dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .template-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .template-name {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .template-desc {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
         
         /* 表单 */
         .form-row {
@@ -119,23 +176,20 @@
             border-radius: 10px;
             color: var(--text-primary);
             font-size: 14px;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
         .form-input:focus {
             outline: none;
             border-color: var(--gold);
             box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
-        .form-input::placeholder { color: var(--text-muted); }
-        
-        textarea.form-input { min-height: 100px; resize: vertical; }
         
         /* 开关 */
         .switch-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 14px 0;
             border-bottom: 1px solid rgba(212, 175, 55, 0.05);
         }
         .switch-row:last-child { border-bottom: none; }
@@ -183,10 +237,11 @@
         .btn-row {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 24px;
+            flex-wrap: wrap;
         }
         .btn {
-            padding: 12px 28px;
+            padding: 12px 24px;
             border: none;
             border-radius: 10px;
             font-size: 14px;
@@ -204,6 +259,14 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: var(--dark);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
         .btn-outline {
             background: transparent;
@@ -230,18 +293,21 @@
         .preview-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
             margin-bottom: 16px;
         }
         .preview-title {
             font-size: 16px;
             color: var(--gold);
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .phone-frame {
-            width: 320px;
-            height: 640px;
+            width: 300px;
+            height: 580px;
             background: #111;
             border: 3px solid #333;
             border-radius: 32px;
@@ -253,10 +319,10 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 28px;
+            width: 100px;
+            height: 24px;
             background: #111;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 14px 14px;
             z-index: 10;
         }
         .phone-screen {
@@ -271,17 +337,18 @@
             overflow-y: auto;
         }
         .phone-scroll-content {
-            height: 400px;
-            background: linear-gradient(180deg, rgba(26, 33, 62, 0.5), rgba(26, 33, 62, 0.3), rgba(26, 33, 62, 0.5));
+            height: 350px;
+            background: linear-gradient(180deg, rgba(26, 33, 62, 0.5), rgba(26, 33, 62, 0.3));
             border-radius: 8px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: 12px;
+            gap: 8px;
         }
         
-        /* 手机端底部栏 */
         .phone-bottom-bar {
             background: rgba(15, 15, 35, 0.97);
             border-top: 1px solid rgba(212, 175, 55, 0.25);
@@ -291,18 +358,17 @@
             gap: 10px;
         }
         .phone-bar-info { flex: 1; }
-        .phone-bar-title { font-size: 13px; color: var(--text-primary); margin-bottom: 2px; }
-        .phone-bar-desc { font-size: 11px; color: var(--text-muted); }
+        .phone-bar-title { font-size: 12px; color: var(--text-primary); margin-bottom: 2px; }
+        .phone-bar-desc { font-size: 10px; color: var(--text-muted); }
         .phone-bar-btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: #fff;
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 12px;
+            padding: 8px 14px;
+            border-radius: 14px;
+            font-size: 11px;
             font-weight: 600;
         }
         
-        /* 手机端底部导航 */
         .phone-nav {
             background: rgba(10, 10, 25, 0.98);
             border-top: 1px solid rgba(212, 175, 55, 0.15);
@@ -311,12 +377,11 @@
             padding: 8px 0;
         }
         .phone-nav-item {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-muted);
             text-align: center;
         }
-        .phone-nav-item span { display: block; font-size: 18px; margin-bottom: 2px; }
-        .phone-nav-item.active { color: var(--gold); }
+        .phone-nav-item span { display: block; font-size: 16px; margin-bottom: 2px; }
         
         /* Toast提示 */
         .toast {
@@ -338,15 +403,80 @@
             to { transform: translateY(0); opacity: 1; }
         }
         
-        /* 两栏布局 */
+        /* 历史记录 */
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--dark-bg);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .history-item:hover {
+            background: var(--dark-light);
+        }
+        .history-time {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+        .history-title {
+            color: var(--text-primary);
+            font-size: 13px;
+            flex: 1;
+            margin: 0 12px;
+        }
+        .history-action {
+            color: var(--gold);
+            font-size: 12px;
+        }
+        
+        /* 布局 */
         .config-grid {
             display: grid;
-            grid-template-columns: 1fr 340px;
+            grid-template-columns: 1fr 320px;
             gap: 24px;
         }
         @media (max-width: 900px) {
             .config-grid { grid-template-columns: 1fr; }
             .phone-frame { margin: 0 auto; }
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: var(--dark-bg);
+            padding: 4px;
+            border-radius: 10px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--gold);
+            color: var(--dark);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -358,163 +488,211 @@
                 <span>📱</span>
                 底部浮动栏配置
             </h1>
-            <p class="page-desc">配置H5移动端底部浮动下单栏的内容和行为</p>
+            <p class="page-desc">配置H5移动端底部浮动下单栏的内容、行为和预设模板</p>
         </div>
         
         <!-- 快捷导航 -->
         <div class="quick-nav">
             <a href="#" class="quick-link active">
-                <span class="quick-link-icon">📱</span>
+                <span>📱</span>
                 <span>底部栏配置</span>
             </a>
             <a href="#" class="quick-link">
-                <span class="quick-link-icon">🎨</span>
+                <span>🎨</span>
                 <span>首页模块</span>
             </a>
             <a href="#" class="quick-link">
-                <span class="quick-link-icon">📦</span>
+                <span>📦</span>
                 <span>商品管理</span>
             </a>
             <a href="#" class="quick-link">
-                <span class="quick-link-icon">📝</span>
-                <span>符箓百科</span>
-            </a>
-            <a href="#" class="quick-link">
-                <span class="quick-link-icon">🤖</span>
+                <span>🤖</span>
                 <span>AI助手</span>
-            </a>
-            <a href="#" class="quick-link">
-                <span class="quick-link-icon">⚙</span>
-                <span>系统设置</span>
             </a>
         </div>
         
         <div class="config-grid">
             <!-- 配置表单 -->
             <div class="config-form">
-                <form id="form">
-                    <!-- 显示设置 -->
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="template">📋 预设模板</button>
+                    <button class="tab-btn" data-tab="custom">✏️ 自定义</button>
+                    <button class="tab-btn" data-tab="history">📜 历史</button>
+                </div>
+                
+                <!-- 预设模板Tab -->
+                <div class="tab-content active" id="tab-template">
                     <div class="card">
                         <div class="card-header">
-                            <span class="card-icon">📺</span>
-                            <h2 class="card-title">显示设置</h2>
+                            <h2 class="card-title">🎯 选择预设模板</h2>
                         </div>
-                        <div class="switch-row">
-                            <div class="switch-info">
-                                <div class="switch-title">启用底部浮动栏</div>
-                                <div class="switch-desc">关闭后用户将看不到浮动下单栏</div>
+                        <div class="template-grid">
+                            <div class="template-item active" data-template="freepick">
+                                <div class="template-icon">🎁</div>
+                                <div class="template-name">免费领取</div>
+                                <div class="template-desc">新用户专属福利活动</div>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" id="enable" checked>
-                                <span class="slider"></span>
-                            </label>
+                            <div class="template-item" data-template="discount">
+                                <div class="template-icon">🏷️</div>
+                                <div class="template-name">限时折扣</div>
+                                <div class="template-desc">全网最低价促销</div>
+                            </div>
+                            <div class="template-item" data-template="newuser">
+                                <div class="template-icon">👤</div>
+                                <div class="template-name">新人专享</div>
+                                <div class="template-desc">首次下单优惠</div>
+                            </div>
+                            <div class="template-item" data-template="rushbuy">
+                                <div class="template-icon">⚡</div>
+                                <div class="template-name">限时抢购</div>
+                                <div class="template-desc">爆款秒杀活动</div>
+                            </div>
+                        </div>
+                        <div class="btn-row" style="margin-top: 0;">
+                            <button class="btn btn-gold" onclick="applyTemplate()">
+                                ✓ 应用模板
+                            </button>
                         </div>
                     </div>
-                    
-                    <!-- 内容设置 -->
+                </div>
+                
+                <!-- 自定义Tab -->
+                <div class="tab-content" id="tab-custom">
+                    <form id="form">
+                        <!-- 显示设置 -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📺 显示设置</h2>
+                            </div>
+                            <div class="switch-row">
+                                <div class="switch-info">
+                                    <div class="switch-title">启用底部浮动栏</div>
+                                    <div class="switch-desc">关闭后用户将看不到浮动下单栏</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="enable" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 内容设置 -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📝 内容设置</h2>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">标题文字</label>
+                                    <input type="text" class="form-input" id="title" value="免费领取开光符箓">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">描述文字</label>
+                                    <input type="text" class="form-input" id="desc" value="新用户专属福利，灵力加持">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">按钮文字</label>
+                                    <input type="text" class="form-input" id="btnText" value="立即领取">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">跳转链接</label>
+                                    <input type="text" class="form-input" id="btnUrl" value="/freepick">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 行为设置 -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">⚡ 行为设置</h2>
+                            </div>
+                            <div class="switch-row">
+                                <div class="switch-info">
+                                    <div class="switch-title">下拉触发显示</div>
+                                    <div class="switch-desc">用户向下滚动时显示浮动栏</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="triggerDown" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="switch-row">
+                                <div class="switch-info">
+                                    <div class="switch-title">上拉自动隐藏</div>
+                                    <div class="switch-desc">用户向上滚动时延迟隐藏</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="triggerUp" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="form-row" style="margin-top: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">自动隐藏延迟（秒，0为不隐藏）</label>
+                                    <input type="number" class="form-input" id="hideDelay" style="width: 120px;" value="2" min="0" max="30">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 按钮 -->
+                        <div class="btn-row">
+                            <button type="submit" class="btn btn-primary">
+                                💾 保存配置
+                            </button>
+                            <button type="button" class="btn btn-gold" onclick="saveAsTemplate()">
+                                💾 另存为模板
+                            </button>
+                            <button type="button" class="btn btn-outline" onclick="resetForm()">
+                                🔄 重置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 历史Tab -->
+                <div class="tab-content" id="tab-history">
                     <div class="card">
                         <div class="card-header">
-                            <span class="card-icon">📝</span>
-                            <h2 class="card-title">内容设置</h2>
+                            <h2 class="card-title">📜 配置历史</h2>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">标题文字</label>
-                                <input type="text" class="form-input" id="title" 
-                                       placeholder="例如：免费领取开光符箓" 
-                                       value="免费领取开光符箓">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">描述文字</label>
-                                <input type="text" class="form-input" id="desc" 
-                                       placeholder="例如：新用户专属福利，灵力加持" 
-                                       value="新用户专属福利，灵力加持">
-                            </div>
+                        <div class="history-list" id="historyList">
+                            <!-- 动态生成 -->
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">按钮文字</label>
-                                <input type="text" class="form-input" id="btnText" 
-                                       placeholder="例如：立即领取" 
-                                       value="立即领取">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">跳转链接</label>
-                                <input type="text" class="form-input" id="btnUrl" 
-                                       placeholder="例如：/freeppick" 
-                                       value="/freepick">
-                            </div>
+                        <div class="btn-row" style="margin-top: 16px;">
+                            <button class="btn btn-secondary" onclick="clearHistory()">
+                                🗑️ 清除历史
+                            </button>
+                            <button class="btn btn-outline" onclick="exportConfig()">
+                                📤 导出配置
+                            </button>
+                            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                                📥 导入配置
+                            </button>
+                            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importConfig(this)">
                         </div>
                     </div>
-                    
-                    <!-- 行为设置 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">⚡</span>
-                            <h2 class="card-title">行为设置</h2>
-                        </div>
-                        <div class="switch-row">
-                            <div class="switch-info">
-                                <div class="switch-title">下拉触发显示</div>
-                                <div class="switch-desc">用户向下滚动时显示浮动栏</div>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="triggerDown" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="switch-row">
-                            <div class="switch-info">
-                                <div class="switch-title">上拉自动隐藏</div>
-                                <div class="switch-desc">用户向上滚动时延迟2秒隐藏</div>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="triggerUp" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-row" style="margin-top: 16px;">
-                            <div class="form-group">
-                                <label class="form-label">显示延迟（秒，0为立即）</label>
-                                <input type="number" class="form-input" id="showDelay" 
-                                       style="width: 120px;" value="0" min="0" max="10">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">自动隐藏延迟（秒，0为不隐藏）</label>
-                                <input type="number" class="form-input" id="hideDelay" 
-                                       style="width: 120px;" value="2" min="0" max="30">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 按钮 -->
-                    <div class="btn-row">
-                        <button type="submit" class="btn btn-primary">
-                            💾 保存配置
-                        </button>
-                        <button type="button" class="btn btn-outline" onclick="resetForm()">
-                            🔄 重置
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="previewDefault()">
-                            📱 恢复默认
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
             
             <!-- 预览 -->
             <div class="preview-section">
                 <div class="preview-header">
-                    <span class="card-icon">📱</span>
-                    <h3 class="preview-title">手机预览</h3>
+                    <h3 class="preview-title">
+                        <span>📱</span>
+                        手机预览
+                    </h3>
                 </div>
                 <div class="phone-frame">
                     <div class="phone-notch"></div>
                     <div class="phone-screen">
                         <div class="phone-content">
                             <div class="phone-scroll-content">
-                                向下滚动查看效果<br><br>
-                                ☯ 符宝网
+                                <div style="font-size: 40px;">☯</div>
+                                <div>符宝网</div>
+                                <div style="font-size: 10px; margin-top: 8px;">向下滚动查看效果</div>
                             </div>
                         </div>
                         <div class="phone-bottom-bar" id="phoneBar">
@@ -541,7 +719,35 @@
     <div class="toast" id="toast">✅ 配置已保存</div>
     
     <script>
-        // DOM元素
+        // ==================== 预设模板 ====================
+        const templates = {
+            freepick: {
+                title: '免费领取开光符箓',
+                desc: '新用户专属福利，灵力加持',
+                btnText: '立即领取',
+                btnUrl: '/freepick'
+            },
+            discount: {
+                title: '限时折扣来袭',
+                desc: '全场低至5折，错过再等一年',
+                btnText: '抢购中',
+                btnUrl: '/goods'
+            },
+            newuser: {
+                title: '新人专享优惠',
+                desc: '注册即送100元优惠券',
+                btnText: '立即领取',
+                btnUrl: '/user/register'
+            },
+            rushbuy: {
+                title: '⚡ 限时抢购',
+                desc: '爆款限量秒杀，手慢无',
+                btnText: '马上抢',
+                btnUrl: '/activity/rushbuy'
+            }
+        };
+        
+        // ==================== DOM元素 ====================
         const form = document.getElementById('form');
         const enable = document.getElementById('enable');
         const title = document.getElementById('title');
@@ -550,22 +756,51 @@
         const btnUrl = document.getElementById('btnUrl');
         const triggerDown = document.getElementById('triggerDown');
         const triggerUp = document.getElementById('triggerUp');
-        const showDelay = document.getElementById('showDelay');
         const hideDelay = document.getElementById('hideDelay');
-        
-        // 预览元素
         const phoneBar = document.getElementById('phoneBar');
         const pTitle = document.getElementById('pTitle');
         const pDesc = document.getElementById('pDesc');
         const pBtn = document.getElementById('pBtn');
+        const toast = document.getElementById('toast');
+        const historyList = document.getElementById('historyList');
         
-        // 预览元素
-        const phoneBar2 = document.getElementById('phoneBar');
-        const pTitle2 = document.getElementById('pTitle');
-        const pDesc2 = document.getElementById('pDesc');
-        const pBtn2 = document.getElementById('pBtn');
+        // ==================== Tab切换 ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
         
-        // 实时预览
+        // ==================== 模板选择 ====================
+        document.querySelectorAll('.template-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.template-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        function applyTemplate() {
+            const activeTemplate = document.querySelector('.template-item.active');
+            if (!activeTemplate) return;
+            
+            const templateKey = activeTemplate.dataset.template;
+            const template = templates[templateKey];
+            
+            if (template) {
+                title.value = template.title;
+                desc.value = template.desc;
+                btnText.value = template.btnText;
+                btnUrl.value = template.btnUrl;
+                updatePreview();
+                
+                showToast('已应用"' + activeTemplate.querySelector('.template-name').textContent + '"模板');
+            }
+        }
+        
+        // ==================== 预览更新 ====================
         function updatePreview() {
             pTitle.textContent = title.value || '符宝网';
             pDesc.textContent = desc.value || '';
@@ -578,10 +813,13 @@
         desc.addEventListener('input', updatePreview);
         btnText.addEventListener('input', updatePreview);
         
-        // 保存表单
+        // ==================== 保存配置 ====================
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            
+            saveConfig('手动保存');
+        });
+        
+        function saveConfig(reason = '保存') {
             const config = {
                 enable: enable.checked,
                 title: title.value,
@@ -590,32 +828,140 @@
                 btnUrl: btnUrl.value,
                 triggerDown: triggerDown.checked,
                 triggerUp: triggerUp.checked,
-                showDelay: parseInt(showDelay.value) || 0,
+                hideDelay: parseInt(hideDelay.value) || 2,
+                time: Date.now()
+            };
+            
+            localStorage.setItem('bottomBarConfig', JSON.stringify(config));
+            
+            // 保存到历史
+            saveToHistory(config, reason);
+            
+            showToast('✅ 配置已保存成功');
+        }
+        
+        // ==================== 历史记录 ====================
+        function saveToHistory(config, reason) {
+            let history = JSON.parse(localStorage.getItem('bottomBarHistory') || '[]');
+            history.unshift({
+                ...config,
+                reason: reason,
+                time: Date.now()
+            });
+            // 只保留最近10条
+            history = history.slice(0, 10);
+            localStorage.setItem('bottomBarHistory', JSON.stringify(history));
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('bottomBarHistory') || '[]');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">暂无历史记录</div>';
+                return;
+            }
+            
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="restoreHistory(${index})">
+                    <span class="history-time">${formatTime(item.time)}</span>
+                    <span class="history-title">${item.title}</span>
+                    <span class="history-action">恢复</span>
+                </div>
+            `).join('');
+        }
+        
+        function restoreHistory(index) {
+            const history = JSON.parse(localStorage.getItem('bottomBarHistory') || '[]');
+            const item = history[index];
+            
+            if (item) {
+                enable.checked = item.enable;
+                title.value = item.title;
+                desc.value = item.desc;
+                btnText.value = item.btnText;
+                btnUrl.value = item.btnUrl;
+                triggerDown.checked = item.triggerDown;
+                triggerUp.checked = item.triggerUp;
+                hideDelay.value = item.hideDelay;
+                updatePreview();
+                
+                showToast('已恢复到: ' + item.title);
+            }
+        }
+        
+        function clearHistory() {
+            if (confirm('确定要清除所有历史记录吗？')) {
+                localStorage.removeItem('bottomBarHistory');
+                renderHistory();
+                showToast('历史记录已清除');
+            }
+        }
+        
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('zh-CN', {
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // ==================== 导入导出 ====================
+        function exportConfig() {
+            const config = {
+                title: title.value,
+                desc: desc.value,
+                btnText: btnText.value,
+                btnUrl: btnUrl.value,
+                enable: enable.checked,
+                triggerDown: triggerDown.checked,
+                triggerUp: triggerUp.checked,
                 hideDelay: parseInt(hideDelay.value) || 2
             };
             
-            // 保存到localStorage
-            localStorage.setItem('bottomBarConfig', JSON.stringify(config));
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bottom-bar-config-' + Date.now() + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
             
-            // 显示提示
-            const toast = document.getElementById('toast');
-            toast.style.display = 'block';
-            toast.classList.add('success');
-            toast.innerHTML = '✅ 配置已保存成功';
-            
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 2500);
-        });
-        
-        // 重置表单
-        function resetForm() {
-            form.reset();
-            updatePreview();
+            showToast('配置已导出');
         }
         
-        // 恢复默认
-        function previewDefault() {
+        function importConfig(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    
+                    enable.checked = config.enable !== false;
+                    title.value = config.title || '';
+                    desc.value = config.desc || '';
+                    btnText.value = config.btnText || '';
+                    btnUrl.value = config.btnUrl || '';
+                    triggerDown.checked = config.triggerDown !== false;
+                    triggerUp.checked = config.triggerUp !== false;
+                    hideDelay.value = config.hideDelay || 2;
+                    
+                    updatePreview();
+                    showToast('配置已导入');
+                } catch (err) {
+                    showToast('导入失败：文件格式错误');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+        
+        // ==================== 重置 ====================
+        function resetForm() {
             enable.checked = true;
             title.value = '免费领取开光符箓';
             desc.value = '新用户专属福利，灵力加持';
@@ -623,12 +969,21 @@
             btnUrl.value = '/freepick';
             triggerDown.checked = true;
             triggerUp.checked = true;
-            showDelay.value = 0;
             hideDelay.value = 2;
             updatePreview();
         }
         
-        // 初始化
+        // ==================== 提示 ====================
+        function showToast(message) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            toast.classList.add('success');
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+        
+        // ==================== 初始化 ====================
         const saved = localStorage.getItem('bottomBarConfig');
         if (saved) {
             try {
@@ -640,11 +995,11 @@
                 btnUrl.value = config.btnUrl || '/freepick';
                 triggerDown.checked = config.triggerDown !== false;
                 triggerUp.checked = config.triggerUp !== false;
-                showDelay.value = config.showDelay || 0;
                 hideDelay.value = config.hideDelay || 2;
             } catch (e) {}
         }
         updatePreview();
+        renderHistory();
     </script>
 </body>
 </html>

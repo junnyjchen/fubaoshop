@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* ==================== 主题变量 ==================== */
         :root {
             --primary: #c41e3a;
             --primary-light: #e63950;
@@ -19,7 +20,20 @@
             --text-secondary: #b8b8b8;
             --text-muted: #6b6b6b;
             --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        /* 夜间模式 */
+        [data-theme="light"] {
+            --dark-bg: #f5f5f5;
+            --dark: #ffffff;
+            --dark-light: #e8e8e8;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #888888;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             font-family: 'Noto Sans TC', -apple-system, sans-serif;
@@ -27,10 +41,75 @@
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background var(--transition), color var(--transition);
         }
         ::-webkit-scrollbar { display: none; }
         
-        /* 主容器 */
+        /* ==================== 骨架屏 ==================== */
+        .skeleton {
+            background: linear-gradient(90deg, 
+                var(--dark-light) 25%, 
+                var(--dark) 50%, 
+                var(--dark-light) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton-icon { width: 50px; height: 50px; border-radius: 14px; }
+        .skeleton-text { height: 14px; margin-top: 6px; }
+        .skeleton-text-sm { height: 10px; width: 60%; margin-top: 4px; }
+        .skeleton-card { height: 100px; border-radius: 14px; }
+        .skeleton-banner { height: 150px; border-radius: 18px; }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--dark-bg);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loading-logo {
+            font-size: 60px;
+            animation: pulse 1.5s infinite;
+        }
+        .loading-text {
+            margin-top: 16px;
+            color: var(--gold);
+            font-size: 14px;
+        }
+        .loading-bar {
+            width: 120px;
+            height: 3px;
+            background: var(--dark-light);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .loading-progress {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 3px;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+        @keyframes loading {
+            0% { width: 0%; margin-left: 0; }
+            50% { width: 70%; margin-left: 15%; }
+            100% { width: 0%; margin-left: 100%; }
+        }
+        
+        /* ==================== 主容器 ==================== */
         .app-container {
             max-width: 100%;
             min-height: 100vh;
@@ -45,8 +124,10 @@
             z-index: 100;
             background: linear-gradient(180deg, var(--dark) 0%, rgba(26, 26, 46, 0.98) 100%);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 12px 16px;
             border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            transition: background var(--transition);
         }
         .header-content {
             display: flex;
@@ -68,15 +149,15 @@
         }
         .logo-icon {
             font-size: 26px;
-            animation: pulse 3s infinite;
+            animation: rotate 20s linear infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         .header-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
         .header-btn {
             width: 36px;
@@ -88,12 +169,26 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            text-decoration: none;
-            transition: all 0.3s;
+            cursor: pointer;
+            transition: all var(--transition);
         }
         .header-btn:hover {
             background: rgba(212, 175, 55, 0.2);
             border-color: var(--gold);
+        }
+        [data-theme="light"] .header-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 主题切换动画 */
+        .theme-transition {
+            animation: themeSwitch 0.5s ease;
+        }
+        @keyframes themeSwitch {
+            0% { opacity: 0.8; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
         
         /* ==================== 快捷入口 ==================== */
@@ -112,6 +207,18 @@
             gap: 6px;
             text-decoration: none;
             width: 60px;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+        .quick-item:nth-child(1) { animation-delay: 0.1s; }
+        .quick-item:nth-child(2) { animation-delay: 0.15s; }
+        .quick-item:nth-child(3) { animation-delay: 0.2s; }
+        .quick-item:nth-child(4) { animation-delay: 0.25s; }
+        .quick-item:nth-child(5) { animation-delay: 0.3s; }
+        .quick-item:nth-child(6) { animation-delay: 0.35s; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .quick-icon {
             width: 50px;
@@ -123,11 +230,14 @@
             justify-content: center;
             font-size: 22px;
             box-shadow: 0 4px 15px rgba(196, 30, 58, 0.35);
-            transition: all 0.3s;
+            transition: all var(--transition);
         }
         .quick-item:hover .quick-icon {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(196, 30, 58, 0.45);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(196, 30, 58, 0.45);
+        }
+        .quick-item:active .quick-icon {
+            transform: scale(0.95);
         }
         .quick-item span {
             font-size: 11px;
@@ -169,6 +279,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            transition: color var(--transition);
         }
         .section-more:hover { color: var(--gold); }
         
@@ -179,15 +290,21 @@
             gap: 12px;
         }
         .talisman-card {
-            background: linear-gradient(135deg, rgba(22, 33, 62, 0.9), rgba(26, 26, 46, 0.8));
+            background: linear-gradient(135deg, var(--dark-light), var(--dark));
             border: 1px solid rgba(212, 175, 55, 0.15);
             border-radius: 14px;
             padding: 16px;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all var(--transition);
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
         }
+        .talisman-card:nth-child(1) { animation-delay: 0.4s; }
+        .talisman-card:nth-child(2) { animation-delay: 0.45s; }
+        .talisman-card:nth-child(3) { animation-delay: 0.5s; }
+        .talisman-card:nth-child(4) { animation-delay: 0.55s; }
         .talisman-card::before {
             content: '';
             position: absolute;
@@ -197,14 +314,17 @@
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity var(--transition);
         }
         .talisman-card:hover {
             border-color: rgba(212, 175, 55, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
         }
         .talisman-card:hover::before { opacity: 1; }
+        .talisman-card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
         .talisman-icon { font-size: 34px; margin-bottom: 8px; }
         .talisman-name {
             color: var(--gold);
@@ -229,15 +349,23 @@
             align-items: center;
             gap: 12px;
             padding: 14px;
-            background: linear-gradient(135deg, rgba(22, 33, 62, 0.7), rgba(26, 26, 46, 0.6));
+            background: var(--dark-light);
             border: 1px solid rgba(212, 175, 55, 0.1);
             border-radius: 12px;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all var(--transition);
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
         }
+        .wiki-item:nth-child(1) { animation-delay: 0.5s; }
+        .wiki-item:nth-child(2) { animation-delay: 0.55s; }
+        .wiki-item:nth-child(3) { animation-delay: 0.6s; }
         .wiki-item:hover {
             border-color: rgba(212, 175, 55, 0.3);
-            background: rgba(22, 33, 62, 0.9);
+            background: var(--dark);
+        }
+        .wiki-item:active {
+            transform: scale(0.98);
         }
         .wiki-tag {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
@@ -261,6 +389,11 @@
         .wiki-arrow {
             color: var(--text-muted);
             font-size: 14px;
+            transition: transform var(--transition);
+        }
+        .wiki-item:hover .wiki-arrow {
+            transform: translateX(4px);
+            color: var(--gold);
         }
         
         /* ==================== AI助手入口 ==================== */
@@ -275,6 +408,9 @@
             display: block;
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.65s;
         }
         .ai-banner::before {
             content: '';
@@ -286,9 +422,19 @@
             background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
             animation: rotate 10s linear infinite;
         }
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .ai-banner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
         }
         .ai-icon { font-size: 44px; margin-bottom: 12px; position: relative; }
         .ai-title {
@@ -309,6 +455,7 @@
             padding: 4px 10px;
             border-radius: 10px;
             font-size: 10px;
+            animation: pulse 2s infinite;
         }
         
         /* ==================== 商品列表 ==================== */
@@ -322,21 +469,27 @@
         .goods-card {
             flex-shrink: 0;
             width: 145px;
-            background: linear-gradient(135deg, rgba(22, 33, 62, 0.9), rgba(26, 26, 46, 0.8));
+            background: var(--dark-light);
             border: 1px solid rgba(212, 175, 55, 0.15);
             border-radius: 14px;
             overflow: hidden;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all var(--transition);
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.7s;
         }
         .goods-card:hover {
             border-color: rgba(212, 175, 55, 0.4);
-            transform: translateY(-3px);
+            transform: translateY(-4px);
+        }
+        .goods-card:active {
+            transform: scale(0.96);
         }
         .goods-img {
             width: 100%;
             height: 130px;
-            background: linear-gradient(135deg, var(--dark-light), var(--dark));
+            background: linear-gradient(135deg, var(--dark), var(--dark-light));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -385,6 +538,9 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.75s;
         }
         .free-banner::before {
             content: '';
@@ -395,7 +551,7 @@
         .free-decoration {
             position: absolute;
             font-size: 60px;
-            opacity: 0.1;
+            opacity: 0.15;
         }
         .free-decoration.left { top: -10px; left: -10px; }
         .free-decoration.right { bottom: -10px; right: -10px; }
@@ -436,11 +592,14 @@
             text-decoration: none;
             position: relative;
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            transition: all 0.3s;
+            transition: all var(--transition);
         }
         .free-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+        .free-btn:active {
+            transform: scale(0.98);
         }
         
         /* ==================== 功能模块列表 ==================== */
@@ -451,7 +610,7 @@
             margin-top: 8px;
         }
         .module-card {
-            background: linear-gradient(135deg, rgba(22, 33, 62, 0.8), rgba(26, 26, 46, 0.7));
+            background: var(--dark-light);
             border: 1px solid rgba(212, 175, 55, 0.12);
             border-radius: 14px;
             padding: 16px;
@@ -459,11 +618,21 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.3s;
+            transition: all var(--transition);
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.8s;
         }
+        .module-card:nth-child(1) { animation-delay: 0.8s; }
+        .module-card:nth-child(2) { animation-delay: 0.85s; }
+        .module-card:nth-child(3) { animation-delay: 0.9s; }
+        .module-card:nth-child(4) { animation-delay: 0.95s; }
         .module-card:hover {
             border-color: rgba(212, 175, 55, 0.35);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+        }
+        .module-card:active {
+            transform: scale(0.98);
         }
         .module-icon {
             width: 44px;
@@ -497,14 +666,15 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 15, 35, 0.97);
+            background: var(--dark);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid rgba(212, 175, 55, 0.25);
             padding: 10px 16px;
             padding-bottom: calc(10px + var(--safe-bottom));
             z-index: 1000;
             transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition);
         }
         .bottom-bar.show { transform: translateY(0); }
         .bottom-bar-content {
@@ -525,10 +695,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .bottom-desc {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
+        .bottom-desc { color: var(--text-muted); font-size: 12px; }
         .btn {
             padding: 11px 22px;
             border-radius: 24px;
@@ -537,7 +704,7 @@
             text-decoration: none;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition);
             flex-shrink: 0;
         }
         .btn-primary {
@@ -549,6 +716,9 @@
             transform: scale(1.03);
             box-shadow: 0 6px 20px rgba(196, 30, 58, 0.5);
         }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
         
         /* ==================== 底部菜单栏 ==================== */
         .tab-bar {
@@ -556,8 +726,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 25, 0.98);
+            background: var(--dark-bg);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid rgba(212, 175, 55, 0.15);
             display: flex;
             justify-content: space-around;
@@ -565,7 +736,7 @@
             padding-bottom: calc(8px + var(--safe-bottom));
             z-index: 999;
             transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition);
         }
         .tab-bar.show { transform: translateY(0); }
         .tab-item {
@@ -575,29 +746,18 @@
             gap: 3px;
             text-decoration: none;
             color: var(--text-muted);
-            transition: all 0.3s;
+            transition: all var(--transition);
             padding: 6px 8px;
             min-width: 50px;
+            position: relative;
         }
         .tab-item.active { color: var(--gold); }
         .tab-item:hover { color: var(--gold); }
+        .tab-item:active {
+            transform: scale(0.9);
+        }
         .tab-icon { font-size: 22px; line-height: 1; }
         .tab-text { font-size: 10px; }
-        .tab-badge {
-            position: absolute;
-            top: 2px;
-            right: 8px;
-            background: var(--primary);
-            color: #fff;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .tab-item { position: relative; }
         
         /* ==================== 版权信息 ==================== */
         .footer {
@@ -612,13 +772,54 @@
             font-size: 14px;
             margin-bottom: 6px;
         }
-        .footer-icp {
-            color: var(--text-muted);
-            margin-bottom: 4px;
+        .footer-icp { color: var(--text-muted); margin-bottom: 4px; }
+        
+        /* ==================== 触摸反馈 ==================== */
+        @media (hover: none) {
+            .talisman-card:hover,
+            .goods-card:hover,
+            .module-card:hover,
+            .wiki-item:hover {
+                transform: none;
+                border-color: rgba(212, 175, 55, 0.15);
+            }
+            .quick-item:hover .quick-icon {
+                transform: none;
+            }
+        }
+        
+        /* ==================== 下拉刷新提示 ==================== */
+        .pull-hint {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--gold);
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .pull-hint.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
+    <!-- 加载屏幕 -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">☯</div>
+        <div class="loading-text">符宝网</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+    
     <div class="app-container" id="app">
         <!-- 顶部导航 -->
         <header class="header">
@@ -628,11 +829,15 @@
                     <span>符宝网</span>
                 </a>
                 <div class="header-actions">
-                    <a href="/search" class="header-btn">🔍</a>
-                    <a href="/user" class="header-btn">👤</a>
+                    <button class="header-btn" id="themeToggle" title="切换主题">🌓</button>
+                    <button class="header-btn" id="searchBtn">🔍</button>
+                    <button class="header-btn" id="userBtn">👤</button>
                 </div>
             </div>
         </header>
+        
+        <!-- 下拉提示 -->
+        <div class="pull-hint" id="pullHint">松开刷新</div>
         
         <!-- 快捷入口 -->
         <div class="quick-nav">
@@ -899,19 +1104,91 @@
         };
         
         // ==================== DOM元素 ====================
+        const loadingScreen = document.getElementById('loadingScreen');
         const tabBar = document.getElementById('tabBar');
         const bottomBar = document.getElementById('bottomBar');
         const bottomTitle = document.getElementById('bottomTitle');
         const bottomDesc = document.getElementById('bottomDesc');
         const bottomBtn = document.getElementById('bottomBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        const pullHint = document.getElementById('pullHint');
         
         let lastScrollY = 0;
         let hideTimer = null;
         let isBottomBarVisible = false;
+        let touchStartY = 0;
+        let isPullToRefresh = false;
+        
+        // ==================== 加载动画 ====================
+        function hideLoading() {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 800);
+        }
+        
+        // ==================== 主题切换 ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+        
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon(next);
+            
+            // 主题切换动画
+            document.body.classList.add('theme-transition');
+            setTimeout(() => {
+                document.body.classList.remove('theme-transition');
+            }, 500);
+        }
+        
+        function updateThemeIcon(theme) {
+            themeToggle.textContent = theme === 'dark' ? '🌓' : '🌙';
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // ==================== 下拉刷新 ====================
+        function handleTouchStart(e) {
+            touchStartY = e.touches[0].clientY;
+            if (window.scrollY === 0) {
+                isPullToRefresh = true;
+            }
+        }
+        
+        function handleTouchMove(e) {
+            if (!isPullToRefresh) return;
+            const touchY = e.touches[0].clientY;
+            const pullDistance = touchY - touchStartY;
+            
+            if (pullDistance > 60 && window.scrollY === 0) {
+                pullHint.classList.add('show');
+                e.preventDefault();
+            } else {
+                pullHint.classList.remove('show');
+            }
+        }
+        
+        function handleTouchEnd() {
+            if (pullHint.classList.contains('show')) {
+                pullHint.classList.remove('show');
+                // 触发刷新
+                location.reload();
+            }
+            isPullToRefresh = false;
+        }
+        
+        document.addEventListener('touchstart', handleTouchStart, { passive: true });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd, { passive: true });
         
         // ==================== 底部浮动栏 ====================
         function initBottomBar() {
-            // 尝试从localStorage读取配置
             const saved = localStorage.getItem('bottomBarConfig');
             if (saved) {
                 try {
@@ -953,14 +1230,26 @@
             tabBar.classList.remove('show');
         }
         
-        // ==================== 滚动监听 ====================
+        // ==================== 滚动监听（节流优化） ====================
+        let scrollTicking = false;
+        
         function handleScroll() {
+            if (!scrollTicking) {
+                window.requestAnimationFrame(() => {
+                    processScroll();
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }
+        
+        function processScroll() {
             const curY = window.scrollY;
             const dir = curY > lastScrollY ? 'down' : 'up';
             const dist = Math.abs(curY - lastScrollY);
             const pastOneScreen = curY > ONE_SCREEN;
             
-            // 底部浮动栏：下拉显示，上拉延迟隐藏
+            // 底部浮动栏
             if (dir === 'down' && dist > 50 && curY > 200) {
                 showBottomBar();
             }
@@ -968,7 +1257,7 @@
                 delayHideBottomBar();
             }
             
-            // 底部菜单栏：下拉超一屏显示，上拉也显示
+            // 底部菜单栏
             if (dir === 'down' && dist > 50 && pastOneScreen) {
                 showTabBar();
             }
@@ -976,7 +1265,6 @@
                 showTabBar();
             }
             
-            // 回顶部附近隐藏菜单栏
             if (curY < ONE_SCREEN / 2) {
                 hideTabBar();
             }
@@ -984,7 +1272,6 @@
             lastScrollY = curY;
         }
         
-        // ==================== 事件绑定 ====================
         window.addEventListener('scroll', handleScroll, { passive: true });
         
         document.addEventListener('touchend', () => {
@@ -993,22 +1280,21 @@
             }
         });
         
-        // 点击浮动栏按钮后隐藏
         bottomBtn.addEventListener('click', () => {
             hideBottomBar();
         });
         
         // ==================== 初始化 ====================
+        initTheme();
         initBottomBar();
+        hideLoading();
         
-        // 页面加载后3秒检查
         setTimeout(() => {
             if (window.scrollY > 100) {
                 showBottomBar();
             }
         }, 3000);
         
-        // 页面加载时显示菜单栏（如果已经滚动过）
         if (window.scrollY > ONE_SCREEN) {
             showTabBar();
         }
