@@ -1,11 +1,55 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <!-- 基础Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>符宝网 - 传承千年道法智慧</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- SEO优化 -->
+    <title>符宝网 - 传承千年道法智慧 | 开光符箓 道家文化</title>
+    <meta name="description" content="符宝网专业提供开光符箓、道家法器、风水摆件等，传承千年道法智慧，正品开光认证，支持一物一码查验。">
+    <meta name="keywords" content="符宝网,符箓,开光,道家,风水,平安符,财神符,文昌符,太岁符,道家文化">
+    <meta name="author" content="符宝网">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.fubao.ltd/">
+    
+    <!-- Open Graph / 社交分享 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="符宝网 - 传承千年道法智慧">
+    <meta property="og:description" content="专业提供开光符箓、道家法器，传承千年道法智慧，正品开光认证。">
+    <meta property="og:url" content="https://www.fubao.ltd/">
+    <meta property="og:site_name" content="符宝网">
+    <meta property="og:image" content="https://www.fubao.ltd/images/og-image.jpg">
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="符宝网 - 传承千年道法智慧">
+    <meta name="twitter:description" content="专业提供开光符箓、道家法器，传承千年道法智慧。">
+    
+    <!-- 主题色 -->
+    <meta name="theme-color" content="#c41e3a">
+    <meta name="msapplication-navbutton-color" content="#c41e3a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- PWA相关 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="符宝网">
+    
+    <!-- 图标 -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☯</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☯</text></svg>">
+    
+    <!-- 预连接 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <style>
         /* ==================== 主题变量 ==================== */
         :root {
@@ -22,8 +66,6 @@
             --safe-bottom: env(safe-area-inset-bottom, 20px);
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        /* 夜间模式 */
         [data-theme="light"] {
             --dark-bg: #f5f5f5;
             --dark: #ffffff;
@@ -31,7 +73,6 @@
             --text-primary: #1a1a2e;
             --text-secondary: #4a4a5a;
             --text-muted: #888888;
-            --border: rgba(0, 0, 0, 0.1);
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,27 +85,11 @@
             transition: background var(--transition), color var(--transition);
         }
         ::-webkit-scrollbar { display: none; }
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; }
+        img { max-width: 100%; }
         
-        /* ==================== 骨架屏 ==================== */
-        .skeleton {
-            background: linear-gradient(90deg, 
-                var(--dark-light) 25%, 
-                var(--dark) 50%, 
-                var(--dark-light) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 8px;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .skeleton-icon { width: 50px; height: 50px; border-radius: 14px; }
-        .skeleton-text { height: 14px; margin-top: 6px; }
-        .skeleton-text-sm { height: 10px; width: 60%; margin-top: 4px; }
-        .skeleton-card { height: 100px; border-radius: 14px; }
-        .skeleton-banner { height: 150px; border-radius: 18px; }
-        
+        /* ==================== 加载屏幕 ==================== */
         .loading-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -79,15 +104,17 @@
         .loading-screen.hidden {
             opacity: 0;
             visibility: hidden;
+            pointer-events: none;
         }
         .loading-logo {
-            font-size: 60px;
+            font-size: 64px;
             animation: pulse 1.5s infinite;
         }
         .loading-text {
             margin-top: 16px;
             color: var(--gold);
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 600;
         }
         .loading-bar {
             width: 120px;
@@ -99,7 +126,7 @@
         }
         .loading-progress {
             height: 100%;
-            background: var(--gold);
+            background: linear-gradient(90deg, var(--gold), var(--primary));
             border-radius: 3px;
             animation: loading 1.5s ease-in-out infinite;
         }
@@ -108,14 +135,13 @@
             50% { width: 70%; margin-left: 15%; }
             100% { width: 0%; margin-left: 100%; }
         }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
         
         /* ==================== 主容器 ==================== */
-        .app-container {
-            max-width: 100%;
-            min-height: 100vh;
-            padding-bottom: calc(100px + var(--safe-bottom));
-            position: relative;
-        }
+        .app-container { max-width: 100%; min-height: 100vh; padding-bottom: calc(100px + var(--safe-bottom)); }
         
         /* ==================== 顶部导航 ==================== */
         .header {
@@ -127,38 +153,20 @@
             -webkit-backdrop-filter: blur(12px);
             padding: 12px 16px;
             border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-            transition: background var(--transition);
         }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
         .logo {
             font-family: 'Noto Serif TC', serif;
             font-size: 22px;
             font-weight: 700;
             color: var(--gold);
-            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
-            text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
         }
-        .logo-icon {
-            font-size: 26px;
-            animation: rotate 20s linear infinite;
-        }
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .logo-icon { font-size: 26px; animation: rotate 20s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .header-actions { display: flex; gap: 10px; }
         .header-btn {
             width: 36px;
             height: 36px;
@@ -169,53 +177,49 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            cursor: pointer;
             transition: all var(--transition);
         }
-        .header-btn:hover {
-            background: rgba(212, 175, 55, 0.2);
-            border-color: var(--gold);
-        }
-        [data-theme="light"] .header-btn {
-            background: rgba(0, 0, 0, 0.05);
-            border-color: rgba(0, 0, 0, 0.1);
-        }
+        .header-btn:hover { background: rgba(212, 175, 55, 0.2); border-color: var(--gold); }
         
-        /* 主题切换动画 */
-        .theme-transition {
-            animation: themeSwitch 0.5s ease;
+        /* ==================== 通知横幅 ==================== */
+        .notice-bar {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            padding: 8px 16px;
+            overflow: hidden;
+            position: relative;
         }
-        @keyframes themeSwitch {
-            0% { opacity: 0.8; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .notice-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: scroll 20s linear infinite;
+            white-space: nowrap;
+        }
+        .notice-icon { font-size: 14px; }
+        .notice-text { font-size: 12px; color: #fff; }
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
         
         /* ==================== 快捷入口 ==================== */
-        .quick-nav {
-            padding: 16px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+        .quick-nav { padding: 16px; display: flex; gap: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .quick-item {
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            text-decoration: none;
             width: 60px;
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
         }
-        .quick-item:nth-child(1) { animation-delay: 0.1s; }
-        .quick-item:nth-child(2) { animation-delay: 0.15s; }
-        .quick-item:nth-child(3) { animation-delay: 0.2s; }
-        .quick-item:nth-child(4) { animation-delay: 0.25s; }
-        .quick-item:nth-child(5) { animation-delay: 0.3s; }
-        .quick-item:nth-child(6) { animation-delay: 0.35s; }
+        .quick-item:nth-child(1) { animation-delay: 0.05s; }
+        .quick-item:nth-child(2) { animation-delay: 0.1s; }
+        .quick-item:nth-child(3) { animation-delay: 0.15s; }
+        .quick-item:nth-child(4) { animation-delay: 0.2s; }
+        .quick-item:nth-child(5) { animation-delay: 0.25s; }
+        .quick-item:nth-child(6) { animation-delay: 0.3s; }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -232,30 +236,13 @@
             box-shadow: 0 4px 15px rgba(196, 30, 58, 0.35);
             transition: all var(--transition);
         }
-        .quick-item:hover .quick-icon {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(196, 30, 58, 0.45);
-        }
-        .quick-item:active .quick-icon {
-            transform: scale(0.95);
-        }
-        .quick-item span {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
+        .quick-item:hover .quick-icon { transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 25px rgba(196, 30, 58, 0.45); }
+        .quick-item:active .quick-icon { transform: scale(0.95); }
+        .quick-item span { font-size: 11px; color: var(--text-secondary); }
         
-        /* ==================== 区块通用 ==================== */
-        .section {
-            padding: 16px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
+        /* ==================== 区块 ==================== */
+        .section { padding: 16px; max-width: 1200px; margin: 0 auto; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .section-title {
             font-family: 'Noto Serif TC', serif;
             font-size: 17px;
@@ -272,78 +259,44 @@
             font-size: 10px;
             font-weight: 600;
         }
-        .section-more {
-            color: var(--text-muted);
-            font-size: 12px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: color var(--transition);
-        }
+        .section-more { color: var(--text-muted); font-size: 12px; transition: color var(--transition); }
         .section-more:hover { color: var(--gold); }
         
         /* ==================== 符箓卡片 ==================== */
-        .talisman-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        .talisman-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .talisman-card {
             background: linear-gradient(135deg, var(--dark-light), var(--dark));
             border: 1px solid rgba(212, 175, 55, 0.15);
             border-radius: 14px;
             padding: 16px;
-            text-decoration: none;
             transition: all var(--transition);
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
         }
-        .talisman-card:nth-child(1) { animation-delay: 0.4s; }
-        .talisman-card:nth-child(2) { animation-delay: 0.45s; }
-        .talisman-card:nth-child(3) { animation-delay: 0.5s; }
-        .talisman-card:nth-child(4) { animation-delay: 0.55s; }
+        .talisman-card:nth-child(1) { animation-delay: 0.35s; }
+        .talisman-card:nth-child(2) { animation-delay: 0.4s; }
+        .talisman-card:nth-child(3) { animation-delay: 0.45s; }
+        .talisman-card:nth-child(4) { animation-delay: 0.5s; }
         .talisman-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
             opacity: 0;
             transition: opacity var(--transition);
         }
-        .talisman-card:hover {
-            border-color: rgba(212, 175, 55, 0.4);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-        }
+        .talisman-card:hover { border-color: rgba(212, 175, 55, 0.4); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
         .talisman-card:hover::before { opacity: 1; }
-        .talisman-card:active {
-            transform: translateY(-2px) scale(0.98);
-        }
+        .talisman-card:active { transform: scale(0.98); }
         .talisman-icon { font-size: 34px; margin-bottom: 8px; }
-        .talisman-name {
-            color: var(--gold);
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .talisman-desc {
-            color: var(--text-muted);
-            font-size: 12px;
-            line-height: 1.4;
-        }
+        .talisman-name { color: var(--gold); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .talisman-desc { color: var(--text-muted); font-size: 12px; line-height: 1.4; }
         
         /* ==================== 百科列表 ==================== */
-        .wiki-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .wiki-list { display: flex; flex-direction: column; gap: 10px; }
         .wiki-item {
             display: flex;
             align-items: center;
@@ -352,21 +305,15 @@
             background: var(--dark-light);
             border: 1px solid rgba(212, 175, 55, 0.1);
             border-radius: 12px;
-            text-decoration: none;
             transition: all var(--transition);
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
         }
         .wiki-item:nth-child(1) { animation-delay: 0.5s; }
         .wiki-item:nth-child(2) { animation-delay: 0.55s; }
         .wiki-item:nth-child(3) { animation-delay: 0.6s; }
-        .wiki-item:hover {
-            border-color: rgba(212, 175, 55, 0.3);
-            background: var(--dark);
-        }
-        .wiki-item:active {
-            transform: scale(0.98);
-        }
+        .wiki-item:hover { border-color: rgba(212, 175, 55, 0.3); background: var(--dark); }
+        .wiki-item:active { transform: scale(0.98); }
         .wiki-tag {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: #fff;
@@ -378,25 +325,11 @@
         }
         .wiki-tag.tag-blue { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
         .wiki-tag.tag-gold { background: linear-gradient(135deg, var(--gold), var(--gold-light)); }
-        .wiki-title {
-            color: var(--text-secondary);
-            font-size: 13px;
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .wiki-arrow {
-            color: var(--text-muted);
-            font-size: 14px;
-            transition: transform var(--transition);
-        }
-        .wiki-item:hover .wiki-arrow {
-            transform: translateX(4px);
-            color: var(--gold);
-        }
+        .wiki-title { color: var(--text-secondary); font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .wiki-arrow { color: var(--text-muted); font-size: 14px; transition: all var(--transition); }
+        .wiki-item:hover .wiki-arrow { transform: translateX(4px); color: var(--gold); }
         
-        /* ==================== AI助手入口 ==================== */
+        /* ==================== AI入口 ==================== */
         .ai-banner {
             margin: 16px;
             padding: 24px 20px;
@@ -404,31 +337,25 @@
             border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 18px;
             text-align: center;
-            text-decoration: none;
-            display: block;
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
             animation-delay: 0.65s;
         }
         .ai-banner::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
             animation: rotate 10s linear infinite;
         }
         .ai-banner::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
             animation: shine 3s infinite;
         }
@@ -437,14 +364,7 @@
             50%, 100% { left: 100%; }
         }
         .ai-icon { font-size: 44px; margin-bottom: 12px; position: relative; }
-        .ai-title {
-            font-family: 'Noto Serif TC', serif;
-            color: var(--gold);
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            position: relative;
-        }
+        .ai-title { font-family: 'Noto Serif TC', serif; color: var(--gold); font-size: 18px; font-weight: 600; margin-bottom: 6px; position: relative; }
         .ai-desc { color: var(--text-muted); font-size: 13px; position: relative; }
         .ai-tag {
             position: absolute;
@@ -459,13 +379,7 @@
         }
         
         /* ==================== 商品列表 ==================== */
-        .goods-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
+        .goods-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
         .goods-card {
             flex-shrink: 0;
             width: 145px;
@@ -473,19 +387,13 @@
             border: 1px solid rgba(212, 175, 55, 0.15);
             border-radius: 14px;
             overflow: hidden;
-            text-decoration: none;
             transition: all var(--transition);
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
             animation-delay: 0.7s;
         }
-        .goods-card:hover {
-            border-color: rgba(212, 175, 55, 0.4);
-            transform: translateY(-4px);
-        }
-        .goods-card:active {
-            transform: scale(0.96);
-        }
+        .goods-card:hover { border-color: rgba(212, 175, 55, 0.4); transform: translateY(-4px); }
+        .goods-card:active { transform: scale(0.96); }
         .goods-img {
             width: 100%;
             height: 130px;
@@ -498,8 +406,7 @@
         }
         .goods-tag {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 8px; left: 8px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: #fff;
             padding: 3px 8px;
@@ -508,28 +415,11 @@
             font-weight: 600;
         }
         .goods-info { padding: 12px; }
-        .goods-name {
-            color: var(--text-secondary);
-            font-size: 12px;
-            margin-bottom: 6px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .goods-price {
-            color: var(--primary-light);
-            font-size: 15px;
-            font-weight: 700;
-        }
-        .goods-price span {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-decoration: line-through;
-            font-weight: 400;
-            margin-left: 6px;
-        }
+        .goods-name { color: var(--text-secondary); font-size: 12px; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .goods-price { color: var(--primary-light); font-size: 15px; font-weight: 700; }
+        .goods-price span { font-size: 11px; color: var(--text-muted); text-decoration: line-through; font-weight: 400; margin-left: 6px; }
         
-        /* ==================== 免费领取Banner ==================== */
+        /* ==================== 免费Banner ==================== */
         .free-banner {
             margin: 20px 16px;
             padding: 28px 24px;
@@ -538,8 +428,8 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
             animation-delay: 0.75s;
         }
         .free-banner::before {
@@ -548,11 +438,7 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M30 30v-6h-6v6h-6v6h6v6h6v-6h6v-6z'/%3E%3C/g%3E%3C/svg%3E");
         }
-        .free-decoration {
-            position: absolute;
-            font-size: 60px;
-            opacity: 0.15;
-        }
+        .free-decoration { position: absolute; font-size: 60px; opacity: 0.15; }
         .free-decoration.left { top: -10px; left: -10px; }
         .free-decoration.right { bottom: -10px; right: -10px; }
         .free-badge {
@@ -564,23 +450,9 @@
             font-size: 11px;
             margin-bottom: 12px;
             position: relative;
-            backdrop-filter: blur(4px);
         }
-        .free-title {
-            font-family: 'Noto Serif TC', serif;
-            color: #fff;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            position: relative;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        .free-subtitle {
-            color: rgba(255,255,255,0.85);
-            font-size: 13px;
-            margin-bottom: 18px;
-            position: relative;
-        }
+        .free-title { font-family: 'Noto Serif TC', serif; color: #fff; font-size: 24px; font-weight: 700; margin-bottom: 8px; position: relative; }
+        .free-subtitle { color: rgba(255,255,255,0.85); font-size: 13px; margin-bottom: 18px; position: relative; }
         .free-btn {
             display: inline-block;
             background: #fff;
@@ -589,54 +461,35 @@
             border-radius: 28px;
             font-size: 16px;
             font-weight: 700;
-            text-decoration: none;
             position: relative;
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
             transition: all var(--transition);
         }
-        .free-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-        }
-        .free-btn:active {
-            transform: scale(0.98);
-        }
+        .free-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .free-btn:active { transform: scale(0.98); }
         
-        /* ==================== 功能模块列表 ==================== */
-        .module-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 8px;
-        }
+        /* ==================== 功能模块 ==================== */
+        .module-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .module-card {
             background: var(--dark-light);
             border: 1px solid rgba(212, 175, 55, 0.12);
             border-radius: 14px;
             padding: 16px;
-            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 12px;
             transition: all var(--transition);
-            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
-            animation-delay: 0.8s;
+            animation: fadeInUp 0.5s ease forwards;
         }
         .module-card:nth-child(1) { animation-delay: 0.8s; }
         .module-card:nth-child(2) { animation-delay: 0.85s; }
         .module-card:nth-child(3) { animation-delay: 0.9s; }
         .module-card:nth-child(4) { animation-delay: 0.95s; }
-        .module-card:hover {
-            border-color: rgba(212, 175, 55, 0.35);
-            transform: translateY(-3px);
-        }
-        .module-card:active {
-            transform: scale(0.98);
-        }
+        .module-card:hover { border-color: rgba(212, 175, 55, 0.35); transform: translateY(-3px); }
+        .module-card:active { transform: scale(0.98); }
         .module-icon {
-            width: 44px;
-            height: 44px;
+            width: 44px; height: 44px;
             background: linear-gradient(135deg, var(--primary), var(--gold));
             border-radius: 12px;
             display: flex;
@@ -646,26 +499,35 @@
             flex-shrink: 0;
         }
         .module-info { flex: 1; min-width: 0; }
-        .module-name {
-            color: var(--text-primary);
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-        .module-desc {
-            color: var(--text-muted);
-            font-size: 11px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        .module-name { color: var(--text-primary); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+        .module-desc { color: var(--text-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
-        /* ==================== 底部浮动下单栏 ==================== */
+        /* ==================== 统计数据 ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, var(--dark-light), var(--dark));
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .stat-card:nth-child(1) { animation-delay: 0.85s; }
+        .stat-card:nth-child(2) { animation-delay: 0.9s; }
+        .stat-card:nth-child(3) { animation-delay: 0.95s; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
+        .stat-label { font-size: 11px; color: var(--text-muted); }
+        
+        /* ==================== 底部浮动栏 ==================== */
         .bottom-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             background: var(--dark);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -674,34 +536,18 @@
             padding-bottom: calc(10px + var(--safe-bottom));
             z-index: 1000;
             transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .bottom-bar.show { transform: translateY(0); }
-        .bottom-bar-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            gap: 12px;
-        }
+        .bottom-bar-content { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; gap: 12px; }
         .bottom-info { flex: 1; min-width: 0; }
-        .bottom-title {
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 2px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        .bottom-title { color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .bottom-desc { color: var(--text-muted); font-size: 12px; }
         .btn {
             padding: 11px 22px;
             border-radius: 24px;
             font-size: 14px;
             font-weight: 600;
-            text-decoration: none;
             border: none;
             cursor: pointer;
             transition: all var(--transition);
@@ -712,20 +558,12 @@
             color: #fff;
             box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
         }
-        .btn-primary:hover {
-            transform: scale(1.03);
-            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.5);
-        }
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
+        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(196, 30, 58, 0.5); }
         
         /* ==================== 底部菜单栏 ==================== */
         .tab-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             background: var(--dark-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -736,7 +574,7 @@
             padding-bottom: calc(8px + var(--safe-bottom));
             z-index: 999;
             transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .tab-bar.show { transform: translateY(0); }
         .tab-item {
@@ -744,51 +582,87 @@
             flex-direction: column;
             align-items: center;
             gap: 3px;
-            text-decoration: none;
             color: var(--text-muted);
             transition: all var(--transition);
             padding: 6px 8px;
             min-width: 50px;
-            position: relative;
         }
-        .tab-item.active { color: var(--gold); }
-        .tab-item:hover { color: var(--gold); }
-        .tab-item:active {
-            transform: scale(0.9);
-        }
+        .tab-item.active, .tab-item:hover { color: var(--gold); }
+        .tab-item:active { transform: scale(0.9); }
         .tab-icon { font-size: 22px; line-height: 1; }
         .tab-text { font-size: 10px; }
         
-        /* ==================== 版权信息 ==================== */
-        .footer {
-            text-align: center;
-            padding: 30px 16px;
-            color: var(--text-muted);
-            font-size: 11px;
+        /* ==================== 分享面板 ==================== */
+        .share-panel {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--dark);
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            padding-bottom: calc(24px + var(--safe-bottom));
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .footer-brand {
-            font-family: 'Noto Serif TC', serif;
-            color: var(--gold);
+        .share-panel.show { transform: translateY(0); }
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .share-title { font-size: 16px; color: var(--text-primary); font-weight: 600; }
+        .share-close {
+            width: 28px; height: 28px;
+            background: var(--dark-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 14px;
-            margin-bottom: 6px;
         }
-        .footer-icp { color: var(--text-muted); margin-bottom: 4px; }
-        
-        /* ==================== 触摸反馈 ==================== */
-        @media (hover: none) {
-            .talisman-card:hover,
-            .goods-card:hover,
-            .module-card:hover,
-            .wiki-item:hover {
-                transform: none;
-                border-color: rgba(212, 175, 55, 0.15);
-            }
-            .quick-item:hover .quick-icon {
-                transform: none;
-            }
+        .share-buttons {
+            display: flex;
+            justify-content: space-around;
         }
+        .share-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .share-icon {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .share-icon.wechat { background: #07c160; }
+        .share-icon.weibo { background: #e6162d; }
+        .share-icon.copy { background: var(--gold); }
+        .share-icon.qrcode { background: var(--primary); }
+        .share-label { font-size: 11px; color: var(--text-muted); }
         
-        /* ==================== 下拉刷新提示 ==================== */
+        /* ==================== 遮罩 ==================== */
+        .mask {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .mask.show { opacity: 1; visibility: visible; }
+        
+        /* ==================== 版权 ==================== */
+        .footer { text-align: center; padding: 30px 16px; color: var(--text-muted); font-size: 11px; }
+        .footer-brand { font-family: 'Noto Serif TC', serif; color: var(--gold); font-size: 14px; margin-bottom: 6px; }
+        .footer-icp { margin-bottom: 4px; }
+        
+        /* ==================== 下拉提示 ==================== */
         .pull-hint {
             position: fixed;
             top: 60px;
@@ -805,42 +679,54 @@
             transition: opacity 0.3s;
             pointer-events: none;
         }
-        .pull-hint.show {
-            opacity: 1;
+        .pull-hint.show { opacity: 1; }
+        
+        /* ==================== 触摸优化 ==================== */
+        @media (hover: none) {
+            .talisman-card:hover, .goods-card:hover, .module-card:hover, .wiki-item:hover { transform: none; }
+            .quick-item:hover .quick-icon { transform: none; }
         }
     </style>
 </head>
 <body>
     <!-- 加载屏幕 -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">☯</div>
+    <div class="loading-screen" id="loadingScreen" role="progressbar" aria-label="页面加载中">
+        <div class="loading-logo" aria-hidden="true">☯</div>
         <div class="loading-text">符宝网</div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
+        <div class="loading-bar"><div class="loading-progress"></div></div>
     </div>
     
     <div class="app-container" id="app">
         <!-- 顶部导航 -->
         <header class="header">
             <div class="header-content">
-                <a href="/" class="logo">
-                    <span class="logo-icon">☯</span>
+                <a href="/" class="logo" aria-label="符宝网首页">
+                    <span class="logo-icon" aria-hidden="true">☯</span>
                     <span>符宝网</span>
                 </a>
                 <div class="header-actions">
-                    <button class="header-btn" id="themeToggle" title="切换主题">🌓</button>
-                    <button class="header-btn" id="searchBtn">🔍</button>
-                    <button class="header-btn" id="userBtn">👤</button>
+                    <button class="header-btn" id="themeToggle" aria-label="切换主题" title="切换主题">🌓</button>
+                    <button class="header-btn" id="shareBtn" aria-label="分享" title="分享">📤</button>
+                    <button class="header-btn" id="userBtn" aria-label="我的">👤</button>
                 </div>
             </div>
         </header>
         
+        <!-- 通知横幅 -->
+        <div class="notice-bar" role="marquee" aria-label="公告">
+            <div class="notice-content">
+                <span class="notice-icon">📢</span>
+                <span class="notice-text">🎁 新用户免费领取开光符箓 | 全场正品开光认证 | 一物一码查验正品</span>
+                <span class="notice-icon">☯</span>
+                <span class="notice-text">符宝网 - 传承千年道法智慧</span>
+            </div>
+        </div>
+        
         <!-- 下拉提示 -->
-        <div class="pull-hint" id="pullHint">松开刷新</div>
+        <div class="pull-hint" id="pullHint" role="alert">松开刷新</div>
         
         <!-- 快捷入口 -->
-        <div class="quick-nav">
+        <nav class="quick-nav" aria-label="快捷入口">
             <a href="/wiki/category/talisman" class="quick-item">
                 <div class="quick-icon">☯</div>
                 <span>符箓百科</span>
@@ -865,46 +751,46 @@
                 <div class="quick-icon">❋</div>
                 <span>宝品商城</span>
             </a>
-        </div>
+        </nav>
         
-        <!-- 核心功能：符箓科普 -->
-        <section class="section">
+        <!-- 符箓科普 -->
+        <section class="section" aria-labelledby="talisman-title">
             <div class="section-header">
-                <h2 class="section-title">
-                    <span>☯</span> 符箓科普
+                <h2 class="section-title" id="talisman-title">
+                    <span aria-hidden="true">☯</span> 符箓科普
                     <span class="section-badge">核心</span>
                 </h2>
                 <a href="/wiki/category/talisman" class="section-more">更多 ∞</a>
             </div>
             <div class="talisman-grid">
                 <a href="/wiki/detail/pingan" class="talisman-card">
-                    <div class="talisman-icon">☯</div>
+                    <div class="talisman-icon" aria-hidden="true">☯</div>
                     <div class="talisman-name">平安符</div>
                     <div class="talisman-desc">护佑出入平安，驱邪避祸</div>
                 </a>
                 <a href="/wiki/detail/caishen" class="talisman-card">
-                    <div class="talisman-icon">✦</div>
+                    <div class="talisman-icon" aria-hidden="true">✦</div>
                     <div class="talisman-name">财神符</div>
                     <div class="talisman-desc">招财进宝，财运亨通</div>
                 </a>
                 <a href="/wiki/detail/wenchang" class="talisman-card">
-                    <div class="talisman-icon">❋</div>
+                    <div class="talisman-icon" aria-hidden="true">❋</div>
                     <div class="talisman-name">文昌符</div>
                     <div class="talisman-desc">开启智慧，学业进步</div>
                 </a>
                 <a href="/wiki/detail/taisui" class="talisman-card">
-                    <div class="talisman-icon">☸</div>
+                    <div class="talisman-icon" aria-hidden="true">☸</div>
                     <div class="talisman-name">太岁符</div>
                     <div class="talisman-desc">化解冲太岁，趋吉避凶</div>
                 </a>
             </div>
         </section>
         
-        <!-- 核心功能：玄门百科 -->
-        <section class="section">
+        <!-- 玄门百科 -->
+        <section class="section" aria-labelledby="wiki-title">
             <div class="section-header">
-                <h2 class="section-title">
-                    <span>✦</span> 玄门百科
+                <h2 class="section-title" id="wiki-title">
+                    <span aria-hidden="true">✦</span> 玄门百科
                     <span class="section-badge">核心</span>
                 </h2>
                 <a href="/wiki/category/xuanmen" class="section-more">更多 ∞</a>
@@ -913,106 +799,84 @@
                 <a href="/wiki/detail/yinyang" class="wiki-item">
                     <span class="wiki-tag">入门</span>
                     <span class="wiki-title">道家基础理论：阴阳五行与八卦</span>
-                    <span class="wiki-arrow">›</span>
+                    <span class="wiki-arrow" aria-hidden="true">›</span>
                 </a>
                 <a href="/wiki/detail/fulu" class="wiki-item">
                     <span class="wiki-tag tag-blue">进阶</span>
                     <span class="wiki-title">符箓的制作与使用讲究</span>
-                    <span class="wiki-arrow">›</span>
+                    <span class="wiki-arrow" aria-hidden="true">›</span>
                 </a>
                 <a href="/wiki/detail/fengshui" class="wiki-item">
                     <span class="wiki-tag tag-gold">大师</span>
                     <span class="wiki-title">风水布局与命理测算</span>
-                    <span class="wiki-arrow">›</span>
+                    <span class="wiki-arrow" aria-hidden="true">›</span>
                 </a>
             </div>
         </section>
         
-        <!-- AI助手入口 -->
-        <a href="/aiassistant" class="ai-banner">
+        <!-- AI助手 -->
+        <a href="/aiassistant" class="ai-banner" aria-label="AI助手道玄">
             <span class="ai-tag">智能助手</span>
-            <div class="ai-icon">☯</div>
+            <div class="ai-icon" aria-hidden="true">☯</div>
             <div class="ai-title">AI助手「道玄」</div>
             <div class="ai-desc">智能问答，随时解惑 · 传承千年道法智慧</div>
         </a>
         
         <!-- 精选商品 -->
-        <section class="section">
+        <section class="section" aria-labelledby="goods-title">
             <div class="section-header">
-                <h2 class="section-title">
-                    <span>❋</span> 精选宝品
+                <h2 class="section-title" id="goods-title">
+                    <span aria-hidden="true">❋</span> 精选宝品
                 </h2>
                 <a href="/goods" class="section-more">更多 ∞</a>
             </div>
             <div class="goods-scroll">
                 <a href="/goods/1" class="goods-card">
-                    <div class="goods-img">
-                        ☯
-                        <span class="goods-tag">已开光</span>
-                    </div>
+                    <div class="goods-img">☯<span class="goods-tag">已开光</span></div>
                     <div class="goods-info">
                         <div class="goods-name">开光平安符</div>
                         <div class="goods-price">¥299 <span>¥399</span></div>
                     </div>
                 </a>
                 <a href="/goods/2" class="goods-card">
-                    <div class="goods-img">
-                        ✦
-                        <span class="goods-tag">已开光</span>
-                    </div>
+                    <div class="goods-img">✦<span class="goods-tag">已开光</span></div>
                     <div class="goods-info">
                         <div class="goods-name">紫檀念珠</div>
                         <div class="goods-price">¥899 <span>¥1299</span></div>
                     </div>
                 </a>
                 <a href="/goods/3" class="goods-card">
-                    <div class="goods-img">
-                        ☸
-                        <span class="goods-tag">已开光</span>
-                    </div>
+                    <div class="goods-img">☸<span class="goods-tag">已开光</span></div>
                     <div class="goods-info">
                         <div class="goods-name">开光貔貅</div>
                         <div class="goods-price">¥1299 <span>¥1999</span></div>
                     </div>
                 </a>
                 <a href="/goods/4" class="goods-card">
-                    <div class="goods-img">
-                        ❋
-                        <span class="goods-tag">已开光</span>
-                    </div>
+                    <div class="goods-img">❋<span class="goods-tag">已开光</span></div>
                     <div class="goods-info">
                         <div class="goods-name">黄铜葫芦</div>
                         <div class="goods-price">¥599 <span>¥899</span></div>
-                    </div>
-                </a>
-                <a href="/goods/5" class="goods-card">
-                    <div class="goods-img">
-                        ⚘
-                        <span class="goods-tag">已开光</span>
-                    </div>
-                    <div class="goods-info">
-                        <div class="goods-name">桃木剑</div>
-                        <div class="goods-price">¥799 <span>¥999</span></div>
                     </div>
                 </a>
             </div>
         </section>
         
         <!-- 免费领取 -->
-        <a href="/freepick" class="free-banner">
-            <span class="free-decoration left">☯</span>
-            <span class="free-decoration right">✦</span>
+        <a href="/freepick" class="free-banner" aria-label="免费领取开光符箓">
+            <span class="free-decoration left" aria-hidden="true">☯</span>
+            <span class="free-decoration right" aria-hidden="true">✦</span>
             <div class="free-badge">🎁 限时免费</div>
             <div class="free-title">免费领取开光符箓</div>
             <div class="free-subtitle">新用户专属福利 · 每日限量领取</div>
             <span class="free-btn">立即领取</span>
         </a>
         
-        <!-- 功能模块入口 -->
-        <section class="section">
+        <!-- 功能模块 -->
+        <section class="section" aria-labelledby="module-title">
             <div class="section-header">
-                <h2 class="section-title">
-                    <span>☸</span> 更多功能
+                <h2 class="section-title" id="module-title">
+                    <span aria-hidden="true">☸</span> 更多功能
                 </h2>
             </div>
             <div class="module-grid">
@@ -1026,7 +890,7 @@
                 <a href="/wish" class="module-card">
                     <div class="module-icon">☸</div>
                     <div class="module-info">
-                        <div class="module-name">如愿（晒单）</div>
+                        <div class="module-name">如愿晒单</div>
                         <div class="module-desc">分享灵验，见证法力</div>
                     </div>
                 </a>
@@ -1047,15 +911,38 @@
             </div>
         </section>
         
-        <!-- 版权信息 -->
+        <!-- 统计数据 -->
+        <section class="section" aria-labelledby="stats-title">
+            <div class="section-header">
+                <h2 class="section-title" id="stats-title">
+                    <span aria-hidden="true">☯</span> 服务数据
+                </h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">10万+</div>
+                    <div class="stat-label">服务用户</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">98%</div>
+                    <div class="stat-label">好评率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24h</div>
+                    <div class="stat-label">在线客服</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 版权 -->
         <footer class="footer">
             <div class="footer-brand">☯ 符宝网</div>
             <div class="footer-icp">粤ICP备2026045883-2号</div>
             <div>符宝网版权所有 © 2024</div>
         </footer>
         
-        <!-- 底部浮动下单栏 -->
-        <div class="bottom-bar" id="bottomBar">
+        <!-- 底部浮动栏 -->
+        <div class="bottom-bar" id="bottomBar" role="complementary" aria-label="快捷下单">
             <div class="bottom-bar-content">
                 <div class="bottom-info">
                     <div class="bottom-title" id="bottomTitle">免费领取开光符箓</div>
@@ -1066,8 +953,8 @@
         </div>
         
         <!-- 底部菜单栏 -->
-        <nav class="tab-bar" id="tabBar">
-            <a href="/" class="tab-item active">
+        <nav class="tab-bar" id="tabBar" role="navigation" aria-label="主导航">
+            <a href="/" class="tab-item active" aria-current="page">
                 <span class="tab-icon">🏠</span>
                 <span class="tab-text">首页</span>
             </a>
@@ -1090,11 +977,65 @@
         </nav>
     </div>
     
+    <!-- 分享面板 -->
+    <div class="mask" id="mask"></div>
+    <div class="share-panel" id="sharePanel" role="dialog" aria-label="分享">
+        <div class="share-header">
+            <span class="share-title">分享到</span>
+            <button class="share-close" id="shareClose" aria-label="关闭">✕</button>
+        </div>
+        <div class="share-buttons">
+            <button class="share-btn" id="shareWechat">
+                <span class="share-icon wechat">💬</span>
+                <span class="share-label">微信</span>
+            </button>
+            <button class="share-btn" id="shareWeibo">
+                <span class="share-icon weibo">📱</span>
+                <span class="share-label">微博</span>
+            </button>
+            <button class="share-btn" id="shareCopy">
+                <span class="share-icon copy">🔗</span>
+                <span class="share-label">复制链接</span>
+            </button>
+            <button class="share-btn" id="shareQR">
+                <span class="share-icon qrcode">📲</span>
+                <span class="share-label">二维码</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Schema.org结构化数据 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "符宝网",
+        "url": "https://www.fubao.ltd",
+        "logo": "https://www.fubao.ltd/images/logo.png",
+        "description": "专业提供开光符箓、道家法器、风水摆件等，传承千年道法智慧",
+        "sameAs": [
+            "https://weixin.qq.com/",
+            "https://weibo.com/"
+        ]
+    }
+    </script>
+    
     <script>
+        // ==================== 性能监控 ====================
+        window.addEventListener('load', () => {
+            const perf = performance.timing;
+            const loadTime = perf.loadEventEnd - perf.navigationStart;
+            console.log('页面加载时间:', loadTime.toFixed(2) + 'ms');
+            
+            // 记录到localStorage
+            const perfData = JSON.parse(localStorage.getItem('perfData') || '{}');
+            perfData.lastVisit = Date.now();
+            perfData.loadTime = loadTime;
+            localStorage.setItem('perfData', JSON.stringify(perfData));
+        });
+        
         // ==================== 配置 ====================
         const ONE_SCREEN = window.innerHeight || 667;
-        
-        // 底部浮动栏配置
         const bottomBarConfig = {
             title: '免费领取开光符箓',
             desc: '新用户专属福利，灵力加持',
@@ -1103,7 +1044,7 @@
             show: true
         };
         
-        // ==================== DOM元素 ====================
+        // ==================== DOM ====================
         const loadingScreen = document.getElementById('loadingScreen');
         const tabBar = document.getElementById('tabBar');
         const bottomBar = document.getElementById('bottomBar');
@@ -1112,91 +1053,99 @@
         const bottomBtn = document.getElementById('bottomBtn');
         const themeToggle = document.getElementById('themeToggle');
         const pullHint = document.getElementById('pullHint');
+        const shareBtn = document.getElementById('shareBtn');
+        const sharePanel = document.getElementById('sharePanel');
+        const mask = document.getElementById('mask');
+        const shareClose = document.getElementById('shareClose');
         
-        let lastScrollY = 0;
-        let hideTimer = null;
-        let isBottomBarVisible = false;
-        let touchStartY = 0;
-        let isPullToRefresh = false;
+        let lastScrollY = 0, hideTimer = null, isBottomBarVisible = false;
+        let touchStartY = 0, isPullToRefresh = false;
         
-        // ==================== 加载动画 ====================
+        // ==================== 加载完成 ====================
         function hideLoading() {
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-            }, 800);
+            setTimeout(() => loadingScreen.classList.add('hidden'), 800);
         }
         
         // ==================== 主题切换 ====================
         function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            themeToggle.textContent = saved === 'dark' ? '🌓' : '🌙';
         }
         
-        function toggleTheme() {
+        themeToggle.addEventListener('click', () => {
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
-            updateThemeIcon(next);
-            
-            // 主题切换动画
-            document.body.classList.add('theme-transition');
-            setTimeout(() => {
-                document.body.classList.remove('theme-transition');
-            }, 500);
+            themeToggle.textContent = next === 'dark' ? '🌓' : '🌙';
+        });
+        
+        // ==================== 分享面板 ====================
+        function openShare() {
+            sharePanel.classList.add('show');
+            mask.classList.add('show');
         }
         
-        function updateThemeIcon(theme) {
-            themeToggle.textContent = theme === 'dark' ? '🌓' : '🌙';
+        function closeShare() {
+            sharePanel.classList.remove('show');
+            mask.classList.remove('show');
         }
         
-        themeToggle.addEventListener('click', toggleTheme);
+        shareBtn.addEventListener('click', openShare);
+        shareClose.addEventListener('click', closeShare);
+        mask.addEventListener('click', closeShare);
+        
+        // 分享功能
+        document.getElementById('shareWechat').addEventListener('click', () => {
+            alert('请点击右上角分享到微信');
+        });
+        
+        document.getElementById('shareWeibo').addEventListener('click', () => {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://service.weibo.com/share/share.php?url=${url}&title=符宝网-传承千年道法智慧`);
+        });
+        
+        document.getElementById('shareCopy').addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('链接已复制到剪贴板');
+                closeShare();
+            });
+        });
+        
+        document.getElementById('shareQR').addEventListener('click', () => {
+            alert('二维码功能开发中');
+        });
         
         // ==================== 下拉刷新 ====================
-        function handleTouchStart(e) {
+        document.addEventListener('touchstart', (e) => {
             touchStartY = e.touches[0].clientY;
-            if (window.scrollY === 0) {
-                isPullToRefresh = true;
-            }
-        }
+            if (window.scrollY === 0) isPullToRefresh = true;
+        }, { passive: true });
         
-        function handleTouchMove(e) {
+        document.addEventListener('touchmove', (e) => {
             if (!isPullToRefresh) return;
-            const touchY = e.touches[0].clientY;
-            const pullDistance = touchY - touchStartY;
-            
+            const pullDistance = e.touches[0].clientY - touchStartY;
             if (pullDistance > 60 && window.scrollY === 0) {
                 pullHint.classList.add('show');
                 e.preventDefault();
-            } else {
-                pullHint.classList.remove('show');
             }
-        }
+        }, { passive: false });
         
-        function handleTouchEnd() {
+        document.addEventListener('touchend', () => {
             if (pullHint.classList.contains('show')) {
                 pullHint.classList.remove('show');
-                // 触发刷新
                 location.reload();
             }
             isPullToRefresh = false;
-        }
-        
-        document.addEventListener('touchstart', handleTouchStart, { passive: true });
-        document.addEventListener('touchmove', handleTouchMove, { passive: false });
-        document.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }, { passive: true });
         
         // ==================== 底部浮动栏 ====================
         function initBottomBar() {
             const saved = localStorage.getItem('bottomBarConfig');
             if (saved) {
-                try {
-                    const cfg = JSON.parse(saved);
-                    Object.assign(bottomBarConfig, cfg);
-                } catch (e) {}
+                try { Object.assign(bottomBarConfig, JSON.parse(saved)); } catch (e) {}
             }
-            
             if (bottomBarConfig.show) {
                 bottomTitle.textContent = bottomBarConfig.title;
                 bottomDesc.textContent = bottomBarConfig.desc;
@@ -1212,92 +1161,51 @@
             if (hideTimer) clearTimeout(hideTimer);
         }
         
-        function hideBottomBar() {
-            bottomBar.classList.remove('show');
-            isBottomBarVisible = false;
-        }
-        
         function delayHideBottomBar() {
-            hideTimer = setTimeout(hideBottomBar, 2000);
+            hideTimer = setTimeout(() => {
+                bottomBar.classList.remove('show');
+                isBottomBarVisible = false;
+            }, 2000);
         }
         
-        // ==================== 底部菜单栏 ====================
-        function showTabBar() {
-            tabBar.classList.add('show');
-        }
+        function showTabBar() { tabBar.classList.add('show'); }
+        function hideTabBar() { tabBar.classList.remove('show'); }
         
-        function hideTabBar() {
-            tabBar.classList.remove('show');
-        }
-        
-        // ==================== 滚动监听（节流优化） ====================
+        // ==================== 滚动优化 ====================
         let scrollTicking = false;
         
         function handleScroll() {
             if (!scrollTicking) {
-                window.requestAnimationFrame(() => {
-                    processScroll();
+                requestAnimationFrame(() => {
+                    const curY = window.scrollY;
+                    const dir = curY > lastScrollY ? 'down' : 'up';
+                    const dist = Math.abs(curY - lastScrollY);
+                    const pastOneScreen = curY > ONE_SCREEN;
+                    
+                    if (dir === 'down' && dist > 50 && curY > 200) showBottomBar();
+                    if (dir === 'up' && dist > 30) delayHideBottomBar();
+                    if (dir === 'down' && dist > 50 && pastOneScreen) showTabBar();
+                    if (dir === 'up' && dist > 30) showTabBar();
+                    if (curY < ONE_SCREEN / 2) hideTabBar();
+                    
+                    lastScrollY = curY;
                     scrollTicking = false;
                 });
                 scrollTicking = true;
             }
         }
         
-        function processScroll() {
-            const curY = window.scrollY;
-            const dir = curY > lastScrollY ? 'down' : 'up';
-            const dist = Math.abs(curY - lastScrollY);
-            const pastOneScreen = curY > ONE_SCREEN;
-            
-            // 底部浮动栏
-            if (dir === 'down' && dist > 50 && curY > 200) {
-                showBottomBar();
-            }
-            if (dir === 'up' && dist > 30) {
-                delayHideBottomBar();
-            }
-            
-            // 底部菜单栏
-            if (dir === 'down' && dist > 50 && pastOneScreen) {
-                showTabBar();
-            }
-            if (dir === 'up' && dist > 30) {
-                showTabBar();
-            }
-            
-            if (curY < ONE_SCREEN / 2) {
-                hideTabBar();
-            }
-            
-            lastScrollY = curY;
-        }
-        
         window.addEventListener('scroll', handleScroll, { passive: true });
-        
-        document.addEventListener('touchend', () => {
-            if (isBottomBarVisible) {
-                delayHideBottomBar();
-            }
-        });
-        
-        bottomBtn.addEventListener('click', () => {
-            hideBottomBar();
-        });
+        document.addEventListener('touchend', () => { if (isBottomBarVisible) delayHideBottomBar(); });
+        bottomBtn.addEventListener('click', () => { bottomBar.classList.remove('show'); isBottomBarVisible = false; });
         
         // ==================== 初始化 ====================
         initTheme();
         initBottomBar();
         hideLoading();
         
-        setTimeout(() => {
-            if (window.scrollY > 100) {
-                showBottomBar();
-            }
-        }, 3000);
-        
-        if (window.scrollY > ONE_SCREEN) {
-            showTabBar();
-        }
+        setTimeout(() => { if (window.scrollY > 100) showBottomBar(); }, 3000);
+        if (window.scrollY > ONE_SCREEN) showTabBar();
     </script>
 </body>
 </html>
