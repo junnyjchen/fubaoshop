@@ -48,232 +48,115 @@
         .header-info { display: flex; flex-direction: column; }
         .header-title { font-family: 'Noto Serif TC', serif; font-size: 15px; color: var(--gold); }
         .header-status { font-size: 10px; color: var(--success); display: flex; align-items: center; gap: 4px; }
-        .header-status::before {
-            content: '';
-            width: 6px; height: 6px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
+        .header-status::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .header-actions { display: flex; gap: 12px; }
         .header-btn { font-size: 18px; color: var(--text-muted); cursor: pointer; }
         
-        /* 消息区域 */
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-        
-        /* 日期分隔 */
-        .date-divider {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .date-text {
-            display: inline-block;
-            background: var(--dark);
-            padding: 4px 14px;
-            border-radius: 12px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        
-        /* 消息气泡 */
-        .message {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message.user { flex-direction: row-reverse; }
-        .message-avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
+        /* 知识库状态 */
+        .kb-status {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, var(--gold), var(--primary));
-        }
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, var(--dark-light), var(--dark));
-        }
-        .message-content {
-            max-width: 75%;
-        }
-        .message-bubble {
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .message.ai .message-bubble {
-            background: var(--dark);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            border-radius: 4px 16px 16px 16px;
-            color: var(--text);
-        }
-        .message.user .message-bubble {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: #fff;
-            border-radius: 16px 4px 16px 16px;
-        }
-        .message-time {
-            font-size: 10px;
+            gap: 6px;
+            font-size: 11px;
             color: var(--text-muted);
-            margin-top: 4px;
-            padding: 0 4px;
+            background: var(--dark-light);
+            padding: 4px 10px;
+            border-radius: 12px;
         }
+        .kb-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        
+        /* 消息区域 */
+        .messages { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 80px; }
+        
+        /* 日期分隔 */
+        .date-divider { text-align: center; margin: 20px 0; }
+        .date-text { display: inline-block; background: var(--dark); padding: 4px 14px; border-radius: 12px; font-size: 11px; color: var(--text-muted); }
+        
+        /* 消息气泡 */
+        .message { display: flex; gap: 10px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { flex-direction: row-reverse; }
+        .message-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .message.ai .message-avatar { background: linear-gradient(135deg, var(--gold), var(--primary)); }
+        .message.user .message-avatar { background: linear-gradient(135deg, var(--dark-light), var(--dark)); }
+        .message-content { max-width: 78%; }
+        .message-bubble { padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+        .message.ai .message-bubble { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 4px 16px 16px 16px; color: var(--text); }
+        .message.user .message-bubble { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; border-radius: 16px 4px 16px 16px; }
+        .message-time { font-size: 10px; color: var(--text-muted); margin-top: 4px; padding: 0 4px; }
         .message.user .message-time { text-align: right; }
         
         /* 欢迎消息 */
-        .welcome {
-            text-align: center;
-            padding: 30px 20px;
-        }
-        .welcome-icon { font-size: 56px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        .welcome { text-align: center; padding: 20px 16px 30px; }
+        .welcome-icon { font-size: 48px; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .welcome-title { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--gold); margin-bottom: 8px; }
-        .welcome-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+        .welcome-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; text-align: left; }
         
-        /* 快捷问题 */
-        .quick-questions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-        }
-        .quick-btn {
-            background: var(--dark);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 8px 14px;
-            border-radius: 16px;
-            font-size: 12px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .quick-btn:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
+        /* 快捷问题分类 */
+        .quick-section { margin-bottom: 16px; }
+        .quick-title { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-align: left; }
+        .quick-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .quick-btn { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); padding: 8px 14px; border-radius: 16px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.3s; }
+        .quick-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+        
+        /* 分类导航 */
+        .category-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
+        .category-btn { flex-shrink: 0; padding: 6px 12px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 14px; font-size: 11px; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s; }
+        .category-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+        .category-btn:hover:not(.active) { border-color: var(--gold); }
+        
+        /* 商品卡片 */
+        .product-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .product-card { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 14px; text-align: left; cursor: pointer; transition: all 0.3s; }
+        .product-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+        .product-icon { font-size: 28px; margin-bottom: 8px; }
+        .product-name { font-size: 13px; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+        .product-price { font-size: 14px; color: var(--primary-light); font-weight: 700; }
+        .product-tags { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+        
+        /* 推荐问题 */
+        .suggestions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+        .suggestion-item { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: var(--text-muted); text-align: left; cursor: pointer; transition: all 0.3s; }
+        .suggestion-item:hover { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+        .suggestion-item::before { content: '◆ '; color: var(--gold); }
         
         /* 输入区域 */
-        .input-area {
-            flex-shrink: 0;
-            background: var(--dark-bg);
-            border-top: 1px solid rgba(212, 175, 55, 0.15);
-            padding: 12px 16px;
-            padding-bottom: calc(12px + var(--safe-bottom));
-        }
-        .input-container {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        .input-wrapper {
-            flex: 1;
-            background: var(--dark);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 22px;
-            display: flex;
-            align-items: flex-end;
-            padding: 4px 16px;
-            transition: all 0.3s;
-        }
-        .input-wrapper:focus-within {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
-        .input-field {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text);
-            font-size: 14px;
-            font-family: inherit;
-            padding: 10px 0;
-            resize: none;
-            max-height: 100px;
-            line-height: 1.4;
-        }
+        .input-area { flex-shrink: 0; background: var(--dark-bg); border-top: 1px solid rgba(212, 175, 55, 0.15); padding: 12px 16px; padding-bottom: calc(12px + var(--safe-bottom)); }
+        .input-container { display: flex; gap: 10px; align-items: flex-end; }
+        .input-wrapper { flex: 1; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 22px; display: flex; align-items: flex-end; padding: 4px 16px; transition: all 0.3s; }
+        .input-wrapper:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
+        .input-field { flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px; font-family: inherit; padding: 10px 0; resize: none; max-height: 100px; line-height: 1.4; }
         .input-field:focus { outline: none; }
         .input-field::placeholder { color: var(--text-muted); opacity: 0.6; }
-        .input-actions { display: flex; gap: 8px; }
-        .input-btn {
-            width: 40px; height: 40px;
-            background: var(--dark);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .input-btn:hover { border-color: var(--gold); color: var(--gold); }
-        .send-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border: none;
-            color: #fff;
-        }
+        .send-btn { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border: none; border-radius: 50%; color: #fff; font-size: 16px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
         .send-btn:hover { transform: scale(1.05); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         /* 加载动画 */
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 4px 0;
-        }
-        .typing-dot {
-            width: 8px; height: 8px;
-            background: var(--gold);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
+        .typing-indicator { display: flex; gap: 4px; padding: 4px 0; }
+        .typing-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; animation: typing 1.4s infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-4px); opacity: 1; }
-        }
+        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
         
         /* Toast */
-        .toast {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: var(--dark);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 13px;
-            color: var(--text);
-            z-index: 9999;
-            opacity: 0;
-            transition: all 0.3s;
-        }
+        .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.3); padding: 12px 24px; border-radius: 10px; font-size: 13px; color: var(--text); z-index: 9999; opacity: 0; transition: all 0.3s; pointer-events: none; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        /* 菜单面板 */
+        .menu-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 280px; background: var(--dark); border-left: 1px solid rgba(212, 175, 55, 0.15); z-index: 1001; transform: translateX(100%); transition: transform 0.3s; }
+        .menu-panel.show { transform: translateX(0); }
+        .menu-header { padding: 60px 16px 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+        .menu-title { font-size: 16px; color: var(--gold); margin-bottom: 4px; }
+        .menu-subtitle { font-size: 11px; color: var(--text-muted); }
+        .menu-list { padding: 16px; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.08); cursor: pointer; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-icon { font-size: 20px; width: 32px; text-align: center; }
+        .menu-name { flex: 1; font-size: 14px; color: var(--text); }
+        .menu-arrow { color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -283,31 +166,34 @@
             <a href="/" class="back-btn">←</a>
             <div class="header-info">
                 <span class="header-title">☯ AI道玄</span>
-                <span class="header-status">在线</span>
+                <span class="header-status">在线 · 知识库已加载</span>
             </div>
         </div>
         <div class="header-actions">
-            <span class="header-btn" onclick="clearChat()">🗑</span>
-            <span class="header-btn" onclick="showToast('设置功能开发中')">⚙</span>
+            <span class="header-btn" onclick="toggleMenu()">☰</span>
         </div>
     </header>
     
     <!-- 消息区域 -->
     <div class="messages" id="messages">
         <!-- 欢迎消息 -->
-        <div class="welcome">
+        <div class="welcome" id="welcomeSection">
             <div class="welcome-icon">☯</div>
             <div class="welcome-title">道玄居士</div>
-            <div class="welcome-desc">
-                贫道云游四方，精通道家经典，熟读三洞四辅之经。今有缘与施主相遇，有何疑惑尽管道来，贫道必当倾囊相告。
+            <div class="welcome-desc">施主有缘相见，贫道云游四方，精通道家经典。今有何疑惑尽管道来，贫道必当倾囊相告。</div>
+            
+            <!-- 分类导航 -->
+            <div class="category-nav" id="categoryNav">
+                <button class="category-btn active" onclick="showCategory('all', this)">全部</button>
+                <button class="category-btn" onclick="showCategory('talisman', this)">符箓</button>
+                <button class="category-btn" onclick="showCategory('taoism', this)">道家</button>
+                <button class="category-btn" onclick="showCategory('fubao', this)">服务</button>
+                <button class="category-btn" onclick="showCategory('faq', this)">问答</button>
             </div>
-            <div class="quick-questions">
-                <button class="quick-btn" onclick="sendQuestion('什么是平安符，如何使用？')">什么是平安符</button>
-                <button class="quick-btn" onclick="sendQuestion('太岁符和化太岁有什么区别？')">太岁符区别</button>
-                <button class="quick-btn" onclick="sendQuestion('道家的五行属什么？')">五行属相</button>
-                <button class="quick-btn" onclick="sendQuestion('如何正确请符？')">请符讲究</button>
-                <button class="quick-btn" onclick="sendQuestion('符箓一般能保存多久？')">符箓保存</button>
-                <button class="quick-btn" onclick="sendQuestion('开光和加持有什么区别？')">开光加持</button>
+            
+            <!-- 快捷问题 -->
+            <div class="quick-section" id="quickSection">
+                <!-- 动态生成 -->
             </div>
         </div>
     </div>
@@ -318,30 +204,110 @@
             <div class="input-wrapper">
                 <textarea class="input-field" id="inputField" rows="1" placeholder="请输入您的问题..."></textarea>
             </div>
-            <div class="input-actions">
-                <span class="input-btn" onclick="showToast('功能开发中')">📎</span>
-                <button class="input-btn send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
-            </div>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
         </div>
     </div>
     
     <!-- Toast -->
     <div class="toast" id="toast"></div>
     
+    <!-- 菜单面板 -->
+    <div class="mask" id="menuMask" onclick="toggleMenu()"></div>
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-header">
+            <div class="menu-title">☯ 符宝网</div>
+            <div class="menu-subtitle">AI道玄助手 · 知识库v1.0</div>
+        </div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="goPage('/aiassistant/knowledge')">
+                <span class="menu-icon">📚</span>
+                <span class="menu-name">知识库管理</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="goPage('/aiassistant/training')">
+                <span class="menu-icon">🎓</span>
+                <span class="menu-name">训练数据</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="clearChat()">
+                <span class="menu-icon">🗑</span>
+                <span class="menu-name">清空对话</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="exportChat()">
+                <span class="menu-icon">📤</span>
+                <span class="menu-name">导出对话</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showToast('帮助功能开发中')">
+                <span class="menu-icon">❓</span>
+                <span class="menu-name">使用帮助</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showToast('关于功能开发中')">
+                <span class="menu-icon">ℹ</span>
+                <span class="menu-name">关于道玄</span>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/scripts/ai-knowledge.js"></script>
     <script>
-        // 响应数据
-        const responses = {
-            '什么是平安符，如何使用？': '平安符乃道家护身之宝，由高功法师按古法绘制，以朱砂书于黄纸之上，经开光加持后方有灵力。使用方法：\n\n1. 将符贴于大门内侧或随身携带\n2. 保持符纸干燥，切勿沾水\n3. 不可让外人随意触碰\n4. 每年可重新请一道新的\n\n施主可将平安符挂于客厅或卧室，护佑出入平安。',
-            '太岁符和化太岁有什么区别？': '此乃道家常见之惑，今为施主解之：\n\n【太岁符】\n- 本命年犯太岁时佩戴\n- 可化解当年冲、破、害太岁\n- 需法师开光方有效果\n\n【化太岁锦囊】\n- 内含多种化解物品\n- 配合太岁符使用效果更佳\n- 可放置于枕头下或包里\n\n二者配合使用，如虎添翼，化解太岁之力更强。',
-            '道家的五行属什么？': '道家以五行相生相克之理，贯穿万物：\n\n【五行相生】\n木→火→土→金→水→木\n\n【五行相克】\n木→土→水→火→金→木\n\n符箓亦分五行，须配合命主八字选用。若八字喜木，可请青色或绿色符纸之符；喜火则用红色...施主若知自己八字，可告知贫道，为汝细看。',
-            '如何正确请符？': '请符有讲究，心诚则灵：\n\n1. 选择正规道观或法师\n2. 说明自身需求（平安/招财/学业等）\n3. 法师根据八字选符\n4. 请回后妥善保管\n5. 保持恭敬之心\n\n切记：符到之处，心存善念，方能灵验。不可心存恶念，否则反噬。',
-            '符箓一般能保存多久？': '符箓保存有讲究：\n\n【纸质符】\n- 未开光：数年\n- 已开光：一年为佳\n- 建议每年更新\n\n【木质/金属符】\n- 保存时间更长\n- 十年八年皆可\n- 注意防潮防腐\n\n符箓灵力会随时间消散，故建议每年重新请一道，以保灵力常在。',
-            '开光和加持有什么区别？': '开光与加持，功用有别：\n\n【开光】\n- 为物品注入灵力\n- 需要法师设坛做法\n- 仪式较为隆重\n- 用于重要法器\n\n【加持】\n- 法师诵经祈福\n- 增强物品灵力\n- 仪式相对简单\n- 用于日常用品\n\n简单说：开光是"注入灵魂"，加持是"增强能量"。'
+        // ==================== 知识库数据 ====================
+        const quickQuestions = {
+            all: [
+                { text: '什么是平安符，如何使用？', category: 'talisman' },
+                { text: '太岁符和化太岁有什么区别？', category: 'taoism' },
+                { text: '道家的五行属什么？', category: 'taoism' },
+                { text: '如何正确请符？', category: 'guide' },
+                { text: '符箓一般能保存多久？', category: 'faq' },
+                { text: '开光和加持有什么区别？', category: 'taoism' }
+            ],
+            talisman: [
+                { text: '平安符的功效和使用方法', category: 'talisman' },
+                { text: '财神符适合哪些人请？', category: 'talisman' },
+                { text: '文昌符对考试有帮助吗？', category: 'talisman' },
+                { text: '太岁符怎么化解犯太岁？', category: 'talisman' },
+                { text: '和合符能挽回感情吗？', category: 'talisman' }
+            ],
+            taoism: [
+                { text: '什么是开光？', category: 'taoism' },
+                { text: '如何正确请符？', category: 'taoism' },
+                { text: '什么是犯太岁？', category: 'taoism' },
+                { text: '道家的五行学说', category: 'taoism' },
+                { text: '符箓能保存多久？', category: 'taoism' }
+            ],
+            fubao: [
+                { text: '符宝网有哪些服务？', category: 'fubao' },
+                { text: '什么是一物一码？', category: 'fubao' },
+                { text: '如何免费领取符箓？', category: 'fubao' },
+                { text: '如愿晒单怎么用？', category: 'fubao' },
+                { text: '玄门学堂教什么？', category: 'fubao' }
+            ],
+            faq: [
+                { text: '符箓多久见效？', category: 'faq' },
+                { text: '符箓失效了怎么办？', category: 'faq' },
+                { text: '可以同时请多道符吗？', category: 'faq' },
+                { text: '符箓可以送人吗？', category: 'faq' },
+                { text: '请符需要提供八字吗？', category: 'faq' }
+            ]
         };
         
-        const defaultResponse = '施主所问，贫道已悉知。道法自然，万物皆有其缘法。请施主详细说明所求，贫道当为汝指点迷津。\n\n☯ 可问：\n• 各类符箓的用途\n• 道家基础知识\n• 五行八字相术\n• 请符注意事项';
+        const productData = {
+            talisman: [
+                { name: '平安符', icon: '☯', price: '¥299', tags: '护佑平安 · 驱邪避祸' },
+                { name: '财神符', icon: '✦', price: '¥399', tags: '招财进宝 · 财源广进' },
+                { name: '文昌符', icon: '❋', price: '¥359', tags: '开启智慧 · 学业进步' },
+                { name: '太岁符', icon: '☸', price: '¥299', tags: '化解太岁 · 趋吉避凶' }
+            ]
+        };
         
-        // Toast
+        // ==================== 状态 ====================
+        let currentCategory = 'all';
+        let isTyping = false;
+        
+        // ==================== Toast ====================
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
@@ -349,36 +315,184 @@
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
         
-        // 发送问题
+        // ==================== 分类切换 ====================
+        function showCategory(category, btn) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderQuickQuestions();
+        }
+        
+        function renderQuickQuestions() {
+            const section = document.getElementById('quickSection');
+            const questions = quickQuestions[currentCategory];
+            
+            let html = `<div class="quick-title">快捷问题</div><div class="quick-grid">`;
+            questions.forEach(q => {
+                html += `<button class="quick-btn" onclick="sendQuestion('${q.text}')">${q.text}</button>`;
+            });
+            html += `</div>`;
+            
+            // 如果是符箓分类，显示商品卡片
+            if (currentCategory === 'talisman') {
+                html += `<div class="quick-title" style="margin-top:20px;">热门符箓</div><div class="product-cards">`;
+                productData.talisman.forEach(p => {
+                    html += `<div class="product-card" onclick="sendQuestion('${p.name}的功效')">
+                        <div class="product-icon">${p.icon}</div>
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">${p.price}</div>
+                        <div class="product-tags">${p.tags}</div>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            section.innerHTML = html;
+        }
+        
+        // ==================== 发送问题 ====================
         function sendQuestion(question) {
             document.getElementById('inputField').value = question;
             sendMessage();
         }
         
-        // 发送消息
+        // ==================== 发送消息 ====================
         function sendMessage() {
             const input = document.getElementById('inputField');
             const message = input.value.trim();
-            if (!message) return;
+            if (!message || isTyping) return;
             
+            // 隐藏欢迎区域
+            document.getElementById('welcomeSection').style.display = 'none';
+            
+            // 添加用户消息
             addUserMessage(message);
             input.value = '';
             input.style.height = 'auto';
             
             // 模拟AI思考
+            isTyping = true;
             setTimeout(() => {
                 showTyping();
                 
-                // 模拟流式输出
+                // 使用知识库获取回复
                 setTimeout(() => {
                     hideTyping();
-                    const response = responses[message] || defaultResponse;
+                    const response = getAIResponse(message);
                     addAIMessage(response);
-                }, 1500);
+                    isTyping = false;
+                }, 1000 + Math.random() * 1000);
             }, 300);
         }
         
-        // 添加用户消息
+        // ==================== AI回复 ====================
+        function getAIResponse(query) {
+            // 使用知识库检索
+            const result = getResponse(query);
+            if (result) return result;
+            
+            // 智能匹配
+            const lowerQuery = query.toLowerCase();
+            
+            // 符箓相关
+            if (lowerQuery.includes('符') && lowerQuery.includes('请')) {
+                return `施主问请符之道，贫道细细道来：
+
+【请符流程】
+1. 明确需求：知晓需要何种符箓
+2. 选择正规：符宝网法物流通处
+3. 提供信息：可告知生辰八字
+4. 心存善念：符到之处，福报随行
+
+【请符禁忌】
+❌ 心存恶念者，符不灵验
+❌ 不可用污秽之物接触
+❌ 符箓不可让外人随意触碰
+❌ 女子经期宜避开
+
+【符箓保养】
+纸质符有效期约一年，木质金属符可更久。到期请新的替换，旧符可焚烧处理。
+
+施主若有具体需求，可告诉贫道，贫道为您推荐。`;
+            }
+            
+            // 效果相关
+            if (lowerQuery.includes('效') || lowerQuery.includes('灵') || lowerQuery.includes('多久')) {
+                return `符箓见效之期，因人而异：
+
+【短期效果】7-30天
+• 心态渐趋平和
+• 睡眠质量改善
+• 心理上有安定感
+
+【中期效果】1-3个月
+• 贵人运开始增强
+• 做事更加顺利
+• 整体运势转好
+
+【长期效果】3-6个月
+• 事业财运明显提升
+• 家庭和睦安康
+• 福报日渐增长
+
+关键在于：心诚 + 配合自身努力。符箓非万能，仍需自助者天助之。`;
+            }
+            
+            // 禁忌相关
+            if (lowerQuery.includes('禁忌') || lowerQuery.includes('注意') || lowerQuery.includes('不可')) {
+                return `符箓使用之禁忌，施主需牢记：
+
+【禁忌事项】
+❌ 不可心存恶念
+❌ 不可用污秽之物接触
+❌ 符箓不可让外人随意触碰
+❌ 女子经期宜避开
+❌ 不可用口吹熄符前香烛
+❌ 符箓沾水即失效
+
+【处理方式】
+• 符纸污损：立即焚烧，请新的
+• 符纸到期：焚烧处理，请新的
+• 搬家迁移：可带走或焚烧
+
+【最佳做法】
+心存善念，恭敬以待，符到之处，自然灵验。`;
+            }
+            
+            // 关于符宝网
+            if (lowerQuery.includes('符宝网') || lowerQuery.includes('为什么') && lowerQuery.includes('有效')) {
+                return `符宝网符箓灵验，源于四大保障：
+
+【一、传承正统】
+符箓绘制遵循道教正统一脉，由有传承的法师绘制，非野路子可比。
+
+【二、开光加持】
+每道符必经七七四十九天开光加持，注入真正灵力，而非普通印刷品。
+
+【三、一物一码】
+每道符配有唯一防伪码，可溯源查验，确保正品。
+
+【四、善心为本】
+符宝网以弘扬道家文化为己任，以善心待人，符到之处，福泽绵长。
+
+选择符宝网，就是选择正统、正信、正念。`;
+            }
+            
+            // 默认回复
+            return `施主所问，贫道已悉知。
+
+道法自然，万物皆有其缘法。请施主详细说明所求，或选择以下快捷问题：
+
+◆ 各类符箓的功效和使用方法
+◆ 如何正确请符
+◆ 符箓的保存和禁忌
+◆ 什么是犯太岁
+◆ 道家的基础知识
+
+贫道当为施主指点迷津。`;
+        }
+        
+        // ==================== 消息操作 ====================
         function addUserMessage(text) {
             const messages = document.getElementById('messages');
             const time = formatTime(new Date());
@@ -395,9 +509,11 @@
             
             messages.appendChild(msgEl);
             scrollToBottom();
+            
+            // 保存到历史
+            saveToHistory('user', text);
         }
         
-        // 添加AI消息
         function addAIMessage(text) {
             const messages = document.getElementById('messages');
             const time = formatTime(new Date());
@@ -414,9 +530,11 @@
             
             messages.appendChild(msgEl);
             scrollToBottom();
+            
+            // 保存到历史
+            saveToHistory('ai', text);
         }
         
-        // 显示加载
         function showTyping() {
             const messages = document.getElementById('messages');
             
@@ -440,57 +558,103 @@
             scrollToBottom();
         }
         
-        // 隐藏加载
         function hideTyping() {
             const typing = document.getElementById('typingMessage');
             if (typing) typing.remove();
         }
         
-        // 格式化消息（换行）
+        // ==================== 工具函数 ====================
         function formatMessage(text) {
-            return escapeHtml(text).replace(/\n/g, '<br>').replace(/•/g, '◆');
+            return escapeHtml(text).replace(/\n/g, '<br>').replace(/◆/g, '•');
         }
         
-        // HTML转义
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
         
-        // 格式化时间
         function formatTime(date) {
             return date.getHours().toString().padStart(2, '0') + ':' + 
                    date.getMinutes().toString().padStart(2, '0');
         }
         
-        // 滚动到底部
         function scrollToBottom() {
             const messages = document.getElementById('messages');
             messages.scrollTop = messages.scrollHeight;
         }
         
-        // 清空对话
-        function clearChat() {
-            if (confirm('确定要清空对话记录吗？')) {
-                location.reload();
-            }
+        // ==================== 历史记录 ====================
+        function saveToHistory(role, content) {
+            let history = JSON.parse(localStorage.getItem('aiChatHistory') || '[]');
+            history.push({ role, content, time: Date.now() });
+            if (history.length > 100) history = history.slice(-100);
+            localStorage.setItem('aiChatHistory', JSON.stringify(history));
         }
         
-        // 自动调整输入框高度
+        function clearChat() {
+            if (confirm('确定要清空对话记录吗？')) {
+                localStorage.removeItem('aiChatHistory');
+                location.reload();
+            }
+            toggleMenu();
+        }
+        
+        function exportChat() {
+            const history = JSON.parse(localStorage.getItem('aiChatHistory') || '[]');
+            if (history.length === 0) {
+                showToast('暂无对话记录');
+                return;
+            }
+            
+            let text = '符宝网 AI道玄 对话记录\n';
+            text += '================================\n\n';
+            history.forEach(msg => {
+                const role = msg.role === 'user' ? '施主' : '道玄';
+                text += `[${role}]\n${msg.content}\n\n`;
+            });
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `道玄对话_${new Date().toLocaleDateString()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('对话已导出');
+            toggleMenu();
+        }
+        
+        // ==================== 菜单 ====================
+        function toggleMenu() {
+            const panel = document.getElementById('menuPanel');
+            const mask = document.getElementById('menuMask');
+            panel.classList.toggle('show');
+            mask.classList.toggle('show');
+        }
+        
+        function goPage(url) {
+            showToast('正在跳转...');
+            setTimeout(() => window.location.href = url, 300);
+        }
+        
+        // ==================== 自动调整输入框 ====================
         const inputField = document.getElementById('inputField');
         inputField.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 100) + 'px';
         });
         
-        // 回车发送
         inputField.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         });
+        
+        // ==================== 初始化 ====================
+        renderQuickQuestions();
     </script>
 </body>
 </html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI道玄 - 知识库管理</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --gold-light: #f4d160;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text: #f5f5f5;
+            --text-muted: #b8b8b8;
+            --success: #10b981;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 14px; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+        a { color: var(--gold); text-decoration: none; }
+        
+        /* 头部 */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: var(--dark);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--gold); }
+        .header-actions { display: flex; gap: 10px; }
+        .header-btn { padding: 8px 14px; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; color: var(--gold); font-size: 12px; cursor: pointer; }
+        .header-btn:hover { background: rgba(212, 175, 55, 0.25); }
+        
+        /* 主容器 */
+        .container { max-width: 1000px; margin: 0 auto; padding: 70px 16px 30px; }
+        
+        /* 统计卡片 */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+        .stat-card { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 16px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: 700; color: var(--gold); }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .stat-icon { font-size: 24px; margin-bottom: 8px; }
+        
+        /* Tab */
+        .tabs { display: flex; gap: 4px; background: var(--dark); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; font-size: 14px; color: var(--text-muted); background: transparent; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        .tab-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; }
+        .tab-btn:hover:not(.active) { color: var(--gold); }
+        
+        /* 搜索 */
+        .search-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+        .search-input { flex: 1; padding: 12px 16px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .search-input:focus { outline: none; border-color: var(--gold); }
+        .search-input::placeholder { color: var(--text-muted); }
+        .filter-btn { padding: 12px 16px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text-muted); font-size: 14px; cursor: pointer; }
+        
+        /* 知识列表 */
+        .knowledge-list { display: flex; flex-direction: column; gap: 12px; }
+        .knowledge-item { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 16px; transition: all 0.3s; cursor: pointer; }
+        .knowledge-item:hover { border-color: rgba(212, 175, 55, 0.4); transform: translateY(-2px); }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .item-category { background: rgba(196, 30, 58, 0.2); color: var(--primary-light); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .item-category.talisman { background: rgba(212, 175, 55, 0.2); color: var(--gold); }
+        .item-category.taoism { background: rgba(30, 136, 229, 0.2); color: #42a5f5; }
+        .item-category.faq { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .item-title { font-size: 15px; color: var(--text); font-weight: 600; margin-bottom: 6px; }
+        .item-preview { font-size: 13px; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .item-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .item-tag { background: var(--dark-light); padding: 3px 8px; border-radius: 6px; font-size: 10px; color: var(--text-muted); }
+        .item-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .item-action { padding: 6px 12px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 6px; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.3s; }
+        .item-action:hover { border-color: var(--gold); color: var(--gold); }
+        .item-action.delete:hover { border-color: var(--primary); color: var(--primary); }
+        
+        /* 分页 */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .page-btn { width: 36px; height: 36px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 8px; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: all 0.3s; }
+        .page-btn:hover, .page-btn.active { border-color: var(--gold); color: var(--gold); }
+        .page-btn.active { background: rgba(212, 175, 55, 0.15); }
+        
+        /* 添加/编辑弹窗 */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; padding: 24px; max-width: 600px; width: 100%; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; color: var(--gold); }
+        .modal-close { width: 32px; height: 32px; background: var(--dark-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 12px 14px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .form-input:focus { outline: none; border-color: var(--gold); }
+        textarea.form-input { resize: vertical; min-height: 150px; }
+        .form-select { width: 100%; padding: 12px 14px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; }
+        .btn-secondary { background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold); }
+        .btn:hover { transform: scale(1.02); }
+        
+        /* Toast */
+        .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.3); padding: 12px 24px; border-radius: 10px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.3s; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        /* 预览 */
+        .preview-panel { background: var(--dark-light); border-radius: 10px; padding: 16px; margin-top: 12px; }
+        .preview-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+        .preview-content { font-size: 13px; color: var(--text); line-height: 1.6; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+        
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .tabs { flex-wrap: wrap; }
+            .tab-btn { flex: none; width: calc(50% - 2px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <a href="/" class="header-title">☯ AI道玄 · 知识库管理</a>
+        <div class="header-actions">
+            <button class="header-btn" onclick="exportData()">📤 导出</button>
+            <button class="header-btn" onclick="importData()">📥 导入</button>
+            <button class="header-btn" onclick="openModal()">➕ 添加</button>
+        </div>
+    </header>
+    
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 统计 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">☯</div>
+                <div class="stat-value" id="totalTalismans">10</div>
+                <div class="stat-label">符箓知识</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✦</div>
+                <div class="stat-value" id="totalTaoism">15</div>
+                <div class="stat-label">道家文化</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">☸</div>
+                <div class="stat-value" id="totalFaq">8</div>
+                <div class="stat-label">常见问题</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value" id="totalKnowledge">33</div>
+                <div class="stat-label">知识总量</div>
+            </div>
+        </div>
+        
+        <!-- Tab -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('all', this)">全部</button>
+            <button class="tab-btn" onclick="switchTab('talisman', this)">符箓</button>
+            <button class="tab-btn" onclick="switchTab('taoism', this)">道家文化</button>
+            <button class="tab-btn" onclick="switchTab('faq', this)">常见问题</button>
+            <button class="tab-btn" onclick="switchTab('service', this)">服务</button>
+        </div>
+        
+        <!-- 搜索 -->
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索知识库..." oninput="searchKnowledge()">
+            <button class="filter-btn" onclick="showFilters()">🔍 筛选</button>
+        </div>
+        
+        <!-- 知识列表 -->
+        <div class="knowledge-list" id="knowledgeList">
+            <!-- 动态生成 -->
+        </div>
+        
+        <!-- 分页 -->
+        <div class="pagination" id="pagination">
+            <button class="page-btn" onclick="changePage(-1)">‹</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn" onclick="changePage(1)">›</button>
+        </div>
+    </div>
+    
+    <!-- 添加/编辑弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">添加知识</span>
+                <span class="modal-close" onclick="closeModal()">✕</span>
+            </div>
+            <form id="knowledgeForm">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label class="form-label">分类</label>
+                    <select class="form-select" id="category">
+                        <option value="talisman">符箓知识</option>
+                        <option value="taoism">道家文化</option>
+                        <option value="faq">常见问题</option>
+                        <option value="service">服务介绍</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标题/问题</label>
+                    <input type="text" class="form-input" id="title" placeholder="输入标题或问题" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">内容/回复</label>
+                    <textarea class="form-input" id="content" placeholder="输入回复内容，支持多行文本" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标签（用逗号分隔）</label>
+                    <input type="text" class="form-input" id="tags" placeholder="例如：平安,驱邪,入门">
+                </div>
+                
+                <!-- 预览 -->
+                <div class="preview-panel">
+                    <div class="preview-title">预览效果</div>
+                    <div class="preview-content" id="previewContent">请输入内容后查看预览...</div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <!-- 导入 -->
+    <input type="file" id="importFile" accept=".json" style="display:none">
+    
+    <script src="/scripts/ai-knowledge.js"></script>
+    <script>
+        // ==================== 知识库数据 ====================
+        let knowledgeBase = [];
+        let currentTab = 'all';
+        let currentPage = 1;
+        let pageSize = 10;
+        
+        // ==================== 初始化 ====================
+        function init() {
+            loadKnowledgeBase();
+            renderKnowledgeList();
+            updateStats();
+        }
+        
+        // 加载知识库
+        function loadKnowledgeBase() {
+            const saved = localStorage.getItem('aiKnowledgeCustom');
+            if (saved) {
+                knowledgeBase = JSON.parse(saved);
+            } else {
+                // 初始化默认知识
+                knowledgeBase = [
+                    // 符箓知识
+                    { id: 1, category: 'talisman', title: '平安符的功效和使用方法', content: '平安符乃道家护身之宝...\n\n【功效】\n• 护佑出入平安\n• 驱邪避祸\n• 化解小人\n\n【使用方法】\n挂于大门内侧或随身携带，保持干燥不可沾水。', tags: ['平安', '护身', '入门'] },
+                    { id: 2, category: 'talisman', title: '财神符适合哪些人请？', content: '财神符适合以下人群请购...\n\n【适合人群】\n• 经商做生意\n• 财运不佳\n• 投资理财\n• 创业开张\n\n【功效】\n招财进宝、财源广进、守财聚财。', tags: ['财运', '招财', '经商'] },
+                    { id: 3, category: 'talisman', title: '文昌符对考试有帮助吗？', content: '文昌符乃求学问道之宝...\n\n【适合人群】\n• 学生备考\n• 中考高考\n• 考研考公\n• 职称考试\n\n【功效】\n开启智慧、学业进步、考试顺利。', tags: ['学业', '考试', '智慧'] },
+                    { id: 4, category: 'talisman', title: '太岁符怎么化解犯太岁？', content: '太岁符专门化解犯太岁...\n\n【犯太岁表现】\n• 值太岁\n• 冲太岁\n• 破太岁\n• 害太岁\n• 刑太岁\n\n【使用方法】\n贴身携带，犯太岁年份必请。', tags: ['太岁', '化解', '本命年'] },
+                    
+                    // 道家文化
+                    { id: 5, category: 'taoism', title: '什么是开光？', content: '开光是道家重要仪式...\n\n【开光条件】\n• 必须由有道行的法师主持\n• 需设坛焚香，诵经祈祷\n• 选择吉日良时进行\n\n【开光流程】\n1. 净坛\n2. 上香\n3. 诵经\n4. 敕笔\n5. 点睛\n6. 发牒', tags: ['开光', '入门', '仪式'] },
+                    { id: 6, category: 'taoism', title: '如何正确请符？', content: '请符有讲究，心诚则灵...\n\n【请符流程】\n1. 选择正规道观\n2. 说明自身需求\n3. 法师根据八字推荐\n4. 请回后妥善保管\n\n【禁忌】\n❌ 心存恶念者符不灵\n❌ 不可用污秽之物接触', tags: ['请符', '禁忌', '入门'] },
+                    { id: 7, category: 'taoism', title: '什么是犯太岁？', content: '太岁是道教信仰中的星辰神祇...\n\n【犯太岁类型】\n• 值太岁：本命年\n• 冲太岁：六大冲\n• 破太岁\n• 害太岁\n• 刑太岁\n\n【化解方法】\n请太岁符化解。', tags: ['太岁', '命理', '进阶'] },
+                    { id: 8, category: 'taoism', title: '道家的五行学说', content: '五行是道家核心理论...\n\n【五行】\n金、木、水、火、土\n\n【相生】\n木→火→土→金→水→木\n\n【相克】\n木→土→水→火→金→木', tags: ['五行', '入门', '理论'] },
+                    
+                    // 常见问题
+                    { id: 9, category: 'faq', title: '符箓多久见效？', content: '符箓见效时间因人而异...\n\n【短期效果】7-30天\n心态平和、睡眠改善\n\n【中期效果】1-3个月\n运势转好、贵人运增\n\n【长期效果】3-6个月\n整体运势明显改善', tags: ['效果', '常见问题'] },
+                    { id: 10, category: 'faq', title: '符箓失效了怎么办？', content: '符箓灵力会逐渐消散...\n\n【纸质符】\n有效期约一年，到期请新符\n\n【处理旧符】\n不可随意丢弃，建议焚烧\n\n【请新符】\n选正规渠道，每年请一次', tags: ['保养', '常见问题'] },
+                    { id: 11, category: 'faq', title: '可以同时请多道符吗？', content: '可以同时请多道符...\n\n【可以同请】\n• 太岁符 + 平安符\n• 财神符 + 招财符\n\n【不宜同请】\n• 功效相冲的符\n• 超过3道同功效符', tags: ['请符', '常见问题'] },
+                    { id: 12, category: 'faq', title: '符箓可以送人吗？', content: '符箓作为礼物有讲究...\n\n【可以送】\n✅ 家人之间可互送\n✅ 夫妻情侣可互送\n\n【不宜送】\n❌ 不建议送外人\n❌ 不确定对方是否需要', tags: ['禁忌', '常见问题'] },
+                    
+                    // 服务介绍
+                    { id: 13, category: 'service', title: '符宝网一物一码是什么？', content: '一物一码是符宝网的正品认证服务...\n\n【功能】\n• 每件商品唯一防伪码\n• 扫码查验真伪\n• 开光信息可查\n\n【保障】\n确保您请到正品开光符箓。', tags: ['服务', '正品'] },
+                    { id: 14, category: 'service', title: '如何免费领取符箓？', content: '新用户可免费领取...\n\n【领取条件】\n• 首次注册用户\n• 每个账号限领一次\n\n【领取流程】\n1. 注册账号\n2. 完成验证\n3. 选择符箓\n4. 提交领取', tags: ['服务', '免费'] }
+                ];
+            }
+        }
+        
+        // 保存知识库
+        function saveKnowledgeBase() {
+            localStorage.setItem('aiKnowledgeCustom', JSON.stringify(knowledgeBase));
+        }
+        
+        // ==================== 渲染列表 ====================
+        function renderKnowledgeList() {
+            const list = document.getElementById('knowledgeList');
+            let filtered = knowledgeBase;
+            
+            // 分类筛选
+            if (currentTab !== 'all') {
+                filtered = knowledgeBase.filter(item => item.category === currentTab);
+            }
+            
+            // 搜索筛选
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            if (searchText) {
+                filtered = filtered.filter(item => 
+                    item.title.toLowerCase().includes(searchText) ||
+                    item.content.toLowerCase().includes(searchText) ||
+                    item.tags.some(tag => tag.toLowerCase().includes(searchText))
+                );
+            }
+            
+            // 分页
+            const start = (currentPage - 1) * pageSize;
+            const paged = filtered.slice(start, start + pageSize);
+            
+            // 渲染
+            list.innerHTML = paged.map(item => `
+                <div class="knowledge-item" onclick="editItem(${item.id})">
+                    <div class="item-header">
+                        <span class="item-category ${item.category}">${getCategoryName(item.category)}</span>
+                        <span class="item-id">#${item.id}</span>
+                    </div>
+                    <div class="item-title">${item.title}</div>
+                    <div class="item-preview">${item.content.substring(0, 100)}...</div>
+                    <div class="item-tags">
+                        ${item.tags.map(tag => `<span class="item-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="item-actions" onclick="event.stopPropagation()">
+                        <button class="item-action" onclick="editItem(${item.id})">编辑</button>
+                        <button class="item-action" onclick="duplicateItem(${item.id})">复制</button>
+                        <button class="item-action delete" onclick="deleteItem(${item.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 更新分页
+            renderPagination(filtered.length);
+        }
+        
+        function getCategoryName(category) {
+            const names = { talisman: '符箓', taoism: '道家', faq: '问答', service: '服务' };
+            return names[category] || category;
+        }
+        
+        function renderPagination(total) {
+            const totalPages = Math.ceil(total / pageSize);
+            const pagination = document.getElementById('pagination');
+            
+            let html = `<button class="page-btn" onclick="changePage(-1)" ${currentPage <= 1 ? 'disabled' : ''}>‹</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+            }
+            html += `<button class="page-btn" onclick="changePage(1)" ${currentPage >= totalPages ? 'disabled' : ''}>›</button>`;
+            
+            pagination.innerHTML = html;
+        }
+        
+        // ==================== Tab切换 ====================
+        function switchTab(tab, btn) {
+            currentTab = tab;
+            currentPage = 1;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderKnowledgeList();
+        }
+        
+        // ==================== 搜索 ====================
+        function searchKnowledge() {
+            currentPage = 1;
+            renderKnowledgeList();
+        }
+        
+        // ==================== 分页 ====================
+        function changePage(delta) {
+            const totalPages = Math.ceil(knowledgeBase.length / pageSize);
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                goPage(newPage);
+            }
+        }
+        
+        function goPage(page) {
+            currentPage = page;
+            renderKnowledgeList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // ==================== 统计 ====================
+        function updateStats() {
+            const talisman = knowledgeBase.filter(i => i.category === 'talisman').length;
+            const taoism = knowledgeBase.filter(i => i.category === 'taoism').length;
+            const faq = knowledgeBase.filter(i => i.category === 'faq').length;
+            
+            document.getElementById('totalTalismans').textContent = talisman;
+            document.getElementById('totalTaoism').textContent = taoism;
+            document.getElementById('totalFaq').textContent = faq;
+            document.getElementById('totalKnowledge').textContent = knowledgeBase.length;
+        }
+        
+        // ==================== 弹窗 ====================
+        function openModal(id = null) {
+            document.getElementById('modal').classList.add('show');
+            document.getElementById('editId').value = id || '';
+            document.getElementById('modalTitle').textContent = id ? '编辑知识' : '添加知识';
+            
+            if (id) {
+                const item = knowledgeBase.find(i => i.id === id);
+                if (item) {
+                    document.getElementById('category').value = item.category;
+                    document.getElementById('title').value = item.title;
+                    document.getElementById('content').value = item.content;
+                    document.getElementById('tags').value = item.tags.join(',');
+                }
+            } else {
+                document.getElementById('knowledgeForm').reset();
+            }
+            
+            updatePreview();
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+        
+        function editItem(id) {
+            openModal(id);
+        }
+        
+        // 预览更新
+        document.getElementById('content').addEventListener('input', updatePreview);
+        document.getElementById('title').addEventListener('input', updatePreview);
+        
+        function updatePreview() {
+            const title = document.getElementById('title').value || '问题标题';
+            const content = document.getElementById('content').value || '回复内容...';
+            document.getElementById('previewContent').textContent = `${title}\n\n${content}`;
+        }
+        
+        // 保存表单
+        document.getElementById('knowledgeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('editId').value;
+            const item = {
+                id: id ? parseInt(id) : Date.now(),
+                category: document.getElementById('category').value,
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t)
+            };
+            
+            if (id) {
+                // 编辑
+                const index = knowledgeBase.findIndex(i => i.id === parseInt(id));
+                if (index >= 0) knowledgeBase[index] = item;
+            } else {
+                // 新增
+                knowledgeBase.unshift(item);
+            }
+            
+            saveKnowledgeBase();
+            renderKnowledgeList();
+            updateStats();
+            closeModal();
+            showToast(id ? '已更新' : '已添加');
+        });
+        
+        // ==================== 操作 ====================
+        function deleteItem(id) {
+            if (confirm('确定要删除这条知识吗？')) {
+                knowledgeBase = knowledgeBase.filter(i => i.id !== id);
+                saveKnowledgeBase();
+                renderKnowledgeList();
+                updateStats();
+                showToast('已删除');
+            }
+        }
+        
+        function duplicateItem(id) {
+            const item = knowledgeBase.find(i => i.id === id);
+            if (item) {
+                const newItem = { ...item, id: Date.now(), title: item.title + ' (副本)' };
+                knowledgeBase.unshift(newItem);
+                saveKnowledgeBase();
+                renderKnowledgeList();
+                updateStats();
+                showToast('已复制');
+            }
+        }
+        
+        // ==================== 导入导出 ====================
+        function exportData() {
+            const data = JSON.stringify(knowledgeBase, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-knowledge-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('已导出');
+        }
+        
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+        
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (Array.isArray(data)) {
+                        knowledgeBase = data;
+                        saveKnowledgeBase();
+                        renderKnowledgeList();
+                        updateStats();
+                        showToast(`已导入 ${data.length} 条知识`);
+                    } else {
+                        showToast('文件格式错误');
+                    }
+                } catch (err) {
+                    showToast('导入失败');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+        
+        function showFilters() {
+            showToast('筛选功能开发中');
+        }
+        
+        // ==================== Toast ====================
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // ==================== 初始化 ====================
+        init();
+    </script>
+</body>
+</html>
