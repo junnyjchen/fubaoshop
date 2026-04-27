@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的 - 符宝网</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --gold-light: #f4d160;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text: #f5f5f5;
+            --text-muted: #b8b8b8;
+            --success: #10b981;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 14px; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: calc(80px + var(--safe-bottom));
+        }
+        ::-webkit-scrollbar { display: none; }
+        a { color: inherit; text-decoration: none; }
+        
+        /* 头部 */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, var(--primary), var(--dark) 60%);
+            padding: 40px 16px 24px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-size: 18px; font-weight: 600; color: #fff; }
+        .header-btn { font-size: 20px; color: #fff; }
+        
+        /* 用户信息 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .user-avatar {
+            width: 68px; height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 3px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .user-details { flex: 1; }
+        .user-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .user-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: var(--dark);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .user-id { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+        
+        /* 会员卡片 */
+        .vip-card {
+            background: linear-gradient(135deg, var(--dark), var(--dark-light));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .vip-card::before {
+            content: '☯';
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 80px;
+            opacity: 0.1;
+        }
+        .vip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .vip-title { font-size: 14px; color: var(--gold); font-weight: 600; }
+        .vip-btn {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            border: none;
+            border-radius: 16px;
+            color: var(--dark);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .vip-benefits { display: flex; gap: 16px; flex-wrap: wrap; }
+        .vip-benefit { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        .vip-benefit::before { content: '✓'; color: var(--gold); }
+        
+        /* 统计 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+        .stat-item {
+            background: var(--dark-bg);
+            padding: 14px 8px;
+            text-align: center;
+        }
+        .stat-value { font-size: 18px; font-weight: 700; color: var(--gold); }
+        .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        
+        /* 订单 */
+        .section { padding: 16px; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
+        .section-more { font-size: 12px; color: var(--text-muted); }
+        
+        .order-status {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            background: var(--dark);
+            border-radius: 14px;
+            padding: 16px 8px;
+        }
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .status-item:hover { transform: scale(1.05); }
+        .status-icon { font-size: 24px; position: relative; }
+        .status-badge {
+            position: absolute;
+            top: -4px;
+            right: -8px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 10px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            min-width: 16px;
+            text-align: center;
+        }
+        .status-label { font-size: 11px; color: var(--text-muted); }
+        
+        /* 功能列表 */
+        .menu-list {
+            background: var(--dark);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: var(--dark-light); }
+        .menu-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .menu-icon.red { background: rgba(196, 30, 58, 0.2); }
+        .menu-icon.blue { background: rgba(30, 136, 229, 0.2); }
+        .menu-icon.green { background: rgba(16, 185, 129, 0.2); }
+        .menu-icon.gold { background: rgba(212, 175, 55, 0.2); }
+        .menu-icon.purple { background: rgba(156, 39, 176, 0.2); }
+        .menu-icon.orange { background: rgba(255, 152, 0, 0.2); }
+        .menu-info { flex: 1; }
+        .menu-name { font-size: 14px; color: var(--text); }
+        .menu-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .menu-arrow { color: var(--text-muted); font-size: 14px; }
+        
+        /* 底部导航 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--dark-bg);
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + var(--safe-bottom));
+            z-index: 999;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            transition: all 0.3s;
+        }
+        .tab-item.active, .tab-item:hover { color: var(--gold); }
+        .tab-icon { font-size: 20px; }
+        .tab-text { font-size: 10px; }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-content">
+            <span class="header-title">我的</span>
+            <a href="/admin/bottom-bar.html" class="header-btn">⚙</a>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">☯</div>
+            <div class="user-details">
+                <div class="user-name" id="userName">道玄居士</div>
+                <span class="user-level">☯ 黄金会员</span>
+                <div class="user-id">ID: 888888</div>
+            </div>
+        </div>
+        
+        <!-- 会员卡片 -->
+        <div class="vip-card">
+            <div class="vip-header">
+                <span class="vip-title">☯ 符宝网会员</span>
+                <button class="vip-btn" onclick="upgradeVip()">升级VIP</button>
+            </div>
+            <div class="vip-benefits">
+                <span class="vip-benefit">专属折扣</span>
+                <span class="vip-benefit">优先发货</span>
+                <span class="vip-benefit">专属客服</span>
+                <span class="vip-benefit">免费领符</span>
+            </div>
+        </div>
+        
+        <!-- 统计 -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value">128</div>
+                <div class="stat-label">收藏</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">36</div>
+                <div class="stat-label">足迹</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">8</div>
+                <div class="stat-label">优惠券</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">520</div>
+                <div class="stat-label">积分</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主内容 -->
+    <main style="margin-top: 320px;">
+        <!-- 订单 -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">我的订单</span>
+                <a href="/order" class="section-more">全部订单 ›</a>
+            </div>
+            <div class="order-status">
+                <div class="status-item" onclick="goOrder('pending')">
+                    <span class="status-icon">⏳<span class="status-badge">2</span></span>
+                    <span class="status-label">待付款</span>
+                </div>
+                <div class="status-item" onclick="goOrder('shipped')">
+                    <span class="status-icon">🚚</span>
+                    <span class="status-label">待发货</span>
+                </div>
+                <div class="status-item" onclick="goOrder('delivered')">
+                    <span class="status-icon">📦<span class="status-badge">1</span></span>
+                    <span class="status-label">待收货</span>
+                </div>
+                <div class="status-item" onclick="goOrder('review')">
+                    <span class="status-icon">⭐</span>
+                    <span class="status-label">待评价</span>
+                </div>
+                <div class="status-item" onclick="goOrder('refund')">
+                    <span class="status-icon">💰</span>
+                    <span class="status-label">退款/售后</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 服务 -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">常用服务</span>
+            </div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="goPage('/address')">
+                    <div class="menu-icon gold">📍</div>
+                    <div class="menu-info">
+                        <div class="menu-name">收货地址</div>
+                        <div class="menu-desc">管理收货地址</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/coupon')">
+                    <div class="menu-icon red">🎫</div>
+                    <div class="menu-info">
+                        <div class="menu-name">优惠券</div>
+                        <div class="menu-desc">8张可用优惠券</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/gift')">
+                    <div class="menu-icon purple">🎁</div>
+                    <div class="menu-info">
+                        <div class="menu-name">礼品卡</div>
+                        <div class="menu-desc">余额 ¥200.00</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/points')">
+                    <div class="menu-icon gold">💎</div>
+                    <div class="menu-info">
+                        <div class="menu-name">积分商城</div>
+                        <div class="menu-desc">520积分可兑换</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 工具 -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">常用工具</span>
+            </div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="goPage('/certificate')">
+                    <div class="menu-icon blue">📜</div>
+                    <div class="menu-info">
+                        <div class="menu-name">一物一码</div>
+                        <div class="menu-desc">正品查验认证</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/wish')">
+                    <div class="menu-icon green">☸</div>
+                    <div class="menu-info">
+                        <div class="menu-name">我的晒单</div>
+                        <div class="menu-desc">分享你的灵验故事</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/aiassistant')">
+                    <div class="menu-icon orange">☯</div>
+                    <div class="menu-info">
+                        <div class="menu-name">AI道玄</div>
+                        <div class="menu-desc">智能问答助手</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/help')">
+                    <div class="menu-icon blue">❓</div>
+                    <div class="menu-info">
+                        <div class="menu-name">帮助中心</div>
+                        <div class="menu-desc">常见问题解答</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="goPage('/settings')">
+                    <div class="menu-icon gold">⚙</div>
+                    <div class="menu-info">
+                        <div class="menu-name">设置</div>
+                        <div class="menu-desc">账号安全、隐私设置</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="logout()">
+                    <div class="menu-icon red">🚪</div>
+                    <div class="menu-info">
+                        <div class="menu-name">退出登录</div>
+                        <div class="menu-desc">切换账号</div>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 版权 -->
+        <div style="text-align:center;padding:24px 16px;color:var(--text-muted);font-size:11px;">
+            <div style="color:var(--gold);margin-bottom:4px;">☯ 符宝网</div>
+            <div>符宝网版权所有 © 2024</div>
+        </div>
+    </main>
+    
+    <!-- 底部导航 -->
+    <nav class="tab-bar">
+        <a href="/" class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-text">首页</span>
+        </a>
+        <a href="/wiki" class="tab-item">
+            <span class="tab-icon">☯</span>
+            <span class="tab-text">百科</span>
+        </a>
+        <a href="/wish" class="tab-item">
+            <span class="tab-icon">☸</span>
+            <span class="tab-text">动态</span>
+        </a>
+        <a href="/cart" class="tab-item">
+            <span class="tab-icon">🛒</span>
+            <span class="tab-text">购物车</span>
+        </a>
+        <a href="/user" class="tab-item active">
+            <span class="tab-icon">👤</span>
+            <span class="tab-text">我的</span>
+        </a>
+    </nav>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // 检查登录状态
+        function checkLogin() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                const userData = JSON.parse(user);
+                if (userData.loggedIn) {
+                    document.getElementById('userName').textContent = userData.nickname || userData.account || '道玄居士';
+                    if (userData.platform) {
+                        document.getElementById('userAvatar').textContent = getPlatformEmoji(userData.platform);
+                    }
+                }
+            }
+        }
+        
+        function getPlatformEmoji(platform) {
+            const emojis = { facebook: 'f', google: 'G', x: '𝕏', tiktok: '♪', instagram: '📷' };
+            return emojis[platform] || '☯';
+        }
+        
+        // Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 页面跳转
+        function goPage(url) {
+            showToast('正在跳转...');
+            setTimeout(() => window.location.href = url, 300);
+        }
+        
+        // 订单跳转
+        function goOrder(status) {
+            showToast('订单功能开发中');
+        }
+        
+        // VIP升级
+        function upgradeVip() {
+            showToast('VIP服务即将上线');
+        }
+        
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('user');
+                showToast('已退出登录');
+                setTimeout(() => window.location.href = '/login.html', 1000);
+            }
+        }
+        
+        // 初始化
+        checkLogin();
+    </script>
+</body>
+</html>

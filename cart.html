@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>购物车 - 符宝网</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --gold-light: #f4d160;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text: #f5f5f5;
+            --text-muted: #b8b8b8;
+            --success: #10b981;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 14px; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: calc(80px + var(--safe-bottom));
+        }
+        ::-webkit-scrollbar { display: none; }
+        a { color: inherit; text-decoration: none; }
+        
+        /* 头部 */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: var(--dark);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-family: 'Noto Serif TC', serif; font-size: 17px; color: var(--gold); }
+        .header-right { font-size: 13px; color: var(--text-muted); cursor: pointer; }
+        
+        /* 编辑模式 */
+        .edit-mode .checkbox { display: none; }
+        
+        /* 主体 */
+        .main { padding: 60px 16px 100px; }
+        
+        /* 空购物车 */
+        .empty-cart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .empty-icon { font-size: 80px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-title { font-size: 16px; color: var(--text); margin-bottom: 8px; }
+        .empty-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        .empty-btn {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 24px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* 店铺 */
+        .shop-section { margin-bottom: 16px; }
+        .shop-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 0;
+        }
+        .shop-checkbox {
+            width: 22px; height: 22px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .shop-checkbox.checked {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+        .shop-checkbox.checked::after {
+            content: '✓';
+            color: var(--dark);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .shop-name { font-size: 13px; color: var(--text); flex: 1; display: flex; align-items: center; gap: 4px; }
+        
+        /* 商品 */
+        .goods-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            background: var(--dark);
+            border-radius: 14px;
+            margin-bottom: 10px;
+        }
+        .goods-checkbox {
+            width: 22px; height: 22px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+            margin-top: 24px;
+            transition: all 0.3s;
+        }
+        .goods-checkbox.checked {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+        .goods-checkbox.checked::after {
+            content: '✓';
+            color: var(--dark);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .goods-img {
+            width: 90px; height: 90px;
+            background: var(--dark-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+        .goods-info { flex: 1; min-width: 0; }
+        .goods-name { font-size: 14px; color: var(--text); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .goods-spec { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+        .goods-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .goods-price { font-size: 16px; font-weight: 700; color: var(--primary-light); }
+        .goods-price::before { content: '¥'; font-size: 12px; }
+        .quantity-control { display: flex; align-items: center; gap: 2px; }
+        .quantity-btn {
+            width: 28px; height: 28px;
+            background: var(--dark-light);
+            border: none;
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .quantity-btn:hover { background: rgba(212, 175, 55, 0.2); }
+        .quantity-num { width: 36px; text-align: center; font-size: 14px; }
+        .goods-delete {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        /* 推荐 */
+        .recommend-section { margin-top: 20px; }
+        .recommend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .recommend-title { font-size: 15px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .recommend-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .recommend-item {
+            background: var(--dark);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .recommend-img {
+            height: 120px;
+            background: var(--dark-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        .recommend-info { padding: 10px; }
+        .recommend-name { font-size: 12px; color: var(--text); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .recommend-price { font-size: 15px; font-weight: 700; color: var(--primary-light); }
+        .recommend-price::before { content: '¥'; font-size: 11px; }
+        
+        /* 优惠券 */
+        .coupon-section {
+            padding: 14px;
+            background: var(--dark);
+            border-radius: 12px;
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .coupon-left { display: flex; align-items: center; gap: 10px; }
+        .coupon-icon { font-size: 20px; }
+        .coupon-title { font-size: 13px; color: var(--text); }
+        .coupon-count { font-size: 11px; color: var(--primary); background: rgba(196, 30, 58, 0.15); padding: 2px 8px; border-radius: 8px; margin-left: 6px; }
+        .coupon-right { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        
+        /* 底部结算栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--dark-bg);
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 12px 16px;
+            padding-bottom: calc(12px + var(--safe-bottom));
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 999;
+        }
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .select-all-checkbox {
+            width: 22px; height: 22px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .select-all-checkbox.checked {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+        .select-all-checkbox.checked::after {
+            content: '✓';
+            color: var(--dark);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .select-all-text { font-size: 13px; color: var(--text-muted); }
+        .price-info { flex: 1; text-align: right; }
+        .price-total { font-size: 18px; font-weight: 700; color: var(--primary-light); }
+        .price-total::before { content: '¥'; font-size: 12px; }
+        .price-discount { font-size: 11px; color: var(--text-muted); }
+        .checkout-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 22px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        /* 底部导航 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--dark-bg);
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + var(--safe-bottom));
+            z-index: 998;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--text-muted);
+            padding: 6px 12px;
+        }
+        .tab-item.active, .tab-item:hover { color: var(--gold); }
+        .tab-icon { font-size: 20px; }
+        .tab-text { font-size: 10px; }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <a href="javascript:history.back()" style="font-size:18px;">←</a>
+        <span class="header-title">购物车</span>
+        <span class="header-right" id="editBtn" onclick="toggleEdit()">编辑</span>
+    </header>
+    
+    <!-- 主体 -->
+    <div class="main" id="mainContent">
+        <!-- 空购物车 -->
+        <div class="empty-cart" id="emptyCart" style="display:none;">
+            <div class="empty-icon">🛒</div>
+            <div class="empty-title">购物车是空的</div>
+            <div class="empty-desc">快去挑选心仪的宝贝吧</div>
+            <button class="empty-btn" onclick="goShopping()">去逛逛</button>
+        </div>
+        
+        <!-- 购物车列表 -->
+        <div class="cart-list" id="cartList">
+            <div class="shop-section">
+                <div class="shop-header">
+                    <div class="shop-checkbox checked" onclick="toggleShopSelect(this)"></div>
+                    <span class="shop-name">☯ 符宝网官方旗舰店</span>
+                </div>
+                
+                <div class="goods-item">
+                    <div class="goods-checkbox checked" onclick="toggleItemSelect(this)"></div>
+                    <div class="goods-img">☯</div>
+                    <div class="goods-info">
+                        <div class="goods-name">开光平安符 - 护佑平安</div>
+                        <div class="goods-spec">规格：平安符（大）</div>
+                        <div class="goods-bottom">
+                            <span class="goods-price">299</span>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <span class="quantity-num">1</span>
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="goods-delete" onclick="deleteItem(this)">删除</div>
+                    </div>
+                </div>
+                
+                <div class="goods-item">
+                    <div class="goods-checkbox checked" onclick="toggleItemSelect(this)"></div>
+                    <div class="goods-img">✦</div>
+                    <div class="goods-info">
+                        <div class="goods-name">紫檀念珠 - 开光加持</div>
+                        <div class="goods-spec">规格：12mm</div>
+                        <div class="goods-bottom">
+                            <span class="goods-price">899</span>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <span class="quantity-num">1</span>
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="goods-delete" onclick="deleteItem(this)">删除</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 优惠券 -->
+        <div class="coupon-section" onclick="showToast('优惠券功能开发中')">
+            <div class="coupon-left">
+                <span class="coupon-icon">🎫</span>
+                <span class="coupon-title">优惠券</span>
+                <span class="coupon-count">3张可用</span>
+            </div>
+            <div class="coupon-right">领取更多 ›</div>
+        </div>
+        
+        <!-- 推荐 -->
+        <div class="recommend-section">
+            <div class="recommend-header">
+                <span class="recommend-title">☯ 为你推荐</span>
+            </div>
+            <div class="recommend-list">
+                <div class="recommend-item" onclick="goDetail(1)">
+                    <div class="recommend-img">☸</div>
+                    <div class="recommend-info">
+                        <div class="recommend-name">开光貔貅摆件</div>
+                        <div class="recommend-price">1299</div>
+                    </div>
+                </div>
+                <div class="recommend-item" onclick="goDetail(2)">
+                    <div class="recommend-img">❋</div>
+                    <div class="recommend-info">
+                        <div class="recommend-name">黄铜葫芦挂件</div>
+                        <div class="recommend-price">599</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部结算栏 -->
+    <div class="bottom-bar">
+        <div class="select-all" onclick="toggleAllSelect()">
+            <div class="select-all-checkbox checked" id="selectAllCheckbox"></div>
+            <span class="select-all-text">全选</span>
+        </div>
+        <div class="price-info">
+            <div class="price-total" id="totalPrice">1198</div>
+            <div class="price-discount">已省 ¥100</div>
+        </div>
+        <button class="checkout-btn" onclick="checkout()">结算 <span id="selectedCount">(2)</span></button>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <!-- 底部导航 -->
+    <nav class="tab-bar">
+        <a href="/" class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-text">首页</span>
+        </a>
+        <a href="/wiki" class="tab-item">
+            <span class="tab-icon">☯</span>
+            <span class="tab-text">百科</span>
+        </a>
+        <a href="/wish" class="tab-item">
+            <span class="tab-icon">☸</span>
+            <span class="tab-text">动态</span>
+        </a>
+        <a href="/cart" class="tab-item active">
+            <span class="tab-icon">🛒</span>
+            <span class="tab-text">购物车</span>
+        </a>
+        <a href="/user" class="tab-item">
+            <span class="tab-icon">👤</span>
+            <span class="tab-text">我的</span>
+        </a>
+    </nav>
+    
+    <script>
+        let isEditMode = false;
+        let isAllSelected = true;
+        
+        // Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 编辑模式
+        function toggleEdit() {
+            isEditMode = !isEditMode;
+            document.getElementById('editBtn').textContent = isEditMode ? '完成' : '编辑';
+            document.querySelector('.main').classList.toggle('edit-mode', isEditMode);
+            document.querySelector('.checkout-btn').textContent = isEditMode ? '删除' : '结算';
+        }
+        
+        // 全选
+        function toggleAllSelect() {
+            isAllSelected = !isAllSelected;
+            document.getElementById('selectAllCheckbox').classList.toggle('checked', isAllSelected);
+            document.querySelectorAll('.goods-checkbox, .shop-checkbox').forEach(cb => {
+                cb.classList.toggle('checked', isAllSelected);
+            });
+            updateTotal();
+        }
+        
+        // 店铺选择
+        function toggleShopSelect(el) {
+            el.classList.toggle('checked');
+            const items = el.closest('.shop-section').querySelectorAll('.goods-checkbox');
+            items.forEach(item => item.classList.toggle('checked', el.classList.contains('checked')));
+            updateTotal();
+        }
+        
+        // 商品选择
+        function toggleItemSelect(el) {
+            el.classList.toggle('checked');
+            updateTotal();
+        }
+        
+        // 数量修改
+        function changeQuantity(btn, delta) {
+            const numEl = btn.parentElement.querySelector('.quantity-num');
+            let num = parseInt(numEl.textContent) + delta;
+            if (num < 1) num = 1;
+            if (num > 99) num = 99;
+            numEl.textContent = num;
+            updateTotal();
+        }
+        
+        // 删除商品
+        function deleteItem(btn) {
+            if (confirm('确定要删除这件商品吗？')) {
+                btn.closest('.goods-item').remove();
+                updateTotal();
+                checkEmpty();
+            }
+        }
+        
+        // 更新总价
+        function updateTotal() {
+            const items = document.querySelectorAll('.goods-item');
+            let total = 0;
+            let count = 0;
+            
+            items.forEach(item => {
+                const checkbox = item.querySelector('.goods-checkbox');
+                if (checkbox.classList.contains('checked')) {
+                    const price = parseInt(item.querySelector('.goods-price').textContent);
+                    const quantity = parseInt(item.querySelector('.quantity-num').textContent);
+                    total += price * quantity;
+                    count++;
+                }
+            });
+            
+            document.getElementById('totalPrice').textContent = total;
+            document.getElementById('selectedCount').textContent = `(${count})`;
+            isAllSelected = count === items.length;
+            document.getElementById('selectAllCheckbox').classList.toggle('checked', isAllSelected);
+        }
+        
+        // 检查是否为空
+        function checkEmpty() {
+            const items = document.querySelectorAll('.goods-item');
+            if (items.length === 0) {
+                document.getElementById('emptyCart').style.display = 'flex';
+                document.getElementById('cartList').style.display = 'none';
+            }
+        }
+        
+        // 去购物
+        function goShopping() {
+            window.location.href = '/';
+        }
+        
+        // 商品详情
+        function goDetail(id) {
+            window.location.href = '/goods-detail.html';
+        }
+        
+        // 结算
+        function checkout() {
+            if (isEditMode) {
+                // 删除选中商品
+                if (confirm('确定要删除选中的商品吗？')) {
+                    document.querySelectorAll('.goods-item').forEach(item => {
+                        if (item.querySelector('.goods-checkbox').classList.contains('checked')) {
+                            item.remove();
+                        }
+                    });
+                    updateTotal();
+                    checkEmpty();
+                    showToast('已删除');
+                }
+            } else {
+                showToast('正在跳转结算...');
+                setTimeout(() => showToast('结算功能开发中'), 800);
+            }
+        }
+        
+        // 初始化
+        updateTotal();
+    </script>
+</body>
+</html>

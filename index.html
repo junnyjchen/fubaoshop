@@ -586,11 +586,25 @@
             transition: all var(--transition);
             padding: 6px 8px;
             min-width: 50px;
+            position: relative;
         }
         .tab-item.active, .tab-item:hover { color: var(--gold); }
         .tab-item:active { transform: scale(0.9); }
         .tab-icon { font-size: 22px; line-height: 1; }
         .tab-text { font-size: 10px; }
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 10px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            min-width: 16px;
+            text-align: center;
+            font-weight: 600;
+        }
         
         /* ==================== 分享面板 ==================== */
         .share-panel {
@@ -985,7 +999,7 @@
                 <span class="tab-icon">☸</span>
                 <span class="tab-text">动态</span>
             </a>
-            <a href="/cart" class="tab-item">
+            <a href="/cart.html" class="tab-item">
                 <span class="tab-icon">🛒</span>
                 <span class="tab-text">购物车</span>
             </a>
@@ -1087,7 +1101,52 @@
             perfData.lastVisit = Date.now();
             perfData.loadTime = loadTime;
             localStorage.setItem('perfData', JSON.stringify(perfData));
+            
+            // 更新用户状态
+            updateUserStatus();
+            updateCartBadge();
         });
+        
+        // ==================== 用户状态 ====================
+        function updateUserStatus() {
+            const user = localStorage.getItem('user');
+            const userBtn = document.getElementById('userBtn');
+            
+            if (user) {
+                const userData = JSON.parse(user);
+                if (userData.loggedIn) {
+                    userBtn.textContent = '👤';
+                    userBtn.onclick = () => window.location.href = '/user.html';
+                    userBtn.title = userData.nickname || '我的';
+                }
+            } else {
+                userBtn.textContent = '👤';
+                userBtn.onclick = () => window.location.href = '/login.html';
+                userBtn.title = '登录/注册';
+            }
+        }
+        
+        // ==================== 购物车徽章 ====================
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            // 查找购物车tab
+            const cartTab = document.querySelector('.tab-item[href="/cart"] .tab-icon');
+            if (cartTab) {
+                let badge = cartTab.nextElementSibling;
+                if (total > 0) {
+                    if (badge && badge.classList.contains('cart-badge')) {
+                        badge.textContent = total;
+                    } else {
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'cart-badge';
+                        newBadge.textContent = total;
+                        cartTab.parentNode.appendChild(newBadge);
+                    }
+                }
+            }
+        }
         
         // ==================== 配置 ====================
         const ONE_SCREEN = window.innerHeight || 667;

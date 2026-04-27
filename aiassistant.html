@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI道玄 - 符宝网</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --gold-light: #f4d160;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text: #f5f5f5;
+            --text-muted: #b8b8b8;
+            --success: #10b981;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 14px; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        ::-webkit-scrollbar { display: none; }
+        a { color: inherit; text-decoration: none; }
+        
+        /* 头部 */
+        .header {
+            flex-shrink: 0;
+            background: linear-gradient(180deg, var(--dark) 0%, var(--dark-bg) 100%);
+            padding: 12px 16px;
+            padding-top: calc(12px + env(safe-area-inset-top, 0));
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .back-btn { font-size: 18px; color: var(--gold); }
+        .header-info { display: flex; flex-direction: column; }
+        .header-title { font-family: 'Noto Serif TC', serif; font-size: 15px; color: var(--gold); }
+        .header-status { font-size: 10px; color: var(--success); display: flex; align-items: center; gap: 4px; }
+        .header-status::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .header-actions { display: flex; gap: 12px; }
+        .header-btn { font-size: 18px; color: var(--text-muted); cursor: pointer; }
+        
+        /* 消息区域 */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+        
+        /* 日期分隔 */
+        .date-divider {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .date-text {
+            display: inline-block;
+            background: var(--dark);
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        /* 消息气泡 */
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user { flex-direction: row-reverse; }
+        .message-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, var(--gold), var(--primary));
+        }
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--dark-light), var(--dark));
+        }
+        .message-content {
+            max-width: 75%;
+        }
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .message.ai .message-bubble {
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 4px 16px 16px 16px;
+            color: var(--text);
+        }
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff;
+            border-radius: 16px 4px 16px 16px;
+        }
+        .message-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+        .message.user .message-time { text-align: right; }
+        
+        /* 欢迎消息 */
+        .welcome {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .welcome-icon { font-size: 56px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .welcome-title { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--gold); margin-bottom: 8px; }
+        .welcome-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+        
+        /* 快捷问题 */
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        .quick-btn {
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quick-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        /* 输入区域 */
+        .input-area {
+            flex-shrink: 0;
+            background: var(--dark-bg);
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 12px 16px;
+            padding-bottom: calc(12px + var(--safe-bottom));
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .input-wrapper {
+            flex: 1;
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 22px;
+            display: flex;
+            align-items: flex-end;
+            padding: 4px 16px;
+            transition: all 0.3s;
+        }
+        .input-wrapper:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        .input-field {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            padding: 10px 0;
+            resize: none;
+            max-height: 100px;
+            line-height: 1.4;
+        }
+        .input-field:focus { outline: none; }
+        .input-field::placeholder { color: var(--text-muted); opacity: 0.6; }
+        .input-actions { display: flex; gap: 8px; }
+        .input-btn {
+            width: 40px; height: 40px;
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .input-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            color: #fff;
+        }
+        .send-btn:hover { transform: scale(1.05); }
+        
+        /* 加载动画 */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+        .typing-dot {
+            width: 8px; height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-left">
+            <a href="/" class="back-btn">←</a>
+            <div class="header-info">
+                <span class="header-title">☯ AI道玄</span>
+                <span class="header-status">在线</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span class="header-btn" onclick="clearChat()">🗑</span>
+            <span class="header-btn" onclick="showToast('设置功能开发中')">⚙</span>
+        </div>
+    </header>
+    
+    <!-- 消息区域 -->
+    <div class="messages" id="messages">
+        <!-- 欢迎消息 -->
+        <div class="welcome">
+            <div class="welcome-icon">☯</div>
+            <div class="welcome-title">道玄居士</div>
+            <div class="welcome-desc">
+                贫道云游四方，精通道家经典，熟读三洞四辅之经。今有缘与施主相遇，有何疑惑尽管道来，贫道必当倾囊相告。
+            </div>
+            <div class="quick-questions">
+                <button class="quick-btn" onclick="sendQuestion('什么是平安符，如何使用？')">什么是平安符</button>
+                <button class="quick-btn" onclick="sendQuestion('太岁符和化太岁有什么区别？')">太岁符区别</button>
+                <button class="quick-btn" onclick="sendQuestion('道家的五行属什么？')">五行属相</button>
+                <button class="quick-btn" onclick="sendQuestion('如何正确请符？')">请符讲究</button>
+                <button class="quick-btn" onclick="sendQuestion('符箓一般能保存多久？')">符箓保存</button>
+                <button class="quick-btn" onclick="sendQuestion('开光和加持有什么区别？')">开光加持</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 输入区域 -->
+    <div class="input-area">
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea class="input-field" id="inputField" rows="1" placeholder="请输入您的问题..."></textarea>
+            </div>
+            <div class="input-actions">
+                <span class="input-btn" onclick="showToast('功能开发中')">📎</span>
+                <button class="input-btn send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // 响应数据
+        const responses = {
+            '什么是平安符，如何使用？': '平安符乃道家护身之宝，由高功法师按古法绘制，以朱砂书于黄纸之上，经开光加持后方有灵力。使用方法：\n\n1. 将符贴于大门内侧或随身携带\n2. 保持符纸干燥，切勿沾水\n3. 不可让外人随意触碰\n4. 每年可重新请一道新的\n\n施主可将平安符挂于客厅或卧室，护佑出入平安。',
+            '太岁符和化太岁有什么区别？': '此乃道家常见之惑，今为施主解之：\n\n【太岁符】\n- 本命年犯太岁时佩戴\n- 可化解当年冲、破、害太岁\n- 需法师开光方有效果\n\n【化太岁锦囊】\n- 内含多种化解物品\n- 配合太岁符使用效果更佳\n- 可放置于枕头下或包里\n\n二者配合使用，如虎添翼，化解太岁之力更强。',
+            '道家的五行属什么？': '道家以五行相生相克之理，贯穿万物：\n\n【五行相生】\n木→火→土→金→水→木\n\n【五行相克】\n木→土→水→火→金→木\n\n符箓亦分五行，须配合命主八字选用。若八字喜木，可请青色或绿色符纸之符；喜火则用红色...施主若知自己八字，可告知贫道，为汝细看。',
+            '如何正确请符？': '请符有讲究，心诚则灵：\n\n1. 选择正规道观或法师\n2. 说明自身需求（平安/招财/学业等）\n3. 法师根据八字选符\n4. 请回后妥善保管\n5. 保持恭敬之心\n\n切记：符到之处，心存善念，方能灵验。不可心存恶念，否则反噬。',
+            '符箓一般能保存多久？': '符箓保存有讲究：\n\n【纸质符】\n- 未开光：数年\n- 已开光：一年为佳\n- 建议每年更新\n\n【木质/金属符】\n- 保存时间更长\n- 十年八年皆可\n- 注意防潮防腐\n\n符箓灵力会随时间消散，故建议每年重新请一道，以保灵力常在。',
+            '开光和加持有什么区别？': '开光与加持，功用有别：\n\n【开光】\n- 为物品注入灵力\n- 需要法师设坛做法\n- 仪式较为隆重\n- 用于重要法器\n\n【加持】\n- 法师诵经祈福\n- 增强物品灵力\n- 仪式相对简单\n- 用于日常用品\n\n简单说：开光是"注入灵魂"，加持是"增强能量"。'
+        };
+        
+        const defaultResponse = '施主所问，贫道已悉知。道法自然，万物皆有其缘法。请施主详细说明所求，贫道当为汝指点迷津。\n\n☯ 可问：\n• 各类符箓的用途\n• 道家基础知识\n• 五行八字相术\n• 请符注意事项';
+        
+        // Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 发送问题
+        function sendQuestion(question) {
+            document.getElementById('inputField').value = question;
+            sendMessage();
+        }
+        
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('inputField');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addUserMessage(message);
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // 模拟AI思考
+            setTimeout(() => {
+                showTyping();
+                
+                // 模拟流式输出
+                setTimeout(() => {
+                    hideTyping();
+                    const response = responses[message] || defaultResponse;
+                    addAIMessage(response);
+                }, 1500);
+            }, 300);
+        }
+        
+        // 添加用户消息
+        function addUserMessage(text) {
+            const messages = document.getElementById('messages');
+            const time = formatTime(new Date());
+            
+            const msgEl = document.createElement('div');
+            msgEl.className = 'message user';
+            msgEl.innerHTML = `
+                <div class="message-avatar">☯</div>
+                <div class="message-content">
+                    <div class="message-bubble">${escapeHtml(text)}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messages.appendChild(msgEl);
+            scrollToBottom();
+        }
+        
+        // 添加AI消息
+        function addAIMessage(text) {
+            const messages = document.getElementById('messages');
+            const time = formatTime(new Date());
+            
+            const msgEl = document.createElement('div');
+            msgEl.className = 'message ai';
+            msgEl.innerHTML = `
+                <div class="message-avatar">☯</div>
+                <div class="message-content">
+                    <div class="message-bubble">${formatMessage(text)}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messages.appendChild(msgEl);
+            scrollToBottom();
+        }
+        
+        // 显示加载
+        function showTyping() {
+            const messages = document.getElementById('messages');
+            
+            const msgEl = document.createElement('div');
+            msgEl.className = 'message ai';
+            msgEl.id = 'typingMessage';
+            msgEl.innerHTML = `
+                <div class="message-avatar">☯</div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <div class="typing-indicator">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            messages.appendChild(msgEl);
+            scrollToBottom();
+        }
+        
+        // 隐藏加载
+        function hideTyping() {
+            const typing = document.getElementById('typingMessage');
+            if (typing) typing.remove();
+        }
+        
+        // 格式化消息（换行）
+        function formatMessage(text) {
+            return escapeHtml(text).replace(/\n/g, '<br>').replace(/•/g, '◆');
+        }
+        
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 格式化时间
+        function formatTime(date) {
+            return date.getHours().toString().padStart(2, '0') + ':' + 
+                   date.getMinutes().toString().padStart(2, '0');
+        }
+        
+        // 滚动到底部
+        function scrollToBottom() {
+            const messages = document.getElementById('messages');
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        // 清空对话
+        function clearChat() {
+            if (confirm('确定要清空对话记录吗？')) {
+                location.reload();
+            }
+        }
+        
+        // 自动调整输入框高度
+        const inputField = document.getElementById('inputField');
+        inputField.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+        
+        // 回车发送
+        inputField.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
