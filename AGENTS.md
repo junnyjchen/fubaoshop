@@ -67,13 +67,37 @@ app/
 ## 核心功能详情
 
 ### 1. AI助手「道玄」
-- **路由**: `/aiassistant`
-- **控制器**: `app/index/controller/AIAssistant.php`
-- **服务**: `app/service/AIAssistantService.php`
-- **API**: `app/index/controller/api/AIChat.php`
-- **视图**: `app/index/view/default/index/ai_assistant/index.html`
-- **知识库**: `sxo_ai_knowledge_item` 表
+- **前端页面**: `/aiassistant.html`
+- **配置后台**: `/admin/ai-model-config.html`
+- **知识库管理**: `/admin/ai-knowledge.html`
+- **训练优化**: `/admin/ai-training.html`
+- **API服务**: `api/server.js`
 - **功能**: 智能问答，知识库检索，道法咨询
+
+#### 大模型配置
+| 配置项 | 说明 |
+|--------|------|
+| 启用大模型API | 开启后使用豆包/DeepSeek等大模型 |
+| 知识库优先 | 先匹配知识库，未匹配再调用大模型 |
+| 流式输出 | 打字机效果实时显示回复 |
+| 模型选择 | 豆包Pro/Lite/Mini、DeepSeek V3、Kimi、GLM-5 |
+| Temperature | 创造性参数 (0-2) |
+| 深度思考 | 启用复杂推理思考过程 |
+
+#### API接口
+```
+POST /api/ai/chat         - 发送消息
+GET  /api/ai/config       - 获取配置
+POST /api/ai/config       - 保存配置
+```
+
+#### 支持的模型
+- 豆包 Pro 2.0 (doubao-seed-2-0-pro-260215)
+- 豆包 Lite 2.0 (doubao-seed-2-0-lite-260215)
+- 豆包 Mini 2.0 (doubao-seed-2-0-mini-260215)
+- DeepSeek V3.2 (deepseek-v3-2-251201)
+- Kimi K2.5 (kimi-k2-5-260127)
+- GLM-5.0 (glm-5-0-260211)
 
 ### 2. 免费领取
 - **路由**: `/freepick`

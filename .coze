@@ -2,11 +2,11 @@
 requires = ["nodejs-24"]
 
 [dev]
-build = []
-run = ["python3", "-m", "http.server", "5000"]
-cwd = "public/demo"
+build = ["cd api && pnpm install"]
+run = ["node", "api/server.js", "--static", "/workspace/projects"]
+cwd = "/workspace/projects"
 
 [deploy]
-build = []
-run = ["python3", "-m", "http.server", "5000"]
-cwd = "public/demo"
+build = ["cd api && pnpm install"]
+run = ["node", "api/server.js", "--static", "/workspace/projects"]
+cwd = "/workspace/projects"

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI道玄 - 大模型配置</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --gold-light: #f4d160;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text: #f5f5f5;
+            --text-muted: #b8b8b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+        a { color: var(--gold); text-decoration: none; }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.15); }
+        .header-title { font-family: 'Noto Serif TC', serif; font-size: 20px; color: var(--gold); }
+        .header-nav { display: flex; gap: 8px; }
+        .nav-link { padding: 8px 14px; background: transparent; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); color: var(--gold); }
+        
+        .card { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .card-title { font-size: 16px; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        .form-input, .form-select { width: 100%; padding: 12px 14px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--gold); }
+        .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+        
+        .toggle-group { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+        .toggle-group:last-child { border-bottom: none; }
+        .toggle-label { font-size: 14px; color: var(--text); }
+        .toggle-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        
+        .toggle { position: relative; width: 48px; height: 26px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--dark-light); border-radius: 26px; transition: 0.3s; }
+        .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+        .toggle input:checked + .toggle-slider { background: var(--success); }
+        .toggle input:checked + .toggle-slider:before { transform: translateX(22px); }
+        
+        .model-list { display: grid; gap: 12px; }
+        .model-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        .model-item:hover { border-color: rgba(212, 175, 55, 0.3); }
+        .model-item.selected { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+        .model-item.selected::after { content: '✓'; color: var(--gold); font-size: 18px; }
+        .model-info { flex: 1; }
+        .model-name { font-size: 14px; color: var(--text); font-weight: 500; }
+        .model-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        
+        .slider-group { margin: 16px 0; }
+        .slider-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .slider-value { color: var(--gold); font-weight: 600; }
+        input[type="range"] { width: 100%; height: 6px; background: var(--dark-light); border-radius: 3px; outline: none; -webkit-appearance: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--gold); border-radius: 50%; cursor: pointer; }
+        
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold); }
+        .btn:hover { transform: scale(1.02); }
+        
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.3); padding: 12px 24px; border-radius: 10px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.3s; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .status-badge.success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-badge.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-badge.danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        
+        .test-panel { margin-top: 20px; padding: 16px; background: var(--dark-light); border-radius: 10px; }
+        .test-result { margin-top: 12px; padding: 12px; background: var(--dark); border-radius: 8px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="header-title">☯ AI道玄 · 大模型配置</h1>
+            <nav class="header-nav">
+                <a href="/admin/ai-knowledge.html" class="nav-link">知识库</a>
+                <a href="/admin/ai-training.html" class="nav-link">训练优化</a>
+                <button class="nav-link active">模型配置</button>
+            </nav>
+        </header>
+        
+        <!-- 当前状态 -->
+        <div class="card">
+            <div class="card-title">📊 当前状态</div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">API状态</div>
+                    <div class="status-badge" id="apiStatus">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--warning);"></span>
+                        未配置
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">当前模型</div>
+                    <div style="font-size: 14px; color: var(--gold);" id="currentModel">doubao-seed-2-0-pro-260215</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">调用模式</div>
+                    <div style="font-size: 14px;" id="currentMode">知识库优先</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API配置 -->
+        <div class="card">
+            <div class="card-title">🔑 API配置</div>
+            
+            <div class="toggle-group">
+                <div>
+                    <div class="toggle-label">启用大模型API</div>
+                    <div class="toggle-desc">关闭后使用本地知识库匹配</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="enableApi" onchange="saveConfig()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-group">
+                <div>
+                    <div class="toggle-label">优先使用知识库</div>
+                    <div class="toggle-desc">知识库未匹配时再调用大模型</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="knowledgeFirst" checked onchange="saveConfig()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-group">
+                <div>
+                    <div class="toggle-label">流式输出</div>
+                    <div class="toggle-desc">打字机效果实时显示回复</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="streamOutput" checked onchange="saveConfig()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- 模型选择 -->
+        <div class="card">
+            <div class="card-title">🤖 模型选择</div>
+            
+            <div class="model-list" id="modelList">
+                <div class="model-item" data-model="doubao-seed-2-0-pro-260215" onclick="selectModel(this)">
+                    <div class="model-info">
+                        <div class="model-name">豆包 Pro 2.0 (旗舰)</div>
+                        <div class="model-desc">旗舰级全能通用模型，复杂推理与长链路任务</div>
+                    </div>
+                </div>
+                <div class="model-item" data-model="doubao-seed-2-0-lite-260215" onclick="selectModel(this)">
+                    <div class="model-info">
+                        <div class="model-name">豆包 Lite 2.0</div>
+                        <div class="model-desc">均衡性能与成本，胜任内容创作与数据分析</div>
+                    </div>
+                </div>
+                <div class="model-item" data-model="doubao-seed-2-0-mini-260215" onclick="selectModel(this)">
+                    <div class="model-info">
+                        <div class="model-name">豆包 Mini 2.0</div>
+                        <div class="model-desc">快速响应，高并发与成本敏感场景</div>
+                    </div>
+                </div>
+                <div class="model-item" data-model="deepseek-v3-2-251201" onclick="selectModel(this)">
+                    <div class="model-info">
+                        <div class="model-name">DeepSeek V3.2</div>
+                        <div class="model-desc">平衡推理能力与输出长度</div>
+                    </div>
+                </div>
+                <div class="model-item" data-model="kimi-k2-5-260127" onclick="selectModel(this)">
+                    <div class="model-info">
+                        <div class="model-name">Kimi K2.5</div>
+                        <div class="model-desc">Agent、代码、视觉理解及通用智能任务</div>
+                    </div>
+                </div>
+                <div class="model-item" data-model="glm-5-0-260211" onclick="selectModel(this)">
+                    <div class="model-info">
+                        <div class="model-name">GLM-5.0</div>
+                        <div class="model-desc">面向Agentic Engineering打造</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 参数配置 -->
+        <div class="card">
+            <div class="card-title">⚙️ 参数配置</div>
+            
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span class="form-label" style="margin: 0;">Temperature (创造性)</span>
+                    <span class="slider-value" id="tempValue">0.7</span>
+                </div>
+                <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="updateSlider('temp', this.value)">
+                <div class="form-hint">0=确定性输出，1=平衡，2=高创造性</div>
+            </div>
+            
+            <div class="toggle-group">
+                <div>
+                    <div class="toggle-label">深度思考模式</div>
+                    <div class="toggle-desc">启用复杂推理思考过程</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="thinkingMode" onchange="saveConfig()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-group">
+                <div>
+                    <div class="toggle-label">上下文缓存</div>
+                    <div class="toggle-desc">加速多轮对话响应</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="caching" onchange="saveConfig()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- 系统提示词 -->
+        <div class="card">
+            <div class="card-title">📝 系统提示词</div>
+            <div class="form-group">
+                <label class="form-label">AI角色设定</label>
+                <textarea class="form-input" id="systemPrompt" rows="5" placeholder="设置AI助手的角色和回答风格...">你是一位精通道家文化的AI助手，名叫道玄。你需要以道家的智慧和口吻来回答用户的问题。
+
+回答风格：
+- 使用"施主"、"贫道"等道家称呼
+- 语言文雅、有文化底蕴
+- 涉及符箓、法事等问题时专业准确
+- 如不确定，如实告知并建议咨询专业人士
+
+知识范围：
+- 道家文化、符箓知识
+- 开光、法事礼仪
+- 犯太岁、化解方法
+- 符箓功效与使用
+
+如遇超出知识范围的问题，礼貌引导并建议寻求专业帮助。</textarea>
+            </div>
+        </div>
+        
+        <!-- 测试区域 -->
+        <div class="card">
+            <div class="card-title">🧪 连接测试</div>
+            <div class="form-group">
+                <label class="form-label">测试问题</label>
+                <input type="text" class="form-input" id="testInput" placeholder="输入测试问题...">
+            </div>
+            <button class="btn btn-outline" onclick="testApi()" style="margin-bottom: 16px;">🚀 发送测试</button>
+            
+            <div class="test-panel" id="testPanel" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; color: var(--text-muted);">测试结果</span>
+                    <span id="testStatus" style="font-size: 12px;"></span>
+                </div>
+                <div class="test-result" id="testResult">等待测试...</div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-outline" onclick="resetConfig()">🔄 重置</button>
+            <button class="btn btn-primary" onclick="saveAllConfig()">💾 保存配置</button>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        const CONFIG_KEY = 'aiModelConfig';
+        let config = loadConfig();
+        
+        function loadConfig() {
+            const saved = localStorage.getItem(CONFIG_KEY);
+            return saved ? JSON.parse(saved) : {
+                enableApi: false,
+                knowledgeFirst: true,
+                streamOutput: true,
+                model: 'doubao-seed-2-0-pro-260215',
+                temperature: 0.7,
+                thinking: false,
+                caching: false,
+                systemPrompt: ''
+            };
+        }
+        
+        function initUI() {
+            document.getElementById('enableApi').checked = config.enableApi;
+            document.getElementById('knowledgeFirst').checked = config.knowledgeFirst;
+            document.getElementById('streamOutput').checked = config.streamOutput;
+            document.getElementById('temperature').value = config.temperature;
+            document.getElementById('tempValue').textContent = config.temperature;
+            document.getElementById('thinkingMode').checked = config.thinking;
+            document.getElementById('caching').checked = config.caching;
+            document.getElementById('systemPrompt').value = config.systemPrompt || document.getElementById('systemPrompt').placeholder;
+            
+            // 更新当前状态显示
+            updateStatusDisplay();
+            
+            // 选中模型
+            document.querySelectorAll('.model-item').forEach(item => {
+                item.classList.toggle('selected', item.dataset.model === config.model);
+            });
+        }
+        
+        function updateStatusDisplay() {
+            const statusEl = document.getElementById('apiStatus');
+            const currentModel = document.getElementById('currentModel');
+            const currentMode = document.getElementById('currentMode');
+            
+            if (config.enableApi) {
+                statusEl.className = 'status-badge success';
+                statusEl.innerHTML = '<span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></span>已启用';
+                currentMode.textContent = config.knowledgeFirst ? '知识库优先' : '直接调用';
+            } else {
+                statusEl.className = 'status-badge warning';
+                statusEl.innerHTML = '<span style="width: 8px; height: 8px; border-radius: 50%; background: var(--warning);"></span>本地模式';
+                currentMode.textContent = '仅知识库';
+            }
+            
+            currentModel.textContent = config.model;
+        }
+        
+        function selectModel(el) {
+            document.querySelectorAll('.model-item').forEach(item => item.classList.remove('selected'));
+            el.classList.add('selected');
+            config.model = el.dataset.model;
+            updateStatusDisplay();
+            saveConfig();
+        }
+        
+        function updateSlider(type, value) {
+            document.getElementById(type + 'Value').textContent = value;
+            config[type === 'temp' ? 'temperature' : type] = parseFloat(value);
+        }
+        
+        function saveConfig() {
+            config.enableApi = document.getElementById('enableApi').checked;
+            config.knowledgeFirst = document.getElementById('knowledgeFirst').checked;
+            config.streamOutput = document.getElementById('streamOutput').checked;
+            config.temperature = parseFloat(document.getElementById('temperature').value);
+            config.thinking = document.getElementById('thinkingMode').checked;
+            config.caching = document.getElementById('caching').checked;
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+            updateStatusDisplay();
+        }
+        
+        function saveAllConfig() {
+            saveConfig();
+            config.systemPrompt = document.getElementById('systemPrompt').value;
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+            showToast('配置已保存', 'success');
+            
+            // 同步到服务器
+            fetch('/api/ai/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            }).then(() => {
+                showToast('配置已同步到服务器', 'success');
+            }).catch(() => {
+                // 本地模式不需要服务器
+            });
+        }
+        
+        function resetConfig() {
+            if (confirm('确定要重置所有配置吗？')) {
+                localStorage.removeItem(CONFIG_KEY);
+                location.reload();
+            }
+        }
+        
+        async function testApi() {
+            const input = document.getElementById('testInput').value.trim();
+            if (!input) {
+                showToast('请输入测试问题', 'error');
+                return;
+            }
+            
+            const panel = document.getElementById('testPanel');
+            const result = document.getElementById('testResult');
+            const status = document.getElementById('testStatus');
+            
+            panel.style.display = 'block';
+            result.textContent = '正在连接...';
+            status.textContent = '';
+            status.className = '';
+            
+            try {
+                const response = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: input,
+                        stream: false
+                    })
+                });
+                
+                if (!response.ok) throw new Error('API调用失败');
+                
+                const data = await response.json();
+                result.textContent = data.content || '无回复内容';
+                status.textContent = '✓ 成功';
+                status.className = 'status-badge success';
+                showToast('测试成功', 'success');
+                
+            } catch (error) {
+                result.textContent = '错误: ' + error.message;
+                status.textContent = '✗ 失败';
+                status.className = 'status-badge danger';
+                showToast('测试失败', 'error');
+            }
+        }
+        
+        function showToast(msg, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast' + (type ? ' ' + type : '');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 初始化
+        initUI();
+    </script>
+</body>
+</html>
