@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI道玄 - 训练优化管理</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-light: #e63950;
+            --gold: #d4af37;
+            --gold-light: #f4d160;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
+            --dark-bg: #0f0f23;
+            --text: #f5f5f5;
+            --text-muted: #b8b8b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 14px; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+        a { color: var(--gold); text-decoration: none; }
+        
+        /* 头部 */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: var(--dark);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--gold); }
+        .header-nav { display: flex; gap: 6px; }
+        .nav-link { padding: 8px 14px; background: transparent; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); color: var(--gold); }
+        
+        /* 主容器 */
+        .container { max-width: 1200px; margin: 0 auto; padding: 70px 16px 30px; }
+        
+        /* 统计卡片 */
+        .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+        .stat-card { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 16px; text-align: center; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .stat-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .stat-card.green::before { background: linear-gradient(90deg, var(--success), #34d399); }
+        .stat-card.gold::before { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+        .stat-card.red::before { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+        .stat-card.orange::before { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+        .stat-icon { font-size: 20px; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 700; color: var(--gold); }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .stat-trend { font-size: 11px; margin-top: 6px; }
+        .stat-trend.up { color: var(--success); }
+        .stat-trend.down { color: var(--danger); }
+        
+        /* Tab导航 */
+        .main-tabs { display: flex; gap: 4px; background: var(--dark); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 14px 12px; text-align: center; font-size: 14px; color: var(--text-muted); background: transparent; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .tab-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; }
+        .tab-btn:not(.active):hover { color: var(--gold); }
+        .tab-badge { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        
+        /* 图表区域 */
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .chart-card { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 16px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .chart-title { font-size: 15px; color: var(--text); font-weight: 600; }
+        .chart-actions { display: flex; gap: 8px; }
+        .chart-btn { padding: 6px 12px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 6px; color: var(--text-muted); font-size: 11px; cursor: pointer; }
+        .chart-btn.active { border-color: var(--gold); color: var(--gold); }
+        
+        /* 简单柱状图 */
+        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 150px; padding: 10px 0; }
+        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .bar { width: 100%; background: linear-gradient(180deg, var(--gold), rgba(212, 175, 55, 0.3)); border-radius: 4px 4px 0 0; min-height: 4px; transition: all 0.3s; }
+        .bar:hover { opacity: 0.8; }
+        .bar-label { font-size: 10px; color: var(--text-muted); }
+        .bar-value { font-size: 11px; color: var(--gold); font-weight: 600; }
+        
+        /* 饼图 */
+        .pie-container { display: flex; align-items: center; gap: 20px; }
+        .pie-chart { width: 120px; height: 120px; border-radius: 50%; position: relative; }
+        .pie-legend { flex: 1; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .legend-value { margin-left: auto; color: var(--text-muted); }
+        
+        /* 搜索过滤 */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 200px; padding: 12px 16px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .search-input:focus { outline: none; border-color: var(--gold); }
+        .filter-select { padding: 12px 14px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; }
+        .date-input { padding: 12px 14px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .btn { padding: 10px 18px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border: none; border-radius: 8px; color: #fff; font-size: 13px; cursor: pointer; transition: all 0.3s; }
+        .btn:hover { transform: scale(1.02); }
+        .btn-outline { background: transparent; border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold); }
+        .btn-outline:hover { background: rgba(212, 175, 55, 0.1); }
+        
+        /* 日志列表 */
+        .log-list { display: flex; flex-direction: column; gap: 10px; }
+        .log-item { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 10px; padding: 14px; transition: all 0.3s; cursor: pointer; }
+        .log-item:hover { border-color: rgba(212, 175, 55, 0.3); }
+        .log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .log-type { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .log-type.hit { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .log-type.miss { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .log-type.partial { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .log-time { font-size: 11px; color: var(--text-muted); }
+        .log-question { font-size: 14px; color: var(--text); margin-bottom: 8px; font-weight: 500; }
+        .log-answer { font-size: 13px; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .log-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .log-match { font-size: 11px; color: var(--text-muted); }
+        .log-match-rate { color: var(--success); font-weight: 600; }
+        .log-actions { display: flex; gap: 6px; }
+        .log-action { padding: 4px 10px; background: var(--dark-light); border-radius: 4px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+        .log-action:hover { color: var(--gold); }
+        
+        /* 未识别问题 */
+        .unrecognized-item { background: var(--dark); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+        .unrecognized-item .log-question { color: var(--danger); }
+        .suggest-form { display: flex; gap: 8px; margin-top: 10px; }
+        .suggest-input { flex: 1; padding: 8px 12px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 6px; color: var(--text); font-size: 13px; }
+        .suggest-btn { padding: 8px 14px; background: var(--success); border: none; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer; }
+        
+        /* 优化建议 */
+        .suggestions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .suggestion-card { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 16px; }
+        .suggestion-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .suggestion-icon { font-size: 24px; }
+        .suggestion-title { font-size: 14px; color: var(--text); font-weight: 600; }
+        .suggestion-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; }
+        .suggestion-action { display: flex; justify-content: space-between; align-items: center; }
+        .suggestion-impact { font-size: 11px; color: var(--text-muted); }
+        .suggestion-btn { padding: 6px 14px; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 6px; color: var(--gold); font-size: 12px; cursor: pointer; }
+        
+        /* 分页 */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .page-btn { min-width: 36px; height: 36px; padding: 0 12px; background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 8px; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+        .page-btn:hover, .page-btn.active { border-color: var(--gold); color: var(--gold); }
+        .page-btn.active { background: rgba(212, 175, 55, 0.15); }
+        
+        /* 弹窗 */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; padding: 24px; max-width: 700px; width: 100%; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; color: var(--gold); }
+        .modal-close { width: 32px; height: 32px; background: var(--dark-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+        .modal-body { font-size: 14px; line-height: 1.6; }
+        .modal-body .question { background: var(--dark-light); padding: 12px; border-radius: 8px; margin-bottom: 12px; color: var(--text); }
+        .modal-body .answer { background: rgba(212, 175, 55, 0.1); padding: 12px; border-radius: 8px; color: var(--text-muted); white-space: pre-wrap; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 14px; background: var(--dark-light); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; color: var(--text); font-size: 14px; }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-group .btn { flex: 1; }
+        
+        /* Toast */
+        .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--dark); border: 1px solid rgba(212, 175, 55, 0.3); padding: 12px 24px; border-radius: 10px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.3s; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        
+        /* Tab内容 */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        @media (max-width: 900px) {
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+            .suggestions-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .header-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <a href="/" class="header-title">☯ AI道玄 · 训练优化</a>
+        <nav class="header-nav">
+            <a href="/admin/ai-knowledge.html" class="nav-link">知识库</a>
+            <button class="nav-link active">训练优化</button>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <!-- 统计概览 -->
+        <div class="stats-row">
+            <div class="stat-card blue">
+                <div class="stat-icon">💬</div>
+                <div class="stat-value" id="totalQuestions">0</div>
+                <div class="stat-label">总提问数</div>
+                <div class="stat-trend up" id="trendQuestions">+0 今日</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">✓</div>
+                <div class="stat-value" id="hitRate">0%</div>
+                <div class="stat-label">知识命中率</div>
+                <div class="stat-trend up" id="trendHitRate">+0%</div>
+            </div>
+            <div class="stat-card gold">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="avgRating">0</div>
+                <div class="stat-label">平均满意度</div>
+                <div class="stat-trend up" id="trendRating">+0</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-icon">❓</div>
+                <div class="stat-value" id="unrecognized">0</div>
+                <div class="stat-label">未识别问题</div>
+                <div class="stat-trend down" id="trendUnrecognized">-0</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value" id="coverage">0%</div>
+                <div class="stat-label">知识覆盖率</div>
+                <div class="stat-trend up" id="trendCoverage">+0%</div>
+            </div>
+        </div>
+        
+        <!-- Tab导航 -->
+        <div class="main-tabs">
+            <button class="tab-btn active" onclick="switchMainTab('logs', this)">
+                <span>📋</span> 问答日志
+                <span class="tab-badge" id="logCount">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('unrecognized', this)">
+                <span>🔴</span> 未识别问题
+                <span class="tab-badge" id="unrecCount">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('analysis', this)">
+                <span>📊</span> 数据分析
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('suggestions', this)">
+                <span>💡</span> 优化建议
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('training', this)">
+                <span>🎯</span> 训练管理
+            </button>
+        </div>
+        
+        <!-- 问答日志 -->
+        <div class="tab-content active" id="tab-logs">
+            <div class="filter-bar">
+                <input type="text" class="search-input" id="logSearch" placeholder="搜索问题或回复..." oninput="filterLogs()">
+                <select class="filter-select" id="logType" onchange="filterLogs()">
+                    <option value="">全部类型</option>
+                    <option value="hit">已匹配</option>
+                    <option value="partial">部分匹配</option>
+                    <option value="miss">未匹配</option>
+                </select>
+                <input type="date" class="date-input" id="logDate" onchange="filterLogs()">
+                <button class="btn btn-outline" onclick="exportLogs()">📤 导出日志</button>
+            </div>
+            <div class="log-list" id="logList"></div>
+            <div class="pagination" id="logPagination"></div>
+        </div>
+        
+        <!-- 未识别问题 -->
+        <div class="tab-content" id="tab-unrecognized">
+            <div class="filter-bar">
+                <input type="text" class="search-input" id="unrecSearch" placeholder="搜索未识别的问题..." oninput="filterUnrecognized()">
+                <select class="filter-select" id="unrecSort" onchange="filterUnrecognized()">
+                    <option value="time">按时间排序</option>
+                    <option value="freq">按频率排序</option>
+                </select>
+                <button class="btn" onclick="batchTrain()">🎯 批量训练</button>
+            </div>
+            <div id="unrecognizedList"></div>
+            <div class="pagination" id="unrecPagination"></div>
+        </div>
+        
+        <!-- 数据分析 -->
+        <div class="tab-content" id="tab-analysis">
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">每日问答趋势</span>
+                        <div class="chart-actions">
+                            <button class="chart-btn active" onclick="setChartRange('7d', this)">7天</button>
+                            <button class="chart-btn" onclick="setChartRange('30d', this)">30天</button>
+                        </div>
+                    </div>
+                    <div class="bar-chart" id="trendChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">匹配类型分布</span>
+                    </div>
+                    <div class="pie-container">
+                        <div class="pie-chart" id="pieChart"></div>
+                        <div class="pie-legend" id="pieLegend"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">热门知识TOP10</span>
+                </div>
+                <div class="log-list" id="hotKnowledge" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+        </div>
+        
+        <!-- 优化建议 -->
+        <div class="tab-content" id="tab-suggestions">
+            <div class="suggestions-grid" id="suggestionsGrid"></div>
+        </div>
+        
+        <!-- 训练管理 -->
+        <div class="tab-content" id="tab-training">
+            <div class="filter-bar">
+                <button class="btn" onclick="trainNewModel()">🚀 重新训练模型</button>
+                <button class="btn btn-outline" onclick="resetTraining()">🔄 重置训练数据</button>
+                <button class="btn btn-outline" onclick="exportTrainingData()">📤 导出训练数据</button>
+                <button class="btn btn-outline" onclick="importTrainingData()">📥 导入训练数据</button>
+            </div>
+            
+            <div class="chart-card" style="margin-top: 16px;">
+                <div class="chart-header">
+                    <span class="chart-title">训练状态</span>
+                </div>
+                <div id="trainingStatus">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: var(--success);"></div>
+                        <span>模型状态：已就绪</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        <div style="background: var(--dark-light); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; color: var(--gold); font-weight: 700;" id="trainDataCount">0</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">训练样本数</div>
+                        </div>
+                        <div style="background: var(--dark-light); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; color: var(--gold); font-weight: 700;" id="lastTrainTime">--</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">上次训练时间</div>
+                        </div>
+                        <div style="background: var(--dark-light); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; color: var(--success); font-weight: 700;">v1.0</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">模型版本</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 详情弹窗 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">问答详情</span>
+                <span class="modal-close" onclick="closeDetailModal()">✕</span>
+            </div>
+            <div class="modal-body" id="detailBody"></div>
+        </div>
+    </div>
+    
+    <!-- 训练弹窗 -->
+    <div class="modal" id="trainModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">训练未识别问题</span>
+                <span class="modal-close" onclick="closeTrainModal()">✕</span>
+            </div>
+            <form id="trainForm">
+                <div class="form-group">
+                    <label class="form-label">用户问题</label>
+                    <input type="text" class="form-input" id="trainQuestion" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">选择关联知识（可选）</label>
+                    <select class="form-select" id="trainKnowledge">
+                        <option value="">-- 无需关联 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">训练回复</label>
+                    <textarea class="form-textarea" id="trainAnswer" placeholder="输入AI应该回复的内容..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">添加关键词（用逗号分隔）</label>
+                    <input type="text" class="form-input" id="trainKeywords" placeholder="例如：平安符,功效">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline" onclick="closeTrainModal()">取消</button>
+                    <button type="submit" class="btn">添加到知识库</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+    
+    <script>
+        // ==================== 数据存储 ====================
+        const STORAGE_KEY = 'aiTrainingData';
+        
+        // 初始化数据
+        function initData() {
+            let data = getTrainingData();
+            if (!data.logs || data.logs.length === 0) {
+                // 生成示例数据
+                data = generateSampleData();
+                saveTrainingData(data);
+            }
+            return data;
+        }
+        
+        function getTrainingData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : { logs: [], unrecognized: [], training: [] };
+        }
+        
+        function saveTrainingData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // 生成示例数据
+        function generateSampleData() {
+            const logs = [
+                { id: 1, type: 'hit', question: '平安符有什么功效？', answer: '平安符乃道家护身之宝，功效包括护佑出入平安、驱邪避祸、化解小人。使用时挂于大门内侧或随身携带，保持干燥不可沾水。', matchRate: 95, time: Date.now() - 3600000, rating: 5 },
+                { id: 2, type: 'hit', question: '如何请财神符？', answer: '请财神符需到正规道观，说明自身需求，法师会根据八字推荐适合的符箓。财神符适合经商、财运不佳、投资理财、创业开张的人群。', matchRate: 88, time: Date.now() - 7200000, rating: 4 },
+                { id: 3, type: 'miss', question: '你们店铺在哪？', answer: '抱歉，我无法回答关于店铺位置的问题。您可以在符宝网APP中查看门店信息，或联系客服获取帮助。', matchRate: 15, time: Date.now() - 10800000, rating: 3 },
+                { id: 4, type: 'partial', question: '文昌符对学生有用吗？', answer: '文昌符对学业有帮助，适合学生备考、中考高考、考研考公、职称考试等场景。功效包括开启智慧、学业进步、考试顺利。', matchRate: 72, time: Date.now() - 14400000, rating: 4 },
+                { id: 5, type: 'hit', question: '太岁符怎么用？', answer: '太岁符专门化解犯太岁，使用方法为贴身携带，犯太岁年份必请。犯太岁类型包括值太岁、冲太岁、破太岁、害太岁、刑太岁。', matchRate: 92, time: Date.now() - 18000000, rating: 5 },
+                { id: 6, type: 'miss', question: '能不能开发票？', answer: '关于发票问题，请您联系符宝网客服或前往个人中心-订单详情中申请开具发票。', matchRate: 20, time: Date.now() - 21600000, rating: 3 },
+                { id: 7, type: 'hit', question: '什么是开光？', answer: '开光是道家重要仪式，必须由有道行的法师主持，需设坛焚香、诵经祈祷，选择吉日良时进行。流程包括净坛、上香、诵经、敕笔、点睛、发牒。', matchRate: 96, time: Date.now() - 25200000, rating: 5 },
+                { id: 8, type: 'partial', question: '符箓多久能见效？', answer: '符箓见效时间因人而异，短期效果7-30天心态平和、睡眠改善；中期1-3个月运势转好；长期3-6个月整体改善。', matchRate: 65, time: Date.now() - 28800000, rating: 4 },
+                { id: 9, type: 'miss', question: '产品什么时候发货？', answer: '关于发货时间，请您查看商品详情页或订单页面，一般情况下48小时内发货，具体以页面显示为准。', matchRate: 18, time: Date.now() - 32400000, rating: 2 },
+                { id: 10, type: 'hit', question: '可以请多道符吗？', answer: '可以同时请多道符，如太岁符+平安符、财神符+招财符。但不宜超过3道同功效符，也不要请功效相冲的符。', matchRate: 90, time: Date.now() - 36000000, rating: 5 },
+            ];
+            
+            const unrecognized = [
+                { id: 1, question: '你们店铺在哪？', freq: 12, lastTime: Date.now() - 3600000 },
+                { id: 2, question: '能不能开发票？', freq: 8, lastTime: Date.now() - 7200000 },
+                { id: 3, question: '产品什么时候发货？', freq: 15, lastTime: Date.now() - 10800000 },
+                { id: 4, question: '退换货怎么操作？', freq: 6, lastTime: Date.now() - 14400000 },
+                { id: 5, question: '符箓可以送人吗？', freq: 5, lastTime: Date.now() - 18000000 },
+            ];
+            
+            return { logs, unrecognized, training: { lastTrain: null, version: 'v1.0', count: 0 } };
+        }
+        
+        // ==================== 初始化 ====================
+        let currentData = initData();
+        let currentLogPage = 1;
+        let currentUnrecPage = 1;
+        let currentLogFilter = { search: '', type: '', date: '' };
+        let currentUnrecFilter = { search: '', sort: 'time' };
+        
+        function init() {
+            updateStats();
+            renderLogs();
+            renderUnrecognized();
+            renderAnalysis();
+            renderSuggestions();
+            renderTrainingStatus();
+        }
+        
+        // ==================== 统计更新 ====================
+        function updateStats() {
+            const logs = currentData.logs;
+            const todayStart = new Date().setHours(0, 0, 0, 0);
+            const todayLogs = logs.filter(l => l.time >= todayStart);
+            const hitLogs = logs.filter(l => l.type === 'hit');
+            const missLogs = logs.filter(l => l.type === 'miss');
+            
+            // 总提问数
+            document.getElementById('totalQuestions').textContent = logs.length;
+            document.getElementById('trendQuestions').textContent = `+${todayLogs.length} 今日`;
+            
+            // 命中率
+            const hitRate = logs.length > 0 ? Math.round((hitLogs.length / logs.length) * 100) : 0;
+            document.getElementById('hitRate').textContent = hitRate + '%';
+            document.getElementById('trendHitRate').textContent = `+${todayLogs.filter(l => l.type === 'hit').length} 今日`;
+            
+            // 平均满意度
+            const avgRating = logs.length > 0 ? (logs.reduce((sum, l) => sum + (l.rating || 0), 0) / logs.filter(l => l.rating).length).toFixed(1) : 0;
+            document.getElementById('avgRating').textContent = avgRating;
+            
+            // 未识别问题
+            document.getElementById('unrecognized').textContent = currentData.unrecognized.length;
+            document.getElementById('unrecCount').textContent = currentData.unrecognized.length;
+            document.getElementById('logCount').textContent = logs.length;
+            
+            // 覆盖率
+            const coverage = Math.min(100, 60 + hitRate * 0.3);
+            document.getElementById('coverage').textContent = Math.round(coverage) + '%';
+        }
+        
+        // ==================== Tab切换 ====================
+        function switchMainTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+        
+        // ==================== 问答日志 ====================
+        function renderLogs() {
+            const list = document.getElementById('logList');
+            let filtered = currentData.logs;
+            
+            // 筛选
+            if (currentLogFilter.search) {
+                const search = currentLogFilter.search.toLowerCase();
+                filtered = filtered.filter(l => 
+                    l.question.toLowerCase().includes(search) || 
+                    l.answer.toLowerCase().includes(search)
+                );
+            }
+            if (currentLogFilter.type) {
+                filtered = filtered.filter(l => l.type === currentLogFilter.type);
+            }
+            if (currentLogFilter.date) {
+                filtered = filtered.filter(l => {
+                    const logDate = new Date(l.time).toISOString().split('T')[0];
+                    return logDate === currentLogFilter.date;
+                });
+            }
+            
+            // 分页
+            const pageSize = 10;
+            const start = (currentLogPage - 1) * pageSize;
+            const paged = filtered.slice(start, start + pageSize);
+            
+            // 渲染
+            list.innerHTML = paged.map(log => `
+                <div class="log-item" onclick="showLogDetail(${log.id})">
+                    <div class="log-header">
+                        <span class="log-type ${log.type}">${getTypeName(log.type)}</span>
+                        <span class="log-time">${formatTime(log.time)}</span>
+                    </div>
+                    <div class="log-question">${log.question}</div>
+                    <div class="log-answer">${log.answer}</div>
+                    <div class="log-footer">
+                        <span class="log-match">匹配度：<span class="log-match-rate">${log.matchRate}%</span></span>
+                        <div class="log-actions" onclick="event.stopPropagation()">
+                            <span class="log-action" onclick="rateLog(${log.id}, 1)">👍</span>
+                            <span class="log-action" onclick="rateLog(${log.id}, -1)">👎</span>
+                            ${log.type !== 'hit' ? `<span class="log-action" onclick="trainFromLog(${log.id})">训练</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 分页
+            renderPagination(filtered.length, pageSize, currentLogPage, 'logPagination', (page) => {
+                currentLogPage = page;
+                renderLogs();
+            });
+        }
+        
+        function filterLogs() {
+            currentLogFilter.search = document.getElementById('logSearch').value;
+            currentLogFilter.type = document.getElementById('logType').value;
+            currentLogFilter.date = document.getElementById('logDate').value;
+            currentLogPage = 1;
+            renderLogs();
+        }
+        
+        function showLogDetail(id) {
+            const log = currentData.logs.find(l => l.id === id);
+            if (!log) return;
+            
+            document.getElementById('detailBody').innerHTML = `
+                <div class="question">❓ ${log.question}</div>
+                <div class="answer">💬 ${log.answer}</div>
+                <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span style="padding: 6px 12px; background: var(--dark-light); border-radius: 6px; font-size: 12px;">
+                        类型：${getTypeName(log.type)}
+                    </span>
+                    <span style="padding: 6px 12px; background: var(--dark-light); border-radius: 6px; font-size: 12px;">
+                        匹配度：${log.matchRate}%
+                    </span>
+                    <span style="padding: 6px 12px; background: var(--dark-light); border-radius: 6px; font-size: 12px;">
+                        评分：${'⭐'.repeat(log.rating || 0)}
+                    </span>
+                    <span style="padding: 6px 12px; background: var(--dark-light); border-radius: 6px; font-size: 12px;">
+                        ${formatTime(log.time)}
+                    </span>
+                </div>
+            `;
+            document.getElementById('detailModal').classList.add('show');
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+        
+        function rateLog(id, rating) {
+            const log = currentData.logs.find(l => l.id === id);
+            if (log) {
+                // 简化处理，保留评分
+                showToast(rating > 0 ? '感谢您的好评！' : '已记录您的反馈');
+            }
+        }
+        
+        function trainFromLog(id) {
+            const log = currentData.logs.find(l => l.id === id);
+            if (!log) return;
+            
+            document.getElementById('trainQuestion').value = log.question;
+            document.getElementById('trainAnswer').value = log.answer;
+            document.getElementById('trainKeywords').value = '';
+            
+            // 填充知识选择
+            const select = document.getElementById('trainKnowledge');
+            select.innerHTML = '<option value="">-- 无需关联 --</option>';
+            const knowledge = JSON.parse(localStorage.getItem('aiKnowledgeCustom') || '[]');
+            knowledge.slice(0, 10).forEach(k => {
+                select.innerHTML += `<option value="${k.id}">${k.title}</option>`;
+            });
+            
+            document.getElementById('trainModal').classList.add('show');
+        }
+        
+        function closeTrainModal() {
+            document.getElementById('trainModal').classList.remove('show');
+        }
+        
+        document.getElementById('trainForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const question = document.getElementById('trainQuestion').value;
+            const answer = document.getElementById('trainAnswer').value;
+            const keywords = document.getElementById('trainKeywords').value.split(',').map(k => k.trim()).filter(k => k);
+            
+            // 添加到知识库
+            let knowledge = JSON.parse(localStorage.getItem('aiKnowledgeCustom') || '[]');
+            knowledge.unshift({
+                id: Date.now(),
+                category: 'faq',
+                title: question,
+                content: answer,
+                tags: keywords
+            });
+            localStorage.setItem('aiKnowledgeCustom', JSON.stringify(knowledge));
+            
+            // 标记已训练
+            const log = currentData.logs.find(l => l.question === question);
+            if (log) log.type = 'hit';
+            
+            // 从未识别移除
+            currentData.unrecognized = currentData.unrecognized.filter(u => u.question !== question);
+            
+            saveTrainingData(currentData);
+            closeTrainModal();
+            renderLogs();
+            renderUnrecognized();
+            updateStats();
+            showToast('已添加到知识库');
+        });
+        
+        function exportLogs() {
+            const data = JSON.stringify(currentData.logs, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-logs-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('日志已导出');
+        }
+        
+        // ==================== 未识别问题 ====================
+        function renderUnrecognized() {
+            const container = document.getElementById('unrecognizedList');
+            let list = [...currentData.unrecognized];
+            
+            // 筛选
+            if (currentUnrecFilter.search) {
+                const search = currentUnrecFilter.search.toLowerCase();
+                list = list.filter(u => u.question.toLowerCase().includes(search));
+            }
+            
+            // 排序
+            if (currentUnrecFilter.sort === 'freq') {
+                list.sort((a, b) => b.freq - a.freq);
+            } else {
+                list.sort((a, b) => b.lastTime - a.lastTime);
+            }
+            
+            // 分页
+            const pageSize = 10;
+            const start = (currentUnrecPage - 1) * pageSize;
+            const paged = list.slice(start, start + pageSize);
+            
+            container.innerHTML = paged.map(item => `
+                <div class="unrecognized-item">
+                    <div class="log-header">
+                        <span class="log-type miss">未识别</span>
+                        <span style="font-size: 11px; color: var(--text-muted);">出现 ${item.freq} 次 · ${formatTime(item.lastTime)}</span>
+                    </div>
+                    <div class="log-question">${item.question}</div>
+                    <div class="suggest-form">
+                        <input type="text" class="suggest-input" id="reply-${item.id}" placeholder="输入回复内容...">
+                        <button class="suggest-btn" onclick="quickTrain(${item.id})">添加到知识库</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            renderPagination(list.length, pageSize, currentUnrecPage, 'unrecPagination', (page) => {
+                currentUnrecPage = page;
+                renderUnrecognized();
+            });
+        }
+        
+        function filterUnrecognized() {
+            currentUnrecFilter.search = document.getElementById('unrecSearch').value;
+            currentUnrecFilter.sort = document.getElementById('unrecSort').value;
+            currentUnrecPage = 1;
+            renderUnrecognized();
+        }
+        
+        function quickTrain(id) {
+            const input = document.getElementById('reply-' + id);
+            const reply = input.value.trim();
+            if (!reply) {
+                showToast('请输入回复内容', 'error');
+                return;
+            }
+            
+            const item = currentData.unrecognized.find(u => u.id === id);
+            if (!item) return;
+            
+            // 添加到知识库
+            let knowledge = JSON.parse(localStorage.getItem('aiKnowledgeCustom') || '[]');
+            knowledge.unshift({
+                id: Date.now(),
+                category: 'faq',
+                title: item.question,
+                content: reply,
+                tags: []
+            });
+            localStorage.setItem('aiKnowledgeCustom', JSON.stringify(knowledge));
+            
+            // 移除
+            currentData.unrecognized = currentData.unrecognized.filter(u => u.id !== id);
+            saveTrainingData(currentData);
+            renderUnrecognized();
+            updateStats();
+            showToast('已添加到知识库');
+        }
+        
+        function batchTrain() {
+            showToast('请逐个训练未识别问题以确保质量');
+        }
+        
+        // ==================== 数据分析 ====================
+        function renderAnalysis() {
+            renderTrendChart();
+            renderPieChart();
+            renderHotKnowledge();
+        }
+        
+        function renderTrendChart() {
+            const chart = document.getElementById('trendChart');
+            const days = 7;
+            const data = [];
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const count = Math.floor(Math.random() * 50) + 20;
+                data.push({ label: `${date.getMonth() + 1}/${date.getDate()}`, value: count });
+            }
+            
+            const max = Math.max(...data.map(d => d.value));
+            chart.innerHTML = data.map(d => `
+                <div class="bar-item">
+                    <span class="bar-value">${d.value}</span>
+                    <div class="bar" style="height: ${(d.value / max) * 120}px"></div>
+                    <span class="bar-label">${d.label}</span>
+                </div>
+            `).join('');
+        }
+        
+        function setChartRange(range, btn) {
+            document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTrendChart();
+        }
+        
+        function renderPieChart() {
+            const logs = currentData.logs;
+            const hit = logs.filter(l => l.type === 'hit').length;
+            const partial = logs.filter(l => l.type === 'partial').length;
+            const miss = logs.filter(l => l.type === 'miss').length;
+            const total = logs.length || 1;
+            
+            const pie = document.getElementById('pieChart');
+            const legend = document.getElementById('pieLegend');
+            
+            // 简化的CSS渐变模拟
+            pie.style.background = `conic-gradient(
+                var(--success) 0deg ${(hit/total)*360}deg,
+                var(--warning) ${(hit/total)*360}deg ${((hit+partial)/total)*360}deg,
+                var(--danger) ${((hit+partial)/total)*360}deg 360deg
+            )`;
+            
+            legend.innerHTML = `
+                <div class="legend-item"><span class="legend-dot" style="background: var(--success)"></span>已匹配<span class="legend-value">${hit} (${Math.round(hit/total*100)}%)</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--warning)"></span>部分匹配<span class="legend-value">${partial} (${Math.round(partial/total*100)}%)</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--danger)"></span>未匹配<span class="legend-value">${miss} (${Math.round(miss/total*100)}%)</span></div>
+            `;
+        }
+        
+        function renderHotKnowledge() {
+            const container = document.getElementById('hotKnowledge');
+            const hotItems = [
+                { title: '平安符的功效和使用方法', hits: 156 },
+                { title: '什么是开光？', hits: 132 },
+                { title: '太岁符怎么化解犯太岁？', hits: 98 },
+                { title: '如何正确请符？', hits: 87 },
+                { title: '财神符适合哪些人请？', hits: 76 },
+                { title: '文昌符对考试有帮助吗？', hits: 65 },
+                { title: '符箓多久见效？', hits: 54 },
+                { title: '道家的五行学说', hits: 43 },
+            ];
+            
+            container.innerHTML = hotItems.map((item, i) => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.1);">
+                    <span style="width: 24px; height: 24px; background: ${i < 3 ? 'rgba(212, 175, 55, 0.2)' : 'var(--dark-light)'}; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ${i < 3 ? 'var(--gold)' : 'var(--text-muted)'};">${i + 1}</span>
+                    <span style="flex: 1; font-size: 13px;">${item.title}</span>
+                    <span style="font-size: 12px; color: var(--gold);">${item.hits}次</span>
+                </div>
+            `).join('');
+        }
+        
+        // ==================== 优化建议 ====================
+        function renderSuggestions() {
+            const grid = document.getElementById('suggestionsGrid');
+            const suggestions = [
+                { icon: '📝', title: '补充客服类问答', desc: '发现 ' + currentData.unrecognized.filter(u => u.freq > 5).length + ' 个高频客服问题未收录，建议添加关于发票、退换货、发货等常见问题。', impact: '预计提升覆盖率 15%', action: '立即添加' },
+                { icon: '🔗', title: '优化知识关联', desc: '部分问答匹配度在 60-80% 之间，建议添加更多同义词和关联问题。', impact: '预计提升命中率 12%', action: '优化关联' },
+                { icon: '🏷️', title: '补充关键词', desc: '用户常用口语化表达未被识别，建议增加常见口语关键词。', impact: '预计提升识别率 20%', action: '添加关键词' },
+                { icon: '📚', title: '扩展符箓知识', desc: '用户对符箓功效、使用方法的咨询较多，建议补充更多细节。', impact: '提升专业度', action: '扩展内容' },
+                { icon: '🎯', title: '定期训练模型', desc: '定期根据用户反馈训练模型，可持续提升回答准确率。', impact: '长期优化', action: '开始训练' },
+                { icon: '🧹', title: '清理过时内容', desc: '知识库中存在低命中率的条目，建议审核或优化。', impact: '提升质量', action: '审核清理' },
+            ];
+            
+            grid.innerHTML = suggestions.map(s => `
+                <div class="suggestion-card">
+                    <div class="suggestion-header">
+                        <span class="suggestion-icon">${s.icon}</span>
+                        <span class="suggestion-title">${s.title}</span>
+                    </div>
+                    <div class="suggestion-desc">${s.desc}</div>
+                    <div class="suggestion-action">
+                        <span class="suggestion-impact">${s.impact}</span>
+                        <button class="suggestion-btn" onclick="applySuggestion('${s.title}')">${s.action}</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function applySuggestion(title) {
+            showToast('功能开发中');
+        }
+        
+        // ==================== 训练管理 ====================
+        function renderTrainingStatus() {
+            document.getElementById('trainDataCount').textContent = currentData.logs.length;
+            document.getElementById('lastTrainTime').textContent = currentData.training.lastTrain ? 
+                new Date(currentData.training.lastTrain).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '--';
+        }
+        
+        function trainNewModel() {
+            showToast('训练中...', 'success');
+            setTimeout(() => {
+                currentData.training.lastTrain = Date.now();
+                currentData.training.version = 'v' + (parseInt(currentData.training.version.replace('v', '')) + 0.1).toFixed(1);
+                currentData.training.count = currentData.logs.length;
+                saveTrainingData(currentData);
+                renderTrainingStatus();
+                showToast('训练完成！模型已更新', 'success');
+            }, 2000);
+        }
+        
+        function resetTraining() {
+            if (confirm('确定要重置训练数据吗？此操作不可恢复。')) {
+                currentData = { logs: [], unrecognized: [], training: { lastTrain: null, version: 'v1.0', count: 0 } };
+                saveTrainingData(currentData);
+                init();
+                showToast('训练数据已重置');
+            }
+        }
+        
+        function exportTrainingData() {
+            const data = JSON.stringify(currentData, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-training-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('训练数据已导出');
+        }
+        
+        function importTrainingData() {
+            document.getElementById('importFile').click();
+        }
+        
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.logs || data.unrecognized) {
+                        currentData = data;
+                        saveTrainingData(currentData);
+                        init();
+                        showToast('训练数据已导入', 'success');
+                    } else {
+                        showToast('文件格式错误', 'error');
+                    }
+                } catch (err) {
+                    showToast('导入失败', 'error');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+        
+        // ==================== 工具函数 ====================
+        function getTypeName(type) {
+            const names = { hit: '已匹配', partial: '部分匹配', miss: '未匹配' };
+            return names[type] || type;
+        }
+        
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+            return date.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function renderPagination(total, pageSize, current, containerId, callback) {
+            const totalPages = Math.ceil(total / pageSize);
+            const container = document.getElementById(containerId);
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = `<button class="page-btn" onclick="(${callback})(${current - 1})" ${current <= 1 ? 'disabled' : ''}>‹</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= current - 2 && i <= current + 2)) {
+                    html += `<button class="page-btn ${i === current ? 'active' : ''}" onclick="(${callback})(${i})">${i}</button>`;
+                } else if (i === current - 3 || i === current + 3) {
+                    html += `<span style="color: var(--text-muted)">...</span>`;
+                }
+            }
+            html += `<button class="page-btn" onclick="(${callback})(${current + 1})" ${current >= totalPages ? 'disabled' : ''}>›</button>`;
+            
+            container.innerHTML = html;
+        }
+        
+        function showToast(msg, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast' + (type ? ' ' + type : '');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
