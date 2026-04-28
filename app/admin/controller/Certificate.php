@@ -1,9 +1,10 @@
 <?php
 /**
- * 一物一码证书管理
+ * 一物一码证书管理 - 优化版
+ * 符宝网
  * 
- * @author  觅智文化
- * @link    https://mizhi.com
+ * @author  符宝网
+ * @link    https://fubao.com
  */
 namespace app\admin\controller;
 
@@ -16,19 +17,75 @@ use think\Db;
 class Certificate extends Base
 {
     /**
+     * 获取统计数据
+     */
+    public function getStats()
+    {
+        $today_start = strtotime(date('Y-m-d'));
+        $yesterday_start = strtotime('-1 day', $today_start);
+        
+        // 今日生成
+        $today_count = Db::name('certificate_code')
+            ->where('add_time', '>=', $today_start)
+            ->count();
+        
+        // 昨日生成
+        $yesterday_count = Db::name('certificate_code')
+            ->whereBetween('add_time', [$yesterday_start, $today_start])
+            ->count();
+        
+        // 累计证书
+        $total_count = Db::name('certificate_code')->count();
+        
+        // 累计验证
+        $total_verify = Db::name('certificate_verify_log')->count();
+        
+        // 今日验证
+        $today_verify = Db::name('certificate_verify_log')
+            ->where('add_time', '>=', $today_start)
+            ->count();
+        
+        // 各状态数量
+        $status_stats = Db::name('certificate_code')
+            ->field('status, count(*) as count')
+            ->group('status')
+            ->select();
+        $status_data = [-1 => 0, 0 => 0, 1 => 0, 2 => 0, 3 => 0];
+        foreach ($status_stats as $v) {
+            $status_data[$v['status']] = $v['count'];
+        }
+        
+        // 模板数量
+        $template_count = Db::name('certificate_template')->where(['is_enable' => 1])->count();
+        
+        return json([
+            'code' => 0, 
+            'msg' => 'success', 
+            'data' => [
+                'today_count' => $today_count,
+                'yesterday_count' => $yesterday_count,
+                'total_count' => $total_count,
+                'total_verify' => $total_verify,
+                'today_verify' => $today_verify,
+                'status_data' => $status_data,
+                'template_count' => $template_count,
+            ]
+        ]);
+    }
+    
+    /**
      * 证书码列表
      */
     public function index()
     {
         if (IS_AJAX) {
-            // 获取参数
             $keywords = input('keywords', '', 'trim');
             $template_id = input('template_id', 0, 'intval');
             $status = input('status', -1, 'intval');
+            $date_range = input('date_range', '', 'trim');
             $page = input('page', 1, 'intval');
             $limit = input('limit', 20, 'intval');
             
-            // 构建查询
             $where = [];
             if (!empty($keywords)) {
                 $where[] = ['code', 'like', '%' . $keywords . '%'];
@@ -39,46 +96,51 @@ class Certificate extends Base
             if ($status >= 0) {
                 $where[] = ['status', '=', $status];
             }
+            if (!empty($date_range)) {
+                $dates = explode(' - ', $date_range);
+                if (count($dates) == 2) {
+                    $where[] = ['add_time', '>=', strtotime($dates[0])];
+                    $where[] = ['add_time', '<=', strtotime($dates[1]) + 86399];
+                }
+            }
             
-            // 查询数据
             $list = Db::name('certificate_code')
                 ->where($where)
                 ->order('id desc')
                 ->page($page, $limit)
                 ->select();
             
-            // 获取模板名称
             $templates = Db::name('certificate_template')->column('name', 'id');
             foreach ($list as &$v) {
                 $v['template_name'] = $templates[$v['template_id']] ?? '未知';
                 $v['status_text'] = $this->getStatusText($v['status']);
                 $v['add_time'] = date('Y-m-d H:i', $v['add_time']);
                 $v['bind_time'] = $v['bind_time'] > 0 ? date('Y-m-d H:i', $v['bind_time']) : '-';
+                $v['code_short'] = strlen($v['code']) > 12 ? substr($v['code'], 0, 8) . '...' . substr($v['code'], -4) : $v['code'];
             }
             
-            // 统计
             $total = Db::name('certificate_code')->where($where)->count();
-            
             return json(['code' => 0, 'msg' => '', 'count' => $total, 'data' => $list]);
         }
         
-        // 获取模板列表
         $templates = Db::name('certificate_template')->where(['is_enable' => 1])->order('sort asc')->select();
         $this->assign('templates', $templates);
-        
         return $this->fetch();
     }
     
     /**
-     * 模板管理
+     * 模板列表
      */
     public function template()
     {
         if (IS_AJAX) {
-            $list = Db::name('certificate_template')->order('sort asc, id desc')->select();
+            $list = Db::name('certificate_template')
+                ->order('sort asc, id desc')
+                ->select();
             foreach ($list as &$v) {
                 $v['is_enable_text'] = $v['is_enable'] == 1 ? '启用' : '禁用';
                 $v['add_time'] = date('Y-m-d H:i', $v['add_time']);
+                $v['thumb'] = empty($v['thumb']) ? '/static/images/no_image.jpg' : $v['thumb'];
             }
             return json(['code' => 0, 'msg' => '', 'data' => $list]);
         }
@@ -97,29 +159,25 @@ class Certificate extends Base
         $id = input('id', 0, 'intval');
         $data = [
             'name' => input('name', '', 'trim'),
-            'code' => input('code', '', 'trim'),
+            'description' => input('description', '', 'trim'),
             'content' => input('content', '', 'trim'),
-            'image' => input('image', '', 'trim'),
+            'thumb' => input('thumb', '', 'trim'),
             'is_enable' => input('is_enable', 1, 'intval'),
-            'sort' => input('sort', 0, 'intval'),
+            'sort' => input('sort', 100, 'intval'),
             'upd_time' => time(),
         ];
         
-        if (empty($data['name']) || empty($data['code'])) {
-            return json(['code' => 1, 'msg' => '名称和编码不能为空']);
-        }
-        
         try {
             if ($id > 0) {
-                $data['id'] = $id;
-                Db::name('certificate_template')->update($data);
+                Db::name('certificate_template')->where(['id' => $id])->update($data);
+                return json(['code' => 0, 'msg' => '更新成功']);
             } else {
                 $data['add_time'] = time();
                 Db::name('certificate_template')->insert($data);
+                return json(['code' => 0, 'msg' => '添加成功']);
             }
-            return json(['code' => 0, 'msg' => '保存成功']);
         } catch (\Exception $e) {
-            return json(['code' => 1, 'msg' => '保存失败: ' . $e->getMessage()]);
+            return json(['code' => 1, 'msg' => '保存失败']);
         }
     }
     
@@ -136,7 +194,7 @@ class Certificate extends Base
         // 检查是否有证书使用此模板
         $count = Db::name('certificate_code')->where(['template_id' => $id])->count();
         if ($count > 0) {
-            return json(['code' => 1, 'msg' => '该模板已被使用，无法删除']);
+            return json(['code' => 1, 'msg' => '该模板已被 ' . $count . ' 个证书使用，无法删除']);
         }
         
         Db::name('certificate_template')->where(['id' => $id])->delete();
@@ -144,203 +202,52 @@ class Certificate extends Base
     }
     
     /**
-     * 生成证书码
+     * 生成证书
      */
     public function generate()
     {
-        if (IS_AJAX || IS_POST) {
+        if (IS_AJAX) {
             $template_id = input('template_id', 0, 'intval');
             $quantity = input('quantity', 1, 'intval');
-            $goods_id = input('goods_id', 0, 'intval');
-            $goods_sku_id = input('goods_sku_id', 0, 'intval');
             
             if ($template_id <= 0) {
-                return json(['code' => 1, 'msg' => '请选择证书模板']);
+                return json(['code' => 1, 'msg' => '请选择模板']);
             }
-            
             if ($quantity <= 0 || $quantity > 10000) {
-                return json(['code' => 1, 'msg' => '生成数量需在1-10000之间']);
+                return json(['code' => 1, 'msg' => '数量必须在1-10000之间']);
             }
             
-            // 检查模板是否存在
-            $template = Db::name('certificate_template')->where(['id' => $template_id, 'is_enable' => 1])->find();
+            $template = Db::name('certificate_template')->where(['id' => $template_id])->find();
             if (empty($template)) {
-                return json(['code' => 1, 'msg' => '证书模板不存在或已禁用']);
+                return json(['code' => 1, 'msg' => '模板不存在']);
             }
             
             // 生成批次号
-            $batch_no = 'CERT' . date('YmdHis') . rand(1000, 9999);
+            $batch_no = 'B' . date('YmdHis') . sprintf('%04d', rand(0, 9999));
             
-            // 记录批次
-            $batch_data = [
-                'batch_no' => $batch_no,
-                'template_id' => $template_id,
-                'quantity' => $quantity,
-                'goods_id' => $goods_id,
-                'goods_sku_id' => $goods_sku_id,
-                'status' => 1,
-                'add_time' => time(),
-                'upd_time' => time(),
-            ];
-            Db::name('certificate_batch')->insert($batch_data);
-            
-            // 生成证书码
-            $codes = [];
-            $time = time();
+            // 生成证书
+            $data = [];
             for ($i = 0; $i < $quantity; $i++) {
-                $code = $this->generateUniqueCode();
-                $codes[] = [
-                    'code' => $code,
-                    'qrcode' => $this->generateQrcodeUrl($code),
+                $data[] = [
+                    'code' => $this->generateUniqueCode(),
                     'template_id' => $template_id,
-                    'goods_id' => $goods_id,
-                    'goods_sku_id' => $goods_sku_id,
-                    'status' => 0, // 未激活
-                    'add_time' => $time,
-                    'upd_time' => $time,
+                    'batch_no' => $batch_no,
+                    'status' => 0,
+                    'add_time' => time(),
                 ];
             }
             
-            // 批量插入
-            Db::name('certificate_code')->insertAll($codes);
+            Db::name('certificate_code')->insertAll($data);
             
-            return json(['code' => 0, 'msg' => '成功生成 ' . $quantity . ' 个证书码', 'batch_no' => $batch_no]);
+            return json([
+                'code' => 0, 
+                'msg' => '成功生成 ' . $quantity . ' 个证书',
+                'data' => ['batch_no' => $batch_no]
+            ]);
         }
         
-        // 获取模板列表
         $templates = Db::name('certificate_template')->where(['is_enable' => 1])->order('sort asc')->select();
         $this->assign('templates', $templates);
-        
-        return $this->fetch();
-    }
-    
-    /**
-     * 导出证书码
-     */
-    public function export()
-    {
-        $ids = input('ids', '');
-        if (empty($ids)) {
-            return json(['code' => 1, 'msg' => '请选择要导出的证书']);
-        }
-        
-        $id_arr = explode(',', $ids);
-        $list = Db::name('certificate_code')->whereIn('id', $id_arr)->select();
-        
-        if (empty($list)) {
-            return json(['code' => 1, 'msg' => '没有找到对应的证书']);
-        }
-        
-        $templates = Db::name('certificate_template')->column('name', 'id');
-        
-        // 生成CSV
-        $str = "证书码,模板,状态,生成时间\n";
-        foreach ($list as $v) {
-            $status = $this->getStatusText($v['status']);
-            $time = date('Y-m-d H:i:s', $v['add_time']);
-            $template = $templates[$v['template_id']] ?? '';
-            $str .= "{$v['code']},{$template},{$status},{$time}\n";
-        }
-        
-        $filename = 'certificates_' . date('YmdHis') . '.csv';
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename=' . $filename);
-        echo $str;
-        exit;
-    }
-    
-    /**
-     * 证书详情
-     */
-    public function detail()
-    {
-        $id = input('id', 0, 'intval');
-        if ($id <= 0) {
-            $this->error('参数错误');
-        }
-        
-        $cert = Db::name('certificate_code')->where(['id' => $id])->find();
-        if (empty($cert)) {
-            $this->error('证书不存在');
-        }
-        
-        // 获取模板
-        $template = Db::name('certificate_template')->where(['id' => $cert['template_id']])->find();
-        
-        // 获取商品信息
-        $goods = [];
-        if ($cert['goods_id'] > 0) {
-            $goods = Db::name('goods')->where(['id' => $cert['goods_id']])->find();
-        }
-        
-        // 获取验证记录
-        $logs = Db::name('certificate_verify_log')->where(['code_id' => $id])->order('id desc')->limit(20)->select();
-        foreach ($logs as &$v) {
-            $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
-        }
-        
-        $this->assign('cert', $cert);
-        $this->assign('template', $template);
-        $this->assign('goods', $goods);
-        $this->assign('logs', $logs);
-        
-        return $this->fetch();
-    }
-    
-    /**
-     * 验证记录
-     */
-    public function verifyLog()
-    {
-        if (IS_AJAX) {
-            $code = input('code', '', 'trim');
-            $page = input('page', 1, 'intval');
-            $limit = input('limit', 20, 'intval');
-            
-            $where = [];
-            if (!empty($code)) {
-                $where[] = ['code', '=', $code];
-            }
-            
-            $list = Db::name('certificate_verify_log')
-                ->where($where)
-                ->order('id desc')
-                ->page($page, $limit)
-                ->select();
-            
-            foreach ($list as &$v) {
-                $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
-            }
-            
-            $total = Db::name('certificate_verify_log')->where($where)->count();
-            
-            return json(['code' => 0, 'msg' => '', 'count' => $total, 'data' => $list]);
-        }
-        
-        return $this->fetch();
-    }
-    
-    /**
-     * 批次记录
-     */
-    public function batch()
-    {
-        if (IS_AJAX) {
-            $list = Db::name('certificate_batch')
-                ->order('id desc')
-                ->select();
-            
-            $templates = Db::name('certificate_template')->column('name', 'id');
-            
-            foreach ($list as &$v) {
-                $v['template_name'] = $templates[$v['template_id']] ?? '未知';
-                $v['status_text'] = $v['status'] == 1 ? '已完成' : ($v['status'] == 0 ? '处理中' : '失败');
-                $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
-            }
-            
-            return json(['code' => 0, 'msg' => '', 'data' => $list]);
-        }
-        
         return $this->fetch();
     }
     
@@ -354,7 +261,6 @@ class Certificate extends Base
             return json(['code' => 1, 'msg' => '请选择要删除的证书']);
         }
         
-        // 检查是否有已绑定的证书
         $id_arr = explode(',', $ids);
         $bound = Db::name('certificate_code')
             ->whereIn('id', $id_arr)
@@ -370,64 +276,108 @@ class Certificate extends Base
     }
     
     /**
+     * 批量激活
+     */
+    public function batchActivate()
+    {
+        $ids = input('ids', '');
+        if (empty($ids)) {
+            return json(['code' => 1, 'msg' => '请选择要激活的证书']);
+        }
+        
+        $id_arr = explode(',', $ids);
+        $count = Db::name('certificate_code')
+            ->whereIn('id', $id_arr)
+            ->where('status', 0)
+            ->update([
+                'status' => 1,
+                'upd_time' => time()
+            ]);
+        
+        return json(['code' => 0, 'msg' => '成功激活 ' . $count . ' 个证书']);
+    }
+    
+    /**
+     * 批量禁用
+     */
+    public function batchDisable()
+    {
+        $ids = input('ids', '');
+        if (empty($ids)) {
+            return json(['code' => 1, 'msg' => '请选择要禁用的证书']);
+        }
+        
+        $id_arr = explode(',', $ids);
+        $count = Db::name('certificate_code')
+            ->whereIn('id', $id_arr)
+            ->where('status', '<', 2)
+            ->update([
+                'status' => -1,
+                'upd_time' => time()
+            ]);
+        
+        return json(['code' => 0, 'msg' => '成功禁用 ' . $count . ' 个证书']);
+    }
+    
+    /**
+     * 一键激活全部未激活证书
+     */
+    public function activateAll()
+    {
+        $template_id = input('template_id', 0, 'intval');
+        $where = [['status', '=', 0]];
+        if ($template_id > 0) {
+            $where[] = ['template_id', '=', $template_id];
+        }
+        
+        $count = Db::name('certificate_code')
+            ->where($where)
+            ->update([
+                'status' => 1,
+                'upd_time' => time()
+            ]);
+        
+        return json(['code' => 0, 'msg' => '成功激活 ' . $count . ' 个证书']);
+    }
+    
+    /**
      * 绑定商品
      */
     public function bindGoods()
     {
-        if (!IS_POST) {
-            return json(['code' => 1, 'msg' => '非法请求']);
+        $code_id = input('code_id', 0, 'intval');
+        if ($code_id <= 0) {
+            $this->error('参数错误');
         }
         
-        $ids = input('ids', '');
+        $certificate = Db::name('certificate_code')->where(['id' => $code_id])->find();
+        if (empty($certificate)) {
+            $this->error('证书不存在');
+        }
+        
         $goods_id = input('goods_id', 0, 'intval');
-        
-        if (empty($ids)) {
-            return json(['code' => 1, 'msg' => '请选择要绑定的证书']);
-        }
-        
-        if ($goods_id <= 0) {
-            return json(['code' => 1, 'msg' => '请选择要绑定的商品']);
-        }
-        
-        $id_arr = explode(',', $ids);
-        
-        // 更新绑定状态
-        Db::name('certificate_code')
-            ->whereIn('id', $id_arr)
-            ->where('status', '<', 2) // 只能绑定未绑定的
-            ->update([
+        if ($goods_id > 0) {
+            Db::name('certificate_code')->where(['id' => $code_id])->update([
                 'goods_id' => $goods_id,
                 'status' => 2,
                 'bind_time' => time(),
                 'upd_time' => time(),
             ]);
+            return json(['code' => 0, 'msg' => '绑定成功']);
+        }
         
-        return json(['code' => 0, 'msg' => '绑定成功']);
+        $this->assign('code_id', $code_id);
+        return $this->fetch();
     }
     
     /**
-     * 商品证书绑定管理
+     * 商品证书绑定
      */
     public function goodsBind()
     {
-        if (IS_AJAX) {
-            $goods_id = input('goods_id', 0, 'intval');
-            $list = Db::name('goods_certificate')->where(['goods_id' => $goods_id])->select();
-            
-            $templates = Db::name('certificate_template')->column('name', 'id');
-            
-            foreach ($list as &$v) {
-                $v['template_name'] = $templates[$v['template_id']] ?? '未知';
-                $v['is_required_text'] = $v['is_required'] == 1 ? '是' : '否';
-            }
-            
-            return json(['code' => 0, 'msg' => '', 'data' => $list]);
-        }
-        
         $goods_id = input('goods_id', 0, 'intval');
         $this->assign('goods_id', $goods_id);
         
-        // 获取可选模板
         $templates = Db::name('certificate_template')->where(['is_enable' => 1])->order('sort asc')->select();
         $this->assign('templates', $templates);
         
@@ -450,10 +400,8 @@ class Certificate extends Base
             return json(['code' => 1, 'msg' => '商品ID错误']);
         }
         
-        // 删除原有绑定
         Db::name('goods_certificate')->where(['goods_id' => $goods_id])->delete();
         
-        // 添加新绑定
         if (!empty($template_ids)) {
             $data = [];
             foreach ($template_ids as $template_id) {
@@ -472,6 +420,203 @@ class Certificate extends Base
         return json(['code' => 0, 'msg' => '保存成功']);
     }
     
+    /**
+     * 证书详情
+     */
+    public function detail()
+    {
+        $id = input('id', 0, 'intval');
+        if ($id <= 0) {
+            $this->error('参数错误');
+        }
+        
+        $certificate = Db::name('certificate_code')->where(['id' => $id])->find();
+        if (empty($certificate)) {
+            $this->error('证书不存在');
+        }
+        
+        $template = Db::name('certificate_template')->where(['id' => $certificate['template_id']])->find();
+        
+        $goods = null;
+        if ($certificate['goods_id'] > 0) {
+            $goods = Db::name('goods')->where(['id' => $certificate['goods_id']])->find();
+        }
+        
+        $verify_logs = Db::name('certificate_verify_log')
+            ->where(['code_id' => $id])
+            ->order('id desc')
+            ->limit(10)
+            ->select();
+        
+        $templates = Db::name('certificate_template')->where(['is_enable' => 1])->select();
+        
+        $this->assign([
+            'certificate' => $certificate,
+            'template' => $template,
+            'goods' => $goods,
+            'verify_logs' => $verify_logs,
+            'templates' => $templates,
+        ]);
+        
+        return $this->fetch();
+    }
+    
+    /**
+     * 导出证书
+     */
+    public function export()
+    {
+        $ids = input('ids', '');
+        $batch_no = input('batch_no', '');
+        
+        $where = [];
+        if (!empty($ids)) {
+            $where[] = ['id', 'in', explode(',', $ids)];
+        }
+        if (!empty($batch_no)) {
+            $where[] = ['batch_no', '=', $batch_no];
+        }
+        
+        $list = Db::name('certificate_code')
+            ->where($where)
+            ->order('id desc')
+            ->limit(10000)
+            ->select();
+        
+        $templates = Db::name('certificate_template')->column('name', 'id');
+        
+        $csv_data = "ID,证书码,模板,状态,关联商品,验证次数,生成时间,绑定时间\n";
+        foreach ($list as $v) {
+            $status = $this->getStatusText($v['status']);
+            $goods_name = $v['goods_id'] > 0 ? '商品ID:' . $v['goods_id'] : '-';
+            $bind_time = $v['bind_time'] > 0 ? date('Y-m-d H:i:s', $v['bind_time']) : '-';
+            $csv_data .= sprintf("%d,%s,%s,%s,%s,%d,%s,%s\n",
+                $v['id'],
+                $v['code'],
+                $templates[$v['template_id']] ?? '未知',
+                $status,
+                $goods_name,
+                $v['verify_count'],
+                date('Y-m-d H:i:s', $v['add_time']),
+                $bind_time
+            );
+        }
+        
+        $filename = 'certificates_' . date('YmdHis') . '.csv';
+        header('Content-Type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        echo $csv_data;
+        exit;
+    }
+    
+    /**
+     * 更新证书状态
+     */
+    public function updateStatus()
+    {
+        if (!IS_POST) {
+            return json(['code' => 1, 'msg' => '非法请求']);
+        }
+        
+        $id = input('id', 0, 'intval');
+        $status = input('status', 0, 'intval');
+        
+        if ($id <= 0) {
+            return json(['code' => 1, 'msg' => '参数错误']);
+        }
+        
+        $certificate = Db::name('certificate_code')->where(['id' => $id])->find();
+        if (empty($certificate)) {
+            return json(['code' => 1, 'msg' => '证书不存在']);
+        }
+        
+        if ($certificate['status'] >= 2 && $status < 0) {
+            return json(['code' => 1, 'msg' => '已绑定或已验证的证书无法禁用']);
+        }
+        
+        Db::name('certificate_code')->where(['id' => $id])->update([
+            'status' => $status,
+            'upd_time' => time()
+        ]);
+        
+        return json(['code' => 0, 'msg' => '状态更新成功']);
+    }
+    
+    /**
+     * 验证记录
+     */
+    public function verifyLog()
+    {
+        if (IS_AJAX) {
+            $keywords = input('keywords', '', 'trim');
+            $page = input('page', 1, 'intval');
+            $limit = input('limit', 20, 'intval');
+            
+            $where = [];
+            if (!empty($keywords)) {
+                $where[] = ['code', 'like', '%' . $keywords . '%'];
+            }
+            
+            $list = Db::name('certificate_verify_log')
+                ->where($where)
+                ->order('id desc')
+                ->page($page, $limit)
+                ->select();
+            
+            $certificates = Db::name('certificate_code')->column('code,template_id', 'id');
+            $templates = Db::name('certificate_template')->column('name', 'id');
+            
+            foreach ($list as &$v) {
+                $v['code'] = $certificates[$v['code_id']]['code'] ?? '-';
+                $template_id = $certificates[$v['code_id']]['template_id'] ?? 0;
+                $v['template_name'] = $templates[$template_id] ?? '未知';
+                $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
+            }
+            
+            $total = Db::name('certificate_verify_log')->where($where)->count();
+            return json(['code' => 0, 'msg' => '', 'count' => $total, 'data' => $list]);
+        }
+        
+        return $this->fetch();
+    }
+    
+    /**
+     * 批次记录
+     */
+    public function batch()
+    {
+        if (IS_AJAX) {
+            $page = input('page', 1, 'intval');
+            $limit = input('limit', 20, 'intval');
+            
+            $list = Db::name('certificate_code')
+                ->field('batch_no, template_id, count(*) as total, min(add_time) as first_time, max(add_time) as last_time')
+                ->group('batch_no')
+                ->order('first_time desc')
+                ->page($page, $limit)
+                ->select();
+            
+            $templates = Db::name('certificate_template')->column('name', 'id');
+            
+            foreach ($list as &$v) {
+                $v['template_name'] = $templates[$v['template_id']] ?? '未知';
+                $v['first_time'] = date('Y-m-d H:i', $v['first_time']);
+                $v['last_time'] = date('Y-m-d H:i', $v['last_time']);
+            }
+            
+            $total = Db::name('certificate_code')
+                ->field('batch_no')
+                ->group('batch_no')
+                ->count();
+            
+            return json(['code' => 0, 'msg' => '', 'count' => $total, 'data' => $list]);
+        }
+        
+        return $this->fetch();
+    }
+    
     // ==================== 私有方法 ====================
     
     /**
@@ -479,21 +624,11 @@ class Certificate extends Base
      */
     private function generateUniqueCode()
     {
-        // 格式: 前缀 + 时间戳 + 随机数 + 校验位
-        $prefix = 'MZ'; // 觅智前缀
+        $prefix = 'MZ';
         $timestamp = substr(time(), -8);
         $random = sprintf('%04d', rand(0, 9999));
         $check = strtoupper(substr(md5($prefix . $timestamp . $random), 0, 2));
         return $prefix . $timestamp . $random . $check;
-    }
-    
-    /**
-     * 生成二维码URL
-     */
-    private function generateQrcodeUrl($code)
-    {
-        // 返回验证URL
-        return url('index/certificate/verify', ['code' => $code], true, true);
     }
     
     /**
@@ -502,6 +637,7 @@ class Certificate extends Base
     private function getStatusText($status)
     {
         $status_map = [
+            -1 => '已禁用',
             0 => '未激活',
             1 => '已激活',
             2 => '已绑定',

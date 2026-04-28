@@ -154,9 +154,38 @@ public/static/
 ### 6. 一物一码
 - **路由**: `/certificate`
 - **控制器**: `app/index/controller/Certificate.php`
-- **视图**: `app/index/view/default/index/certificate/index.html`
-- **表**: `sxo_certificate`
-- **功能**: 正品认证，扫码查验
+- **后台控制器**: `app/admin/controller/Certificate.php`
+- **前台视图**: `app/index/view/default/index/certificate/index.html`
+- **后台视图**: `app/admin/view/admin/certificate/`
+- **后台路由**:
+  - `/admin/certificate/index` - 证书管理（优化版）
+  - `/admin/certificate/template` - 模板管理
+  - `/admin/certificate/generate` - 生成证书
+  - `/admin/certificate/detail` - 证书详情
+  - `/admin/certificate/verifyLog` - 验证记录
+  - `/admin/certificate/batch` - 批次记录
+- **表**: `sxo_certificate_code`, `sxo_certificate_template`, `sxo_certificate_verify_log`
+- **功能**: 正品认证，扫码查验，批量生成
+
+#### 管理后台功能
+| 功能 | 说明 |
+|------|------|
+| 统计看板 | 今日生成、累计证书、验证次数等 |
+| 证书管理 | 列表、搜索、批量激活/禁用、导出 |
+| 证书详情 | 查看证书、下载二维码、更新状态 |
+| 模板管理 | 创建/编辑证书模板 |
+| 批次记录 | 按批次管理证书 |
+| 验证记录 | 查看扫码验证历史 |
+
+#### API接口
+```
+GET  /admin/certificate/getStats      - 获取统计数据
+POST /admin/certificate/batchActivate - 批量激活
+POST /admin/certificate/batchDisable  - 批量禁用
+POST /admin/certificate/updateStatus   - 更新状态
+GET  /admin/certificate/export         - 导出证书
+POST /admin/certificate/deleteBatch     - 删除批次
+```
 
 ---
 

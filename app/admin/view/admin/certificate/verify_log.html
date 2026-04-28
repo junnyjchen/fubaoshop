@@ -1,0 +1,101 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a href="{:url('certificate/index')}">证书管理</a>
+                <a><cite>验证记录</cite></a>
+            </span>
+            <div class="layui-btn-group" style="float: right;">
+                <a href="{:url('index')}" class="layui-btn layui-btn-sm layui-btn-primary">
+                    <i class="layui-icon layui-icon-left"></i> 返回证书
+                </a>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <!-- 搜索栏 -->
+            <div class="layui-form layui-form-pane" style="margin-bottom: 10px;">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键词</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keywords" placeholder="证书码/模板名称" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn" lay-filter="search" lay-submit>
+                            <i class="layui-icon layui-icon-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <table class="layui-hide" id="table" lay-filter="table"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 工具栏模板 -->
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看证书</a>
+</script>
+{/block}
+
+{block name="script"}
+<script>
+layui.use(['table', 'form'], function(){
+    var table = layui.table;
+    var form = layui.form;
+
+    // 渲染表格
+    table.render({
+        elem: '#table',
+        url: '{:url("verifyLog")}',
+        page: true,
+        limit: 20,
+        limits: [20, 50, 100],
+        cols: [[
+            {field: 'id', title: 'ID', width: 80, sort: true},
+            {field: 'code', title: '证书码', width: 200},
+            {field: 'template_name', title: '模板', width: 120},
+            {field: 'ip', title: 'IP地址', width: 140},
+            {field: 'location', title: '位置', width: 150},
+            {field: 'user_agent', title: '设备信息', width: 200},
+            {field: 'add_time', title: '验证时间', width: 170, sort: true},
+            {fixed: 'right', title: '操作', width: 100, toolbar: '#toolbar'}
+        ]],
+        parseData: function(res){
+            return {
+                "code": res.code,
+                "msg": res.msg,
+                "count": res.count,
+                "data": res.data
+            };
+        }
+    });
+
+    // 搜索
+    form.on('submit(search)', function(data){
+        table.reload('table', {
+            where: data.field,
+            page: {curr: 1}
+        });
+        return false;
+    });
+
+    // 行工具栏
+    table.on('tool(table)', function(obj){
+        var data = obj.data;
+        var event = obj.event;
+
+        if(event === 'detail'){
+            location.href = '{:url("detail")}?id=' + data.code_id;
+        }
+    });
+});
+</script>
+{/block}

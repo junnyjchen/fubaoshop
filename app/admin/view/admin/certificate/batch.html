@@ -1,0 +1,88 @@
+{extend name="public/admin" /}
+{block name="content"}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+                <a href="{:url('index/index')}">首页</a>
+                <a><cite>一物一码</cite></a>
+                <a href="{:url('certificate/index')}">证书管理</a>
+                <a><cite>批次记录</cite></a>
+            </span>
+            <div class="layui-btn-group" style="float: right;">
+                <a href="{:url('generate')}" class="layui-btn layui-btn-sm layui-btn-normal">
+                    <i class="layui-icon layui-icon-add-1"></i> 生成新批次
+                </a>
+                <a href="{:url('index')}" class="layui-btn layui-btn-sm layui-btn-primary">
+                    <i class="layui-icon layui-icon-left"></i> 返回证书
+                </a>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <!-- 数据表格 -->
+            <table class="layui-hide" id="table" lay-filter="table"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 工具栏模板 -->
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="export">导出</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除批次</a>
+</script>
+{/block}
+
+{block name="script"}
+<script>
+layui.use(['table'], function(){
+    var table = layui.table;
+
+    // 渲染表格
+    table.render({
+        elem: '#table',
+        url: '{:url("batch")}',
+        page: true,
+        limit: 20,
+        limits: [20, 50, 100],
+        cols: [[
+            {field: 'batch_no', title: '批次号', width: 200},
+            {field: 'template_name', title: '模板', width: 150},
+            {field: 'total', title: '生成数量', width: 120, sort: true},
+            {field: 'first_time', title: '首次生成', width: 170},
+            {field: 'last_time', title: '最后生成', width: 170},
+            {fixed: 'right', title: '操作', width: 150, toolbar: '#toolbar'}
+        ]],
+        parseData: function(res){
+            return {
+                "code": res.code,
+                "msg": res.msg,
+                "count": res.count,
+                "data": res.data
+            };
+        }
+    });
+
+    // 行工具栏
+    table.on('tool(table)', function(obj){
+        var data = obj.data;
+        var event = obj.event;
+
+        if(event === 'export'){
+            location.href = '{:url("export")}?batch_no=' + encodeURIComponent(data.batch_no);
+        } else if(event === 'delete'){
+            layer.confirm('确定要删除该批次的所有证书吗？此操作不可恢复！', function(index){
+                $.post('{:url("deleteBatch")}', {batch_no: data.batch_no}, function(res){
+                    if(res.code === 0){
+                        layer.msg(res.msg, {icon: 1});
+                        table.reload('table');
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        }
+    });
+});
+</script>
+{/block}

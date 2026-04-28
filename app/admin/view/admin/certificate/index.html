@@ -1,13 +1,76 @@
 {extend name="public/admin" /}
 {block name="content"}
 <div class="layui-fluid">
+    <!-- 统计卡片 -->
+    <div class="layui-row layui-col-space10" style="margin-bottom: 15px;">
+        <div class="layui-col-md3">
+            <div class="layui-card stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="layui-card-body">
+                    <div class="stat-icon"><i class="layui-icon layui-icon-fonts-code"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="todayCount">-</div>
+                        <div class="stat-label">今日生成</div>
+                        <div class="stat-compare">昨日 <span id="yesterdayCount">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-card stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="layui-card-body">
+                    <div class="stat-icon"><i class="layui-icon layui-icon-chart-screen"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalCount">-</div>
+                        <div class="stat-label">累计证书</div>
+                        <div class="stat-compare">共 <span id="templateCount">-</span> 个模板</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-card stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="layui-card-body">
+                    <div class="stat-icon"><i class="layui-icon layui-icon-search"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="todayVerify">-</div>
+                        <div class="stat-label">今日验证</div>
+                        <div class="stat-compare">累计 <span id="totalVerify">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-card stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="layui-card-body">
+                    <div class="stat-icon"><i class="layui-icon layui-icon-release"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="activeCount">-</div>
+                        <div class="stat-label">可用证书</div>
+                        <div class="stat-compare">已验证 <span id="verifiedCount">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="layui-card">
         <div class="layui-card-header">
             <span class="layui-breadcrumb">
                 <a href="{:url('index/index')}">首页</a>
                 <a><cite>一物一码</cite></a>
-                <a href="{:url('certificate/index')}">证书管理</a>
+                <a href="{:url('certificate/index')}"><cite>证书管理</cite></a>
             </span>
+            <div class="layui-btn-group" style="float: right;">
+                <a href="{:url('certificate/template')}" class="layui-btn layui-btn-sm layui-btn-primary">
+                    <i class="layui-icon layui-icon-template"></i> 模板管理
+                </a>
+                <a href="{:url('certificate/batch')}" class="layui-btn layui-btn-sm layui-btn-primary">
+                    <i class="layui-icon layui-icon-log"></i> 批次记录
+                </a>
+                <a href="{:url('certificate/verifyLog')}" class="layui-btn layui-btn-sm layui-btn-primary">
+                    <i class="layui-icon layui-icon-survey"></i> 验证记录
+                </a>
+            </div>
         </div>
         <div class="layui-card-body">
             <!-- 搜索栏 -->
@@ -35,11 +98,18 @@
                         <div class="layui-input-inline">
                             <select name="status">
                                 <option value="-1">全部</option>
+                                <option value="-1">已禁用</option>
                                 <option value="0">未激活</option>
                                 <option value="1">已激活</option>
                                 <option value="2">已绑定</option>
                                 <option value="3">已验证</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="date_range" id="dateRange" placeholder="生成日期范围" class="layui-input" readonly>
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -59,46 +129,107 @@
     </div>
 </div>
 
+<!-- 工具栏模板 -->
 <script type="text/html" id="toolbar">
     <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
+<!-- 状态模板 -->
 <script type="text/html" id="statusTpl">
-    {{# if(d.status == 0){ }}
-    <span class="layui-badge layui-bg-gray">未激活</span>
+    {{# if(d.status == -1){ }}
+    <span class="layui-badge layui-bg-gray">已禁用</span>
+    {{# } else if(d.status == 0){ }}
+    <span class="layui-badge layui-bg-blue">未激活</span>
     {{# } else if(d.status == 1){ }}
-    <span class="layui-badge layui-bg-blue">已激活</span>
+    <span class="layui-badge layui-bg-cyan">已激活</span>
     {{# } else if(d.status == 2){ }}
     <span class="layui-badge layui-bg-orange">已绑定</span>
     {{# } else if(d.status == 3){ }}
     <span class="layui-badge layui-bg-green">已验证</span>
     {{# } }}
 </script>
+
+<!-- 证书码模板 -->
+<script type="text/html" id="codeTpl">
+    <div class="code-cell">
+        <span class="code-full" style="display:none;">{{d.code}}</span>
+        <span class="code-short">{{d.code_short}}</span>
+        <a href="javascript:;" class="copy-code" data-code="{{d.code}}" title="复制证书码">
+            <i class="layui-icon layui-icon-copy-circle" style="font-size:14px;color:#1e9fff;"></i>
+        </a>
+    </div>
+</script>
+
+<!-- 操作按钮模板 -->
+<script type="text/html" id="batchToolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="activate">
+            <i class="layui-icon layui-icon-ok-circle"></i> 批量激活
+        </button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="disable">
+            <i class="layui-icon layui-icon-close-fill"></i> 批量禁用
+        </button>
+        <button class="layui-btn layui-btn-sm" lay-event="export">
+            <i class="layui-icon layui-icon-export"></i> 导出
+        </button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">
+            <i class="layui-icon layui-icon-delete"></i> 删除
+        </button>
+    </div>
+</script>
 {/block}
 
 {block name="script"}
 <script>
-layui.use(['table', 'form', 'layer'], function(){
+layui.use(['table', 'form', 'layer', 'laydate'], function(){
     var table = layui.table;
     var form = layui.form;
     var layer = layui.layer;
+    var laydate = layui.laydate;
+
+    // 日期范围选择
+    laydate.render({
+        elem: '#dateRange'
+        ,range: true
+        ,format: 'yyyy-MM-dd'
+    });
+
+    // 加载统计数据
+    function loadStats() {
+        $.get('{:url("getStats")}', function(res){
+            if (res.code === 0) {
+                var d = res.data;
+                $('#todayCount').text(d.today_count);
+                $('#yesterdayCount').text(d.yesterday_count);
+                $('#totalCount').text(d.total_count);
+                $('#templateCount').text(d.template_count);
+                $('#todayVerify').text(d.today_verify);
+                $('#totalVerify').text(d.total_verify);
+                $('#activeCount').text(d.status_data[0] + d.status_data[1]);
+                $('#verifiedCount').text(d.status_data[3]);
+            }
+        });
+    }
+    loadStats();
 
     // 渲染表格
     var ins1 = table.render({
         elem: '#table',
         url: '{:url("index")}',
         page: true,
+        limit: 20,
+        limits: [20, 50, 100, 500],
         cols: [[
             {type: 'checkbox', fixed: 'left'},
-            {field: 'id', title: 'ID', width: 80},
-            {field: 'code', title: '证书码', width: 200},
+            {field: 'id', title: 'ID', width: 80, sort: true},
+            {field: 'code', title: '证书码', width: 220, templet: '#codeTpl'},
             {field: 'template_name', title: '模板', width: 120},
-            {field: 'status', title: '状态', width: 100, templet: '#statusTpl'},
+            {field: 'status', title: '状态', width: 100, templet: '#statusTpl', sort: true},
+            {field: 'verify_count', title: '验证次数', width: 100, sort: true},
             {field: 'bind_time', title: '绑定时间', width: 160},
-            {field: 'add_time', title: '生成时间', width: 160},
-            {field: 'verify_count', title: '验证次数', width: 100},
-            {fixed: 'right', title: '操作', width: 120, toolbar: '#toolbar'}
+            {field: 'add_time', title: '生成时间', width: 160, sort: true},
+            {fixed: 'right', title: '操作', width: 100, toolbar: '#toolbar'}
         ]],
         parseData: function(res){
             return {
@@ -107,6 +238,10 @@ layui.use(['table', 'form', 'layer'], function(){
                 "count": res.count,
                 "data": res.data
             };
+        },
+        done: function() {
+            // 重新加载统计
+            loadStats();
         }
     });
 
@@ -117,6 +252,79 @@ layui.use(['table', 'form', 'layer'], function(){
             page: {curr: 1}
         });
         return false;
+    });
+
+    // 复制证书码
+    $(document).on('click', '.copy-code', function(){
+        var code = $(this).data('code');
+        var fullEl = $(this).siblings('.code-full');
+        fullEl.css('display', 'inline');
+        var text = fullEl.text();
+        fullEl.css('display', 'none');
+        
+        navigator.clipboard.writeText(code).then(function() {
+            layer.msg('证书码已复制', {icon: 1, time: 1500});
+        }).catch(function() {
+            layer.msg('复制失败，请手动复制', {icon: 2});
+        });
+    });
+
+    // 表头工具栏
+    table.on('toolbar(table)', function(obj){
+        var checkStatus = table.checkStatus('table');
+        var data = checkStatus.data;
+        
+        if (data.length === 0) {
+            layer.msg('请先选择要操作的证书', {icon: 7});
+            return;
+        }
+        
+        var ids = data.map(function(item){ return item.id; }).join(',');
+        
+        switch(obj.event) {
+            case 'activate':
+                layer.confirm('确定要激活选中的 ' + data.length + ' 个证书吗？', function(index){
+                    $.post('{:url("batchActivate")}', {ids: ids}, function(res){
+                        if (res.code === 0) {
+                            layer.msg(res.msg, {icon: 1});
+                            ins1.reload();
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+                break;
+            case 'disable':
+                layer.confirm('确定要禁用选中的 ' + data.length + ' 个证书吗？', function(index){
+                    $.post('{:url("batchDisable")}', {ids: ids}, function(res){
+                        if (res.code === 0) {
+                            layer.msg(res.msg, {icon: 1});
+                            ins1.reload();
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+                break;
+            case 'export':
+                location.href = '{:url("export")}?ids=' + ids;
+                break;
+            case 'delete':
+                layer.confirm('确定要删除选中的 ' + data.length + ' 个证书吗？', function(index){
+                    $.post('{:url("delete")}', {ids: ids}, function(res){
+                        if (res.code === 0) {
+                            layer.msg(res.msg, {icon: 1});
+                            ins1.reload();
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+                break;
+        }
     });
 
     // 行工具栏
@@ -132,73 +340,60 @@ layui.use(['table', 'form', 'layer'], function(){
                     if(res.code === 0){
                         obj.del();
                         layer.close(index);
+                        loadStats();
                     } else {
                         layer.msg(res.msg);
                     }
                 });
             });
         }
-    });
-
-    // 批量删除
-    $('.batch-delete').click(function(){
-        var checkStatus = table.checkStatus('table');
-        var data = checkStatus.data;
-        if(data.length === 0){
-            layer.msg('请选择要删除的数据');
-            return;
-        }
-        var ids = data.map(function(d){ return d.id; }).join(',');
-        layer.confirm('确定删除选中的证书吗？', function(index){
-            $.post('{:url("delete")}', {ids: ids}, function(res){
-                if(res.code === 0){
-                    ins1.reload();
-                    layer.close(index);
-                } else {
-                    layer.msg(res.msg);
-                }
-            });
-        });
-    });
-
-    // 批量绑定商品
-    $('.batch-bind').click(function(){
-        var checkStatus = table.checkStatus('table');
-        var data = checkStatus.data;
-        if(data.length === 0){
-            layer.msg('请选择要绑定的证书');
-            return;
-        }
-        
-        // 弹出商品选择
-        layer.open({
-            type: 2,
-            title: '选择商品',
-            content: '{:url("goodsSelect")}',
-            area: ['80%', '80%'],
-            btn: ['确定', '取消'],
-            yes: function(index, layero){
-                var iframeWin = layero.find('iframe')[0].contentWindow;
-                var goods = iframeWin.getSelectedGoods();
-                if(!goods){
-                    layer.msg('请选择商品');
-                    return;
-                }
-                $.post('{:url("bindGoods")}', {
-                    ids: data.map(function(d){ return d.id; }).join(','),
-                    goods_id: goods.id
-                }, function(res){
-                    if(res.code === 0){
-                        layer.close(index);
-                        ins1.reload();
-                        layer.msg('绑定成功');
-                    } else {
-                        layer.msg(res.msg);
-                    }
-                });
-            }
-        });
     });
 });
 </script>
+
+<style>
+/* 统计卡片样式 */
+.stat-card .layui-card-body {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #fff;
+}
+.stat-icon {
+    font-size: 48px;
+    opacity: 0.8;
+    margin-right: 20px;
+}
+.stat-info {
+    flex: 1;
+}
+.stat-value {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+.stat-compare {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 6px;
+}
+/* 证书码单元格 */
+.code-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.code-cell .copy-code {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.code-cell:hover .copy-code {
+    opacity: 1;
+}
+</style>
 {/block}
