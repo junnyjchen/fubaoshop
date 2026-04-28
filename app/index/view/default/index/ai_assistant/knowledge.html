@@ -1,0 +1,202 @@
+{__CONTENT__}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库管理 - AI道玄 - 符宝网</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap-table/bootstrap-table.min.css">
+    <style>
+        body { background: #0f0f23; color: #f5f5f5; font-family: -apple-system, sans-serif; }
+        .ai-admin { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .ai-admin-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-admin-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #c41e3a, #e63950); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .ai-admin-title h1 { font-size: 22px; color: #d4af37; margin: 0 0 4px; }
+        .ai-admin-title p { font-size: 12px; color: #b8b8b8; margin: 0; }
+        .ai-admin-nav { display: flex; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1a1a2e; border-radius: 10px; overflow-x: auto; }
+        .ai-admin-nav a { padding: 8px 16px; color: #b8b8b8; text-decoration: none; border-radius: 6px; white-space: nowrap; transition: all 0.3s; }
+        .ai-admin-nav a:hover { color: #d4af37; }
+        .ai-admin-nav a.active { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+        .ai-admin-panel { background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); padding: 24px; }
+        .ai-panel-title { font-size: 16px; color: #d4af37; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.15); display: flex; justify-content: space-between; align-items: center; }
+        .ai-toolbar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .ai-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+        .ai-btn-primary { background: linear-gradient(135deg, #c41e3a, #e63950); color: #fff; }
+        .ai-btn-primary:hover { transform: translateY(-2px); }
+        .ai-btn-secondary { background: #16213e; color: #f5f5f5; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .ai-table { background: transparent !important; color: #f5f5f5 !important; }
+        .ai-table th, .ai-table td { background: #16213e !important; border-color: rgba(212, 175, 55, 0.1) !important; color: #f5f5f5 !important; }
+        .ai-table thead th { background: #1a1a2e !important; color: #d4af37 !important; }
+        .ai-table tbody tr:hover { background: rgba(212, 175, 55, 0.1) !important; }
+        .ai-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; }
+        .ai-badge-success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .ai-badge-warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .ai-action-btn { padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; margin-right: 6px; }
+        .ai-action-edit { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .ai-action-delete { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        /* 分页样式 */
+        .pagination { margin: 0; }
+        .pagination li a, .pagination li span { background: #16213e !important; border-color: rgba(212, 175, 55, 0.2) !important; color: #f5f5f5 !important; }
+        .pagination li.active a, .pagination li.active span { background: #c41e3a !important; border-color: #c41e3a !important; color: #fff !important; }
+        .page-size-select { padding: 6px 12px; background: #16213e; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 6px; color: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <div class="ai-admin">
+        <div class="ai-admin-header">
+            <div class="ai-admin-logo">☯</div>
+            <div class="ai-admin-title">
+                <h1>AI助手「道玄」配置</h1>
+                <p>符宝网智能问答系统</p>
+            </div>
+        </div>
+
+        <div class="ai-admin-nav">
+            <a href="{:url('index/ai_assistant/config')}">基础配置</a>
+            <a href="{:url('index/ai_assistant/model')}">模型配置</a>
+            <a href="{:url('index/ai_assistant/knowledge')}" class="active">知识库</a>
+            <a href="{:url('index/ai_assistant/optimize')}">训练优化</a>
+            <a href="{:url('index/ai_assistant/test')}">接口测试</a>
+        </div>
+
+        <div class="ai-admin-panel">
+            <div class="ai-panel-title">
+                <span>知识库管理</span>
+                <span style="font-size:12px;color:#b8b8b8;font-weight:normal;">共 0 条记录</span>
+            </div>
+
+            <div class="ai-toolbar">
+                <button class="ai-btn ai-btn-primary" onclick="addKnowledge()">
+                    <i class="mdi mdi-plus"></i> 添加知识
+                </button>
+                <button class="ai-btn ai-btn-secondary">
+                    <i class="mdi mdi-upload"></i> 批量导入
+                </button>
+                <button class="ai-btn ai-btn-secondary">
+                    <i class="mdi mdi-download"></i> 批量导出
+                </button>
+            </div>
+
+            <table class="ai-table" data-toggle="table" data-url="{:url('index/ai_assistant/knowledge')}" data-pagination="true" data-side-pagination="server" data-page-list="[10, 20, 50, 100]" data-show-refresh="true" data-show-toggle="true" data-show-columns="true">
+                <thead>
+                    <tr>
+                        <th data-field="id" data-width="60">ID</th>
+                        <th data-field="question" data-width="200">问题</th>
+                        <th data-field="answer" data-width="300">答案</th>
+                        <th data-field="category_name" data-width="100">分类</th>
+                        <th data-field="hit_count" data-width="80">命中次数</th>
+                        <th data-field="is_enable" data-width="80" data-formatter="statusFormatter">状态</th>
+                        <th data-field="create_time" data-width="150">创建时间</th>
+                        <th data-field="action" data-width="150" data-formatter="actionFormatter">操作</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div style="text-align:center;padding:40px;color:#b8b8b8;">
+                <i class="mdi mdi-book-open-variant" style="font-size:48px;opacity:0.3;"></i>
+                <p style="margin-top:16px;">暂无知识库数据</p>
+                <button class="ai-btn ai-btn-primary" onclick="addKnowledge()" style="margin-top:16px;">
+                    <i class="mdi mdi-plus"></i> 添加第一条知识
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑弹窗 -->
+    <div class="modal fade" id="knowledgeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background:#1a1a2e;color:#f5f5f5;">
+                <div class="modal-header" style="border-bottom-color:rgba(212,175,55,0.15);">
+                    <h5 class="modal-title" style="color:#d4af37;">添加知识</h5>
+                    <button type="button" class="close" data-dismiss="modal" style="color:#f5f5f5;">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label style="color:#f5f5f5;margin-bottom:8px;">问题</label>
+                        <textarea class="form-control" id="questionInput" rows="2" placeholder="请输入常见问题" style="background:#16213e;border-color:rgba(212,175,55,0.2);color:#f5f5f5;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label style="color:#f5f5f5;margin-bottom:8px;">答案</label>
+                        <textarea class="form-control" id="answerInput" rows="5" placeholder="请输入标准答案" style="background:#16213e;border-color:rgba(212,175,55,0.2);color:#f5f5f5;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label style="color:#f5f5f5;margin-bottom:8px;">分类</label>
+                        <select class="form-control" id="categorySelect" style="background:#16213e;border-color:rgba(212,175,55,0.2);color:#f5f5f5;">
+                            <option value="">请选择分类</option>
+                            <option value="fulu">符箓知识</option>
+                            <option value="daojiao">道教文化</option>
+                            <option value="xuanxue">玄学术数</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top-color:rgba(212,175,55,0.15);">
+                    <button type="button" class="ai-btn ai-btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="ai-btn ai-btn-primary" onclick="saveKnowledge()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{:REQUEST_BASE}/static/common/jquery.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/layer/layer.js"></script>
+    <script>
+        // 状态格式化
+        function statusFormatter(value, row) {
+            if (value == 1) {
+                return '<span class="ai-badge ai-badge-success">启用</span>';
+            } else {
+                return '<span class="ai-badge ai-badge-warning">禁用</span>';
+            }
+        }
+
+        // 操作格式化
+        function actionFormatter(value, row) {
+            return '<button class="ai-action-btn ai-action-edit" onclick="editKnowledge(' + row.id + ')">编辑</button>' +
+                   '<button class="ai-action-btn ai-action-delete" onclick="deleteKnowledge(' + row.id + ')">删除</button>';
+        }
+
+        // 添加知识
+        function addKnowledge() {
+            $('#knowledgeModal').modal('show');
+            $('#questionInput').val('');
+            $('#answerInput').val('');
+            $('#categorySelect').val('');
+        }
+
+        // 编辑知识
+        function editKnowledge(id) {
+            layer.msg('编辑功能开发中', {icon: 7});
+        }
+
+        // 删除知识
+        function deleteKnowledge(id) {
+            layer.confirm('确定要删除这条知识吗？', {
+                icon: 3,
+                title: '提示'
+            }, function(index) {
+                layer.msg('删除功能开发中', {icon: 7});
+                layer.close(index);
+            });
+        }
+
+        // 保存知识
+        function saveKnowledge() {
+            var question = $('#questionInput').val().trim();
+            var answer = $('#answerInput').val().trim();
+            var category = $('#categorySelect').val();
+            
+            if (!question || !answer) {
+                layer.msg('请填写问题和答案', {icon: 7});
+                return;
+            }
+            
+            layer.msg('保存功能开发中', {icon: 7});
+        }
+    </script>
+</body>
+</html>

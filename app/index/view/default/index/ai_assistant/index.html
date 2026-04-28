@@ -1,873 +1,137 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{$ai_config.ai_name|default='道玄'} AI - 符宝网</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --talu-black: #1a1a2e;
-      --talu-black-light: #16213e;
-      --talu-black-dark: #0f0f23;
-      --talu-red: #c41e3a;
-      --talu-red-light: #e63950;
-      --talu-gold: #d4af37;
-      --talu-gold-light: #f4d160;
-      --talu-cyan: #008080;
-      --text-primary: #f5f5f5;
-      --text-secondary: #b8b8b8;
-      --text-muted: #6b6b6b;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Noto Sans TC', 'PingFang SC', sans-serif;
-      background: linear-gradient(135deg, var(--talu-black-dark) 0%, var(--talu-black) 50%, var(--talu-black-light) 100%);
-      color: var(--text-primary);
-      min-height: 100vh;
-    }
-
-    .talu-pattern-bg {
-      background-image: 
-        radial-gradient(circle at 20% 80%, rgba(196, 30, 58, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
-    }
-
-    .app-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* 头部 */
-    .header {
-      text-align: center;
-      padding: 30px 0;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-      position: relative;
-    }
-
-    .header__logo {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--talu-gold);
-      letter-spacing: 4px;
-      font-family: 'Noto Serif TC', serif;
-    }
-
-    .header__subtitle {
-      color: var(--text-secondary);
-      margin-top: 8px;
-      font-size: 14px;
-    }
-
-    .header__actions {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      gap: 8px;
-    }
-
-    .header__btn {
-      padding: 8px 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 20px;
-      color: var(--text-secondary);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .header__btn:hover {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--talu-gold);
-      color: var(--talu-gold);
-    }
-
-    /* 模式选择 */
-    .mode-selector {
-      display: flex;
-      gap: 12px;
-      padding: 20px 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .mode-selector::-webkit-scrollbar { display: none; }
-
-    .mode-btn {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 30px;
-      color: var(--text-secondary);
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .mode-btn:hover {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--talu-gold);
-      color: var(--talu-gold);
-    }
-
-    .mode-btn.active {
-      background: linear-gradient(135deg, var(--talu-red), var(--talu-red-light));
-      border-color: var(--talu-red);
-      color: white;
-    }
-
-    /* 聊天区域 */
-    .chat-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* 消息 */
-    .message {
-      display: flex;
-      gap: 12px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message--user { flex-direction: row-reverse; }
-
-    .message__avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .message--assistant .message__avatar {
-      background: linear-gradient(135deg, var(--talu-red), var(--talu-gold));
-    }
-
-    .message--user .message__avatar {
-      background: var(--talu-cyan);
-    }
-
-    .message__content {
-      max-width: 75%;
-      padding: 16px 20px;
-      border-radius: 12px;
-      font-size: 15px;
-      line-height: 1.8;
-      position: relative;
-    }
-
-    .message--assistant .message__content {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      border-radius: 4px 16px 16px 16px;
-    }
-
-    .message--user .message__content {
-      background: linear-gradient(135deg, var(--talu-cyan), #00a0a0);
-      border-radius: 16px 4px 16px 16px;
-    }
-
-    .message__content p { margin-bottom: 12px; }
-    .message__content p:last-child { margin-bottom: 0; }
-    .message__content code {
-      background: rgba(0,0,0,0.3);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-
-    .message__time {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 8px;
-      text-align: right;
-    }
-
-    /* 欢迎页 */
-    .welcome {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .welcome__icon {
-      font-size: 72px;
-      margin-bottom: 24px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-
-    .welcome__title {
-      font-size: 28px;
-      color: var(--talu-gold);
-      margin-bottom: 16px;
-      font-family: 'Noto Serif TC', serif;
-    }
-
-    .welcome__text {
-      color: var(--text-secondary);
-      max-width: 500px;
-      margin: 0 auto 32px;
-      line-height: 1.8;
-    }
-
-    .welcome__features {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 40px;
-    }
-
-    .welcome__feature {
-      padding: 12px 20px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 30px;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    /* 快捷问题 */
-    .quick-questions {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .quick-questions__title {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    .quick-questions__list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .quick-question {
-      padding: 14px 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      border-radius: 12px;
-      color: var(--text-secondary);
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .quick-question:hover {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--talu-gold);
-      color: var(--talu-gold);
-      transform: translateY(-2px);
-    }
-
-    .quick-question__icon {
-      font-size: 18px;
-    }
-
-    /* 知识推荐 */
-    .knowledge-section {
-      padding: 20px 0;
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
-    }
-
-    .knowledge-section__title {
-      font-size: 16px;
-      color: var(--talu-gold);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .knowledge-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 12px;
-    }
-
-    .knowledge-item {
-      padding: 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .knowledge-item:hover {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--talu-gold);
-    }
-
-    .knowledge-item__title {
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .knowledge-item__category {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* 输入区 */
-    .input-area {
-      padding: 20px 0;
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
-    }
-
-    .input-wrapper {
-      display: flex;
-      gap: 12px;
-    }
-
-    .input-box {
-      flex: 1;
-    }
-
-    .input-box__textarea {
-      width: 100%;
-      min-height: 52px;
-      max-height: 150px;
-      padding: 14px 20px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 12px;
-      color: var(--text-primary);
-      font-size: 15px;
-      font-family: inherit;
-      resize: none;
-      outline: none;
-      transition: all 0.3s;
-    }
-
-    .input-box__textarea:focus {
-      border-color: var(--talu-gold);
-      background: rgba(255,255,255,0.1);
-    }
-
-    .input-box__textarea::placeholder { color: var(--text-muted); }
-
-    .send-btn {
-      width: 52px;
-      height: 52px;
-      background: linear-gradient(135deg, var(--talu-red), #a01830);
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .send-btn:hover:not(:disabled) {
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(196, 30, 58, 0.4);
-    }
-
-    .send-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* 打字指示器 */
-    .typing-indicator {
-      display: flex;
-      gap: 4px;
-      padding: 16px 20px;
-    }
-
-    .typing-indicator span {
-      width: 8px;
-      height: 8px;
-      background: var(--talu-gold);
-      border-radius: 50%;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
-
-    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
-    }
-
-    /* 打字机效果 */
-    .typing-cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1em;
-      background: var(--talu-gold);
-      margin-left: 2px;
-      animation: blink 0.8s infinite;
-      vertical-align: middle;
-    }
-
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
-    }
-
-    /* 会话提示 */
-    .session-info {
-      text-align: center;
-      padding: 10px;
-      background: rgba(212, 175, 55, 0.1);
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 13px;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    /* 滚动条 */
-    .messages::-webkit-scrollbar { width: 6px; }
-    .messages::-webkit-scrollbar-track { background: transparent; }
-    .messages::-webkit-scrollbar-thumb {
-      background: rgba(212, 175, 55, 0.3);
-      border-radius: 3px;
-    }
-
-    /* 响应式 */
-    @media (max-width: 768px) {
-      .header { padding: 20px 0; }
-      .header__logo { font-size: 24px; }
-      .header__actions { position: static; transform: none; margin-top: 10px; justify-content: center; }
-      .message__content { max-width: 85%; }
-      .welcome__icon { font-size: 56px; }
-      .welcome__title { font-size: 22px; }
-      .quick-questions__list { grid-template-columns: 1fr; }
-    }
-  </style>
+{include file="public/header"}
+<link rel="stylesheet" href="__STATIC__/css/ai_assistant.css">
 </head>
 <body>
-  <div class="app-container talu-pattern-bg">
-    <!-- 头部 -->
-    <header class="header">
-      <h1 class="header__logo">{$ai_config.ai_avatar|default='☯'} {$ai_config.ai_name|default='道玄'} AI</h1>
-      <p class="header__subtitle">符宝网 · 智能助手</p>
-      <div class="header__actions">
-        <button class="header__btn" onclick="clearChat()" title="清空会话">
-          <span>🗑</span> 清空会话
-        </button>
-      </div>
-    </header>
-
-    <!-- 模式选择 -->
-    <div class="mode-selector" id="modeSelector">
-      <button class="mode-btn active" data-mode="chat"><span>☯</span> 道法闲聊</button>
-      <button class="mode-btn" data-mode="bazi"><span>✦</span> 八字命理</button>
-      <button class="mode-btn" data-mode="fulu"><span>❋</span> 道玄知识</button>
-      <button class="mode-btn" data-mode="fengshui"><span>⬡</span> 风水调理</button>
-      <button class="mode-btn" data-mode="fashi"><span>⬢</span> 开光法器</button>
-    </div>
-
-    <!-- 聊天区域 -->
-    <div class="chat-area">
-      <div class="messages" id="messages">
-        <!-- 欢迎页 -->
-        <div class="welcome" id="welcome">
-          <div class="welcome__icon">{$ai_config.ai_avatar|default='☯'}</div>
-          <h2 class="welcome__title">善信有缘，{$ai_config.ai_name|default='道玄'}在此恭候</h2>
-          <p class="welcome__text">{$ai_config.welcome_message|default='吾通晓八字命理、道法命理，愿为施主答疑解惑。'}</p>
-          <div class="welcome__features">
-            <span class="welcome__feature">☯ 道法传承</span>
-            <span class="welcome__feature">✦ 八字命理</span>
-            <span class="welcome__feature">❋ 道玄知识</span>
-            <span class="welcome__feature">⬡ 风水调理</span>
-          </div>
-          
-          <!-- 快捷问题 -->
-          <div class="quick-questions" id="quickQuestions">
-            <p class="quick-questions__title">试试这样问</p>
-            <div class="quick-questions__list">
-              <button class="quick-question" onclick="askQuestion('护身符有什么功效？')">
-                <span class="quick-question__icon">☘</span>
-                <span>护身符功效</span>
-              </button>
-              <button class="quick-question" onclick="askQuestion('如何看八字基础？')">
-                <span class="quick-question__icon">✦</span>
-                <span>八字入门</span>
-              </button>
-              <button class="quick-question" onclick="askQuestion('貔貅如何正确佩戴？')">
-                <span class="quick-question__icon">⬢</span>
-                <span>貔貅佩戴</span>
-              </button>
-              <button class="quick-question" onclick="askQuestion('家居风水有什么讲究？')">
-                <span class="quick-question__icon">⬡</span>
-                <span>风水调理</span>
-              </button>
+    <div class="ai-container">
+        <!-- 头部 -->
+        <header class="ai-header">
+            <div class="ai-header-left">
+                <a href="{:url('index/index')}" class="ai-back">
+                    <span>←</span>
+                </a>
+                <div class="ai-header-info">
+                    <span class="ai-header-title">☯ AI道玄</span>
+                    <span class="ai-header-status">
+                        <span class="ai-status-dot"></span>
+                        <span id="aiStatusText">{$config.welcome|default='知识库已加载'}</span>
+                    </span>
+                </div>
             </div>
-          </div>
+            <div class="ai-header-right">
+                <a href="{:url('index/aiassistant/config')}" class="ai-config-btn" title="配置">
+                    <span>⚙</span>
+                </a>
+                <button type="button" class="ai-menu-btn" onclick="toggleMenu()">☰</button>
+            </div>
+        </header>
+        
+        <!-- 消息列表 -->
+        <div class="ai-messages" id="messages">
+            <!-- 欢迎区域 -->
+            <div class="ai-welcome" id="welcomeSection">
+                <div class="ai-welcome-icon">☯</div>
+                <div class="ai-welcome-title">道玄在此，施主有何疑惑？</div>
+                <div class="ai-welcome-desc">贫道精通道家文化、符箓知识，愿为施主指点迷津</div>
+                
+                <!-- 分类快捷入口 -->
+                <div class="ai-categories">
+                    {volist name="categories" id="cat"}
+                    <a href="javascript:;" class="ai-category-btn" data-category="{$cat.id}">
+                        <span class="ai-cat-icon">
+                            {switch name="cat.icon"}
+                                {case value="talisman"}☯{/case}
+                                {case value="taoism"}✦{/case}
+                                {case value="faq"}❓{/case}
+                                {case value="service"}📿{/case}
+                                {default /}📚
+                            {/switch}
+                        </span>
+                        <span>{$cat.name}</span>
+                    </a>
+                    {/volist}
+                </div>
+                
+                <!-- 快捷问题 -->
+                <div class="ai-quick-questions">
+                    <div class="ai-quick-title">快捷问题</div>
+                    <div class="ai-quick-list">
+                        {volist name="quickQuestions" id="q"}
+                        <button type="button" class="ai-quick-btn" onclick="sendQuickQuestion('{$q.question}')">
+                            {$q.question}
+                        </button>
+                        {/volist}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <!-- 知识推荐 -->
-      <?php if(!empty($recommends)): ?>
-      <div class="knowledge-section">
-        <h3 class="knowledge-section__title">❋ 热门知识</h3>
-        <div class="knowledge-list">
-          <?php foreach($recommends as $item): ?>
-          <div class="knowledge-item" onclick="askQuestion('<?php echo addslashes($item['question']); ?>')">
-            <div class="knowledge-item__title"><?php echo htmlspecialchars($item['title']); ?></div>
-            <div class="knowledge-item__category"><?php echo htmlspecialchars($item['tags']); ?></div>
-          </div>
-          <?php endforeach; ?>
+        
+        <!-- 输入区域 -->
+        <div class="ai-input-area">
+            <div class="ai-input-container">
+                <textarea 
+                    id="inputField" 
+                    class="ai-input" 
+                    placeholder="输入您的问题..."
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                    oninput="autoResize(this)"
+                ></textarea>
+                <button type="button" class="ai-send-btn" onclick="sendMessage()">
+                    <span>➤</span>
+                </button>
+            </div>
+            <div class="ai-input-hint">
+                <span>☯ 道法自然，心诚则灵</span>
+            </div>
         </div>
-      </div>
-      <?php endif; ?>
-
-      <!-- 输入区 -->
-      <div class="input-area">
-        <div class="input-wrapper">
-          <div class="input-box">
-            <textarea class="input-box__textarea" id="userInput" placeholder="输入您的问题，{$ai_config.ai_name|default='道玄'}为您解答..." rows="1"></textarea>
-          </div>
-          <button class="send-btn" id="sendBtn" title="发送">➤</button>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <script>
-    const API_BASE = '/index/api_ai_chat';
-    const AI_AVATAR = '{$ai_config.ai_avatar|default="☯"}';
-    const AI_NAME = '{$ai_config.ai_name|default="道玄"}';
     
-    let messages = [];
-    let currentMode = 'chat';
-    let sessionId = 'talu-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    let isLoading = false;
-    let typingSpeed = 20; // 打字速度(ms/字)
-
-    // 初始化
-    document.addEventListener('DOMContentLoaded', () => {
-      initModeSelector();
-      initInput();
-      loadSession();
-    });
-
-    // 模式切换
-    function initModeSelector() {
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentMode = btn.dataset.mode;
-          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          showModeHint();
-        });
-      });
-    }
-
-    // 显示模式提示
-    function showModeHint() {
-      const hints = {
-        chat: '切换到道法闲聊模式',
-        bazi: '切换到八字命理模式',
-        fulu: '切换到道玄知识模式',
-        fengshui: '切换到风水调理模式',
-        fashi: '切换到开光法器模式'
-      };
-      // 可以添加提示动画
-    }
-
-    // 输入处理
-    function initInput() {
-      const input = document.getElementById('userInput');
-      const sendBtn = document.getElementById('sendBtn');
-
-      sendBtn.addEventListener('click', sendMessage);
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
-        }
-      });
-      input.addEventListener('input', () => {
-        input.style.height = 'auto';
-        input.style.height = Math.min(input.scrollHeight, 150) + 'px';
-      });
-    }
-
-    // 发送消息
-    async function sendMessage() {
-      const input = document.getElementById('userInput');
-      const content = input.value.trim();
-      if (!content || isLoading) return;
-
-      input.value = '';
-      input.style.height = 'auto';
-      
-      hideWelcome();
-      hideQuickQuestions();
-      addMessage('user', content, new Date());
-      saveSession();
-
-      isLoading = true;
-      document.getElementById('sendBtn').disabled = true;
-      showTyping();
-
-      try {
-        const formData = new FormData();
-        formData.append('message', content);
-        formData.append('session_id', sessionId);
-        formData.append('mode', currentMode);
-
-        const res = await fetch(API_BASE + '/chat', {
-          method: 'POST',
-          headers: { 'X-Requested-With': 'XMLHttpRequest' },
-          body: formData
-        });
-        const data = await res.json();
-
-        hideTyping();
-        if (data.code === 0) {
-          await addMessageWithTyping('assistant', data.data.content, new Date());
-        } else {
-          addMessage('assistant', '抱歉，道玄暂时无法回应，请稍后再试。', new Date());
-        }
-      } catch (err) {
-        hideTyping();
-        addMessage('assistant', '抱歉，道玄暂时无法回应，请稍后再试。', new Date());
-      } finally {
-        isLoading = false;
-        document.getElementById('sendBtn').disabled = false;
-        saveSession();
-      }
-    }
-
-    // 打字机效果添加消息
-    function addMessageWithTyping(role, content, time) {
-      return new Promise((resolve) => {
-        messages.push({ role, content, time });
-        
-        const html = `
-          <div class="message message--${role}">
-            <div class="message__avatar">${role === 'assistant' ? AI_AVATAR : '◈'}</div>
-            <div class="message__content" id="typingContent">
-              <span class="typing-cursor"></span>
-            </div>
-          </div>
-        `;
-        
-        document.getElementById('messages').insertAdjacentHTML('beforeend', html);
-        scrollToBottom();
-        
-        const contentEl = document.querySelector('#typingContent');
-        let index = 0;
-        
-        function typeNextChar() {
-          if (index < content.length) {
-            const char = content[index];
-            const cursor = contentEl.querySelector('.typing-cursor');
-            if (cursor) {
-              cursor.insertAdjacentText('beforebegin', char);
-            }
-            index++;
-            scrollToBottom();
-            setTimeout(typeNextChar, typingSpeed);
-          } else {
-            // 打字完成，移除光标
-            const cursor = contentEl.querySelector('.typing-cursor');
-            if (cursor) {
-              cursor.insertAdjacentHTML('afterend', `<span class="message__time">${formatTime(time)}</span>`);
-              cursor.remove();
-            }
-            resolve();
-          }
-        }
-        
-        typeNextChar();
-      });
-    }
-
-    // 快捷提问
-    function askQuestion(question) {
-      document.getElementById('userInput').value = question;
-      document.getElementById('userInput').focus();
-    }
-
-    // 添加消息
-    function addMessage(role, content, time) {
-      messages.push({ role, content, time });
-      
-      const html = `
-        <div class="message message--${role}">
-          <div class="message__avatar">${role === 'assistant' ? AI_AVATAR : '◈'}</div>
-          <div class="message__content">${formatContent(content)}<span class="message__time">${formatTime(time)}</span></div>
+    <!-- 菜单面板 -->
+    <div class="ai-mask" id="menuMask" onclick="toggleMenu()"></div>
+    <div class="ai-menu-panel" id="menuPanel">
+        <div class="ai-menu-header">
+            <div class="ai-menu-title">☯ 符宝网</div>
+            <div class="ai-menu-subtitle">AI道玄助手</div>
         </div>
-      `;
-      
-      document.getElementById('messages').insertAdjacentHTML('beforeend', html);
-      scrollToBottom();
-    }
-
-    // 格式化内容
-    function formatContent(content) {
-      let formatted = content
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-      formatted = formatted.replace(/```[\s\S]*?```/g, m => '<pre>' + m.slice(3, -3) + '</pre>');
-      formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-      formatted = formatted.replace(/\n/g, '<br>');
-      return formatted;
-    }
-
-    // 格式化时间
-    function formatTime(date) {
-      if (!date) return '';
-      const d = new Date(date);
-      return d.getHours().toString().padStart(2, '0') + ':' + 
-             d.getMinutes().toString().padStart(2, '0');
-    }
-
-    // 打字指示器
-    function showTyping() {
-      const html = `
-        <div class="message message--assistant" id="typingIndicator">
-          <div class="message__avatar">${AI_AVATAR}</div>
-          <div class="typing-indicator"><span></span><span></span><span></span></div>
+        <div class="ai-menu-list">
+            <a href="{:url('index/aiassistant/knowledge')}" class="ai-menu-item">
+                <span class="ai-menu-icon">📚</span>
+                <span class="ai-menu-name">知识库管理</span>
+                <span class="ai-menu-arrow">›</span>
+            </a>
+            <a href="{:url('index/aiassistant/training')}" class="ai-menu-item">
+                <span class="ai-menu-icon">🎓</span>
+                <span class="ai-menu-name">训练优化</span>
+                <span class="ai-menu-arrow">›</span>
+            </a>
+            <a href="{:url('index/aiassistant/config')}" class="ai-menu-item">
+                <span class="ai-menu-icon">🤖</span>
+                <span class="ai-menu-name">大模型配置</span>
+                <span class="ai-menu-arrow">›</span>
+            </a>
+            <div class="ai-menu-divider"></div>
+            <a href="javascript:;" class="ai-menu-item" onclick="clearChat()">
+                <span class="ai-menu-icon">🗑</span>
+                <span class="ai-menu-name">清空对话</span>
+                <span class="ai-menu-arrow">›</span>
+            </a>
+            <a href="javascript:;" class="ai-menu-item" onclick="exportChat()">
+                <span class="ai-menu-icon">📤</span>
+                <span class="ai-menu-name">导出对话</span>
+                <span class="ai-menu-arrow">›</span>
+            </a>
         </div>
-      `;
-      document.getElementById('messages').insertAdjacentHTML('beforeend', html);
-      scrollToBottom();
-    }
-
-    function hideTyping() {
-      const el = document.getElementById('typingIndicator');
-      if (el) el.remove();
-    }
-
-    function hideWelcome() {
-      const welcome = document.getElementById('welcome');
-      if (welcome) welcome.style.display = 'none';
-    }
-
-    function hideQuickQuestions() {
-      const quick = document.getElementById('quickQuestions');
-      if (quick) quick.style.display = 'none';
-    }
-
-    function scrollToBottom() {
-      const el = document.getElementById('messages');
-      el.scrollTop = el.scrollHeight;
-    }
-
-    // 清空会话
-    function clearChat() {
-      if (!confirm('确定要清空当前会话吗？')) return;
-      
-      messages = [];
-      sessionId = 'talu-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      
-      // 保留欢迎页和快捷问题
-      const welcome = document.getElementById('welcome');
-      document.getElementById('messages').innerHTML = '';
-      if (welcome) {
-        welcome.style.display = 'block';
-        const quick = document.getElementById('quickQuestions');
-        if (quick) quick.style.display = 'block';
-        document.getElementById('messages').appendChild(welcome);
-      }
-      
-      // 清除localStorage
-      localStorage.removeItem('talu_ai_session');
-      localStorage.removeItem('talu_ai_messages');
-      
-      // 清除服务器会话
-      fetch(API_BASE + '/clear', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: new URLSearchParams({ session_id: sessionId })
-      });
-    }
-
-    // 保存会话到localStorage
-    function saveSession() {
-      try {
-        localStorage.setItem('talu_ai_session', sessionId);
-        localStorage.setItem('talu_ai_messages', JSON.stringify(messages.slice(-50))); // 只保存最近50条
-      } catch (e) {
-        console.warn('无法保存会话:', e);
-      }
-    }
-
-    // 加载会话
-    function loadSession() {
-      try {
-        const savedSession = localStorage.getItem('talu_ai_session');
-        const savedMessages = localStorage.getItem('talu_ai_messages');
-        
-        if (savedMessages) {
-          messages = JSON.parse(savedMessages);
-          if (messages.length > 0) {
-            hideWelcome();
-            messages.forEach(msg => {
-              addMessage(msg.role, msg.content, new Date(msg.time));
-            });
-          }
-        }
-      } catch (e) {
-        console.warn('无法加载会话:', e);
-      }
-    }
-  </script>
+    </div>
+    
+    <!-- Toast -->
+    <div class="ai-toast" id="toast"></div>
+    
+    <script src="__STATIC__/js/ai_assistant.js"></script>
+    <script>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initAI();
+        });
+    </script>
 </body>
 </html>

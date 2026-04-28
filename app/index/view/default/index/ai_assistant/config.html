@@ -1,0 +1,588 @@
+{__CONTENT__}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI助手配置 - 符宝网</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap-table/bootstrap-table.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap-select/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/css/ai_assistant.css">
+    <style>
+        body {
+            background: #0f0f23;
+            color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .ai-admin {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .ai-admin-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .ai-admin-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #c41e3a, #e63950);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .ai-admin-title h1 {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 22px;
+            color: #d4af37;
+            margin: 0 0 4px;
+        }
+        .ai-admin-title p {
+            font-size: 12px;
+            color: #b8b8b8;
+            margin: 0;
+        }
+        .ai-admin-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #1a1a2e;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+        .ai-admin-nav a {
+            padding: 8px 16px;
+            color: #b8b8b8;
+            text-decoration: none;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .ai-admin-nav a:hover {
+            color: #d4af37;
+        }
+        .ai-admin-nav a.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+        }
+        .ai-admin-panel {
+            background: #1a1a2e;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 24px;
+        }
+        .ai-panel-title {
+            font-size: 16px;
+            color: #d4af37;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .ai-form-group {
+            margin-bottom: 20px;
+        }
+        .ai-form-label {
+            display: block;
+            font-size: 14px;
+            color: #f5f5f5;
+            margin-bottom: 8px;
+        }
+        .ai-form-hint {
+            font-size: 12px;
+            color: #b8b8b8;
+            margin-top: 4px;
+        }
+        .ai-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+        }
+        .ai-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .ai-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #16213e;
+            border-radius: 26px;
+            transition: 0.3s;
+        }
+        .ai-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: #b8b8b8;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .ai-switch input:checked + .ai-slider {
+            background: linear-gradient(135deg, #c41e3a, #e63950);
+        }
+        .ai-switch input:checked + .ai-slider:before {
+            transform: translateX(22px);
+            background: #fff;
+        }
+        .ai-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #16213e;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .ai-switch-info {
+            flex: 1;
+        }
+        .ai-switch-name {
+            font-size: 14px;
+            color: #f5f5f5;
+        }
+        .ai-switch-desc {
+            font-size: 11px;
+            color: #b8b8b8;
+            margin-top: 2px;
+        }
+        .ai-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: #16213e;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: #f5f5f5;
+            font-size: 14px;
+        }
+        .ai-select:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .ai-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #16213e;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: #f5f5f5;
+            font-size: 14px;
+        }
+        .ai-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .ai-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .ai-input-num {
+            width: 80px;
+            text-align: center;
+        }
+        .ai-range {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ai-range input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: #16213e;
+            border-radius: 3px;
+        }
+        .ai-range input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, #c41e3a, #e63950);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .ai-range-value {
+            min-width: 40px;
+            text-align: center;
+            color: #d4af37;
+            font-weight: 600;
+        }
+        .ai-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .ai-btn-primary {
+            background: linear-gradient(135deg, #c41e3a, #e63950);
+            color: #fff;
+        }
+        .ai-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
+        }
+        .ai-btn-secondary {
+            background: #16213e;
+            color: #f5f5f5;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .ai-btn-secondary:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+        .ai-form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .ai-test-panel {
+            margin-top: 20px;
+            padding: 16px;
+            background: #16213e;
+            border-radius: 8px;
+        }
+        .ai-test-result {
+            margin-top: 12px;
+            padding: 12px;
+            background: #0f0f23;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .ai-success { color: #10b981; }
+        .ai-error { color: #ef4444; }
+        .ai-info { color: #3b82f6; }
+        .ai-warning { color: #f59e0b; }
+        /* 复选框样式 */
+        .ai-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .ai-checkbox input {
+            width: 18px;
+            height: 18px;
+            accent-color: #c41e3a;
+        }
+        .ai-checkbox span {
+            font-size: 14px;
+            color: #f5f5f5;
+        }
+        /* 模型列表 */
+        .ai-model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .ai-model-card {
+            padding: 14px;
+            background: #16213e;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .ai-model-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+        .ai-model-card.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .ai-model-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f5f5f5;
+            margin-bottom: 4px;
+        }
+        .ai-model-desc {
+            font-size: 11px;
+            color: #b8b8b8;
+        }
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .ai-admin {
+                padding: 12px;
+            }
+            .ai-admin-panel {
+                padding: 16px;
+            }
+            .ai-model-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-admin">
+        <!-- 头部 -->
+        <div class="ai-admin-header">
+            <div class="ai-admin-logo">☯</div>
+            <div class="ai-admin-title">
+                <h1>AI助手「道玄」配置</h1>
+                <p>符宝网智能问答系统</p>
+            </div>
+        </div>
+
+        <!-- 导航 -->
+        <div class="ai-admin-nav">
+            <a href="{:url('index/ai_assistant/config')}" class="active">基础配置</a>
+            <a href="{:url('index/ai_assistant/model')}" >模型配置</a>
+            <a href="{:url('index/ai_assistant/knowledge')}" >知识库</a>
+            <a href="{:url('index/ai_assistant/optimize')}" >训练优化</a>
+            <a href="{:url('index/ai_assistant/test')}" >接口测试</a>
+        </div>
+
+        <!-- 主面板 -->
+        <div class="ai-admin-panel">
+            <form id="configForm">
+                <!-- 基础开关 -->
+                <div class="ai-panel-title">基础开关</div>
+                
+                <div class="ai-switch-row">
+                    <div class="ai-switch-info">
+                        <div class="ai-switch-name">启用大模型API</div>
+                        <div class="ai-switch-desc">开启后使用豆包/DeepSeek等大模型进行对话</div>
+                    </div>
+                    <label class="ai-switch">
+                        <input type="checkbox" name="enable_api" value="1" {$config.enable_api==1?'checked':''}>
+                        <span class="ai-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ai-switch-row">
+                    <div class="ai-switch-info">
+                        <div class="ai-switch-name">知识库优先</div>
+                        <div class="ai-switch-desc">先匹配知识库，未匹配再调用大模型</div>
+                    </div>
+                    <label class="ai-switch">
+                        <input type="checkbox" name="knowledge_first" value="1" {$config.knowledge_first==1?'checked':''}>
+                        <span class="ai-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ai-switch-row">
+                    <div class="ai-switch-info">
+                        <div class="ai-switch-name">流式输出</div>
+                        <div class="ai-switch-desc">打字机效果实时显示回复</div>
+                    </div>
+                    <label class="ai-switch">
+                        <input type="checkbox" name="stream_response" value="1" {$config.stream_response==1?'checked':''}>
+                        <span class="ai-slider"></span>
+                    </label>
+                </div>
+
+                <!-- 模型选择 -->
+                <div class="ai-panel-title" style="margin-top:30px;">模型选择</div>
+                
+                <div class="ai-form-group">
+                    <label class="ai-form-label">选择模型</label>
+                    <select name="model" class="ai-select" id="modelSelect">
+                        <option value="">请选择模型</option>
+                        <option value="doubao-seed-2-0-pro-260215" {$config.model=='doubao-seed-2-0-pro-260215'?'selected':''}>豆包 Pro 2.0</option>
+                        <option value="doubao-seed-2-0-lite-260215" {$config.model=='doubao-seed-2-0-lite-260215'?'selected':''}>豆包 Lite 2.0</option>
+                        <option value="doubao-seed-2-0-mini-260215" {$config.model=='doubao-seed-2-0-mini-260215'?'selected':''}>豆包 Mini 2.0</option>
+                        <option value="deepseek-v3-2-251201" {$config.model=='deepseek-v3-2-251201'?'selected':''}>DeepSeek V3.2</option>
+                        <option value="kimi-k2-5-260127" {$config.model=='kimi-k2-5-260127'?'selected':''}>Kimi K2.5</option>
+                        <option value="glm-5-0-260211" {$config.model=='glm-5-0-260211'?'selected':''}>GLM-5.0</option>
+                    </select>
+                    <div class="ai-form-hint">不同模型有不同的响应速度和生成质量</div>
+                </div>
+
+                <!-- 参数配置 -->
+                <div class="ai-panel-title" style="margin-top:30px;">参数配置</div>
+
+                <div class="ai-form-group">
+                    <label class="ai-form-label">Temperature (创造性)</label>
+                    <div class="ai-range">
+                        <input type="range" name="temperature" min="0" max="20" value="{$config.temperature|default='10'}" oninput="updateRangeValue(this, 'tempValue')">
+                        <span class="ai-range-value" id="tempValue">{$config.temperature|default='10' / 10}</span>
+                    </div>
+                    <div class="ai-form-hint">值越高回复越有创造性，越低越确定 (0.0-2.0)</div>
+                </div>
+
+                <div class="ai-form-group">
+                    <label class="ai-form-label">Top P (采样)</label>
+                    <div class="ai-range">
+                        <input type="range" name="top_p" min="0" max="100" value="{$config.top_p|default='80'}" oninput="updateRangeValue(this, 'topPValue')">
+                        <span class="ai-range-value" id="topPValue">{$config.top_p|default='80' / 100}</span>
+                    </div>
+                    <div class="ai-form-hint">控制候选词的多样性 (0.0-1.0)</div>
+                </div>
+
+                <div class="ai-form-group">
+                    <label class="ai-form-label">Max Tokens (最大回复长度)</label>
+                    <div class="ai-input-group">
+                        <input type="number" name="max_tokens" class="ai-input ai-input-num" value="{$config.max_tokens|default='2048'}" min="100" max="8192">
+                        <span style="color:#b8b8b8;font-size:13px;">字数</span>
+                    </div>
+                    <div class="ai-form-hint">单次回复最大生成的token数量</div>
+                </div>
+
+                <!-- 深度思考 -->
+                <div class="ai-panel-title" style="margin-top:30px;">高级选项</div>
+
+                <div class="ai-switch-row">
+                    <div class="ai-switch-info">
+                        <div class="ai-switch-name">启用深度思考</div>
+                        <div class="ai-switch-desc">启用复杂推理思考过程（部分模型支持）</div>
+                    </div>
+                    <label class="ai-switch">
+                        <input type="checkbox" name="enable_thinking" value="1" {$config.enable_thinking==1?'checked':''}>
+                        <span class="ai-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ai-switch-row">
+                    <div class="ai-switch-info">
+                        <div class="ai-switch-name">显示思考过程</div>
+                        <div class="ai-switch-desc">在回复中显示AI的思考推理过程</div>
+                    </div>
+                    <label class="ai-switch">
+                        <input type="checkbox" name="show_thinking" value="1" {$config.show_thinking==1?'checked':''}>
+                        <span class="ai-slider"></span>
+                    </label>
+                </div>
+
+                <!-- 快捷问题 -->
+                <div class="ai-panel-title" style="margin-top:30px;">快捷问题配置</div>
+
+                <div class="ai-form-group">
+                    <label class="ai-form-label">快捷问题 (每行一个)</label>
+                    <textarea name="quick_questions" class="ai-input" rows="5" placeholder="请输入快捷问题，每行一个">{$config.quick_questions|default=''|raw}</textarea>
+                    <div class="ai-form-hint">显示在对话界面的快捷入口</div>
+                </div>
+
+                <!-- 按钮 -->
+                <div class="ai-form-actions">
+                    <button type="submit" class="ai-btn ai-btn-primary">
+                        <i class="mdi mdi-content-save"></i> 保存配置
+                    </button>
+                    <button type="button" class="ai-btn ai-btn-secondary" onclick="testConnection()">
+                        <i class="mdi mdi-flash"></i> 测试连接
+                    </button>
+                    <a href="{:url('index/ai_assistant/index')}" class="ai-btn ai-btn-secondary">
+                        <i class="mdi mdi-eye"></i> 预览效果
+                    </a>
+                </div>
+            </form>
+
+            <!-- 测试面板 -->
+            <div class="ai-test-panel" id="testPanel" style="display:none;">
+                <div class="ai-form-label">接口测试</div>
+                <div class="ai-input-group">
+                    <input type="text" class="ai-input" id="testInput" placeholder="输入测试问题" style="flex:1;">
+                    <button type="button" class="ai-btn ai-btn-primary" onclick="runTest()">发送</button>
+                </div>
+                <div class="ai-test-result" id="testResult">
+                    <span class="ai-info">等待测试...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{:REQUEST_BASE}/static/common/jquery.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/layer/layer.js"></script>
+    <script>
+        // 更新滑块值
+        function updateRangeValue(el, valueId) {
+            var value = parseFloat(el.value) / 10;
+            if (el.name === 'temperature') {
+                document.getElementById(valueId).textContent = value.toFixed(1);
+            } else {
+                document.getElementById(valueId).textContent = (parseInt(el.value) / 100).toFixed(2);
+            }
+        }
+
+        // 提交表单
+        $('#configForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = $(this).serialize();
+            
+            $.ajax({
+                url: '{:url("index/ai_assistant/saveConfig")}',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code === 0) {
+                        layer.msg('配置保存成功', {icon: 1, time: 1500});
+                    } else {
+                        layer.msg(res.msg || '保存失败', {icon: 2});
+                    }
+                },
+                error: function() {
+                    layer.msg('请求失败', {icon: 2});
+                }
+            });
+        });
+
+        // 测试连接
+        function testConnection() {
+            var panel = document.getElementById('testPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 运行测试
+        function runTest() {
+            var message = $('#testInput').val().trim();
+            if (!message) {
+                layer.msg('请输入测试问题', {icon: 7});
+                return;
+            }
+
+            var resultDiv = $('#testResult');
+            resultDiv.html('<span class="ai-info">正在测试，请稍候...</span>');
+
+            $.ajax({
+                url: '/api/ai/chat',
+                type: 'POST',
+                data: JSON.stringify({ message: message }),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code === 0 && res.data) {
+                        resultDiv.html('<span class="ai-success">✓ 测试成功</span><br><br>' + 
+                            '<strong>匹配率:</strong> ' + (res.data.match_rate || 0) + '%<br><br>' +
+                            '<strong>回复内容:</strong><br>' + 
+                            res.data.content.replace(/\n/g, '<br>'));
+                    } else {
+                        resultDiv.html('<span class="ai-error">✗ 测试失败</span><br>' + (res.msg || '未知错误'));
+                    }
+                },
+                error: function(xhr) {
+                    resultDiv.html('<span class="ai-error">✗ 请求失败</span><br>状态码: ' + xhr.status);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

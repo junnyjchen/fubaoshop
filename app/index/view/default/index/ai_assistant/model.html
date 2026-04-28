@@ -1,0 +1,133 @@
+{__CONTENT__}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型配置 - AI道玄 - 符宝网</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap/css/bootstrap.min.css">
+    <style>
+        body { background: #0f0f23; color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .ai-admin { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .ai-admin-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-admin-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #c41e3a, #e63950); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .ai-admin-title h1 { font-size: 22px; color: #d4af37; margin: 0 0 4px; }
+        .ai-admin-title p { font-size: 12px; color: #b8b8b8; margin: 0; }
+        .ai-admin-nav { display: flex; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1a1a2e; border-radius: 10px; overflow-x: auto; }
+        .ai-admin-nav a { padding: 8px 16px; color: #b8b8b8; text-decoration: none; border-radius: 6px; white-space: nowrap; transition: all 0.3s; }
+        .ai-admin-nav a:hover { color: #d4af37; }
+        .ai-admin-nav a.active { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+        .ai-admin-panel { background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); padding: 24px; }
+        .ai-panel-title { font-size: 16px; color: #d4af37; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .ai-model-card { padding: 20px; background: #16213e; border: 2px solid transparent; border-radius: 12px; cursor: pointer; transition: all 0.3s; position: relative; }
+        .ai-model-card:hover { border-color: rgba(212, 175, 55, 0.3); transform: translateY(-2px); }
+        .ai-model-card.selected { border-color: #d4af37; background: rgba(212, 175, 55, 0.1); }
+        .ai-model-card.selected::after { content: '✓'; position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; background: #d4af37; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0f0f23; font-weight: bold; }
+        .ai-model-icon { font-size: 32px; margin-bottom: 12px; }
+        .ai-model-name { font-size: 16px; font-weight: 600; color: #f5f5f5; margin-bottom: 6px; }
+        .ai-model-desc { font-size: 13px; color: #b8b8b8; line-height: 1.5; }
+        .ai-model-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .ai-model-tag { padding: 4px 10px; background: rgba(212, 175, 55, 0.15); border-radius: 12px; font-size: 11px; color: #d4af37; }
+        .ai-btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .ai-btn-primary { background: linear-gradient(135deg, #c41e3a, #e63950); color: #fff; }
+        .ai-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4); }
+        .ai-btn-secondary { background: #16213e; color: #f5f5f5; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .ai-form-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(212, 175, 55, 0.15); }
+    </style>
+</head>
+<body>
+    <div class="ai-admin">
+        <div class="ai-admin-header">
+            <div class="ai-admin-logo">☯</div>
+            <div class="ai-admin-title">
+                <h1>AI助手「道玄」配置</h1>
+                <p>符宝网智能问答系统</p>
+            </div>
+        </div>
+
+        <div class="ai-admin-nav">
+            <a href="{:url('index/ai_assistant/config')}">基础配置</a>
+            <a href="{:url('index/ai_assistant/model')}" class="active">模型配置</a>
+            <a href="{:url('index/ai_assistant/knowledge')}">知识库</a>
+            <a href="{:url('index/ai_assistant/optimize')}">训练优化</a>
+            <a href="{:url('index/ai_assistant/test')}">接口测试</a>
+        </div>
+
+        <div class="ai-admin-panel">
+            <div class="ai-panel-title">选择AI模型</div>
+            <form id="modelForm">
+                <div class="ai-model-grid">
+                    <volist name="models" id="model">
+                        <div class="ai-model-card <if condition='$config.model eq $model.id'>selected</if>" data-model="{$model.id}">
+                            <div class="ai-model-icon">
+                                <switch name="model.id">
+                                    <case value="doubao-seed-2-0-pro-260215">🔮</case>
+                                    <case value="doubao-seed-2-0-lite-260215">✨</case>
+                                    <case value="doubao-seed-2-0-mini-260215">💫</case>
+                                    <case value="deepseek-v3-2-251201">🔍</case>
+                                    <case value="kimi-k2-5-260127">🌙</case>
+                                    <case value="glm-5-0-260211">⚡</case>
+                                    <default />🤖
+                                </switch>
+                            </div>
+                            <div class="ai-model-name">{$model.name}</div>
+                            <div class="ai-model-desc">{$model.desc}</div>
+                            <div class="ai-model-tags">
+                                <switch name="model.id">
+                                    <case value="doubao-seed-2-0-pro-260215"><span class="ai-model-tag">高性能</span><span class="ai-model-tag">复杂任务</span></case>
+                                    <case value="doubao-seed-2-0-lite-260215"><span class="ai-model-tag">轻量</span><span class="ai-model-tag">日常对话</span></case>
+                                    <case value="doubao-seed-2-0-mini-260215"><span class="ai-model-tag">极速响应</span></case>
+                                    <case value="deepseek-v3-2-251201"><span class="ai-model-tag">高性价比</span></case>
+                                    <case value="kimi-k2-5-260127"><span class="ai-model-tag">长文本</span></case>
+                                    <case value="glm-5-0-260211"><span class="ai-model-tag">中文优化</span></case>
+                                </switch>
+                            </div>
+                        </div>
+                    </volist>
+                </div>
+                <input type="hidden" name="model" id="selectedModel" value="{$config.model|default=''}">
+                
+                <div class="ai-form-actions">
+                    <button type="submit" class="ai-btn ai-btn-primary">
+                        <i class="mdi mdi-content-save"></i> 保存模型选择
+                    </button>
+                    <a href="{:url('index/ai_assistant/config')}" class="ai-btn ai-btn-secondary">
+                        <i class="mdi mdi-arrow-left"></i> 返回基础配置
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{:REQUEST_BASE}/static/common/jquery.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/layer/layer.js"></script>
+    <script>
+        // 选择模型
+        $('.ai-model-card').on('click', function() {
+            $('.ai-model-card').removeClass('selected');
+            $(this).addClass('selected');
+            $('#selectedModel').val($(this).data('model'));
+        });
+
+        // 提交表单
+        $('#modelForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '{:url("index/ai_assistant/saveConfig")}',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code === 0) {
+                        layer.msg('模型保存成功', {icon: 1, time: 1500});
+                    } else {
+                        layer.msg(res.msg || '保存失败', {icon: 2});
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

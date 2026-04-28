@@ -67,11 +67,17 @@ app/
 ## 核心功能详情
 
 ### 1. AI助手「道玄」
-- **前端页面**: `/aiassistant.html`
-- **配置后台**: `/admin/ai-model-config.html`
-- **知识库管理**: `/admin/ai-knowledge.html`
-- **训练优化**: `/admin/ai-training.html`
-- **API服务**: `api/server.js`
+- **前端页面**: `/aiassistant`
+- **配置后台**: `/aiassistant/config`
+- **模型配置**: `/aiassistant/model`
+- **知识库管理**: `/aiassistant/knowledge`
+- **训练优化**: `/aiassistant/optimize`
+- **接口测试**: `/aiassistant/test`
+- **控制器**: `app/index/controller/AIAssistant.php`
+- **服务层**: `app/index/service/AIAssistantService.php`
+- **API控制器**: `app/index/controller/api/AIChat.php`
+- **视图目录**: `app/index/view/default/index/ai_assistant/`
+- **静态资源**: `public/static/css/ai_assistant.css`, `public/static/js/ai_assistant.js`
 - **功能**: 智能问答，知识库检索，道法咨询
 
 #### 大模型配置
@@ -89,6 +95,24 @@ app/
 POST /api/ai/chat         - 发送消息
 GET  /api/ai/config       - 获取配置
 POST /api/ai/config       - 保存配置
+```
+
+#### 文件结构
+```
+app/index/
+├── controller/
+│   ├── AIAssistant.php        # AI助手控制器
+│   └── api/
+│       └── AIChat.php         # AI聊天API
+├── service/
+│   └── AIAssistantService.php # AI服务层(核心逻辑)
+└── view/default/index/ai_assistant/
+    ├── index.html             # AI助手主页
+    └── config.html            # 配置后台
+
+public/static/
+├── css/ai_assistant.css       # AI助手样式
+└── js/ai_assistant.js        # AI助手JS
 ```
 
 #### 支持的模型

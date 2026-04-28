@@ -51,5 +51,13 @@ return [
     'default_jsonp_handler' => 'jsonpReturn',
     // 默认JSONP处理方法
     'var_jsonp_handler'     => 'callback',
+
+    // AI助手API路由
+    '__ai_api__' => [
+        'api/ai/chat'           => 'index/api.AIChat/chat',
+        'api/ai/chat/config'   => 'index/api.AIChat/config',
+        'api/ai/chat/health'   => 'index/api.AIChat/health',
+        'api/ai/chat/stream'   => 'index/api.AIChat/stream',
+    ],
 ];
 ?>

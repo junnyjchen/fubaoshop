@@ -2,11 +2,11 @@
 requires = ["nodejs-24"]
 
 [dev]
-build = ["cd api && pnpm install"]
-run = ["node", "api/server.js", "--static", "/workspace/projects"]
+build = []
+run = ["/usr/bin/php8.3", "think", "run", "-H", "0.0.0.0", "-p", "5000"]
 cwd = "/workspace/projects"
 
 [deploy]
-build = ["cd api && pnpm install"]
-run = ["node", "api/server.js", "--static", "/workspace/projects"]
+build = []
+run = ["/usr/bin/php8.3", "think", "run", "-H", "0.0.0.0", "-p", "5000"]
 cwd = "/workspace/projects"

@@ -1,0 +1,266 @@
+{__CONTENT__}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接口测试 - AI道玄 - 符宝网</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap/css/bootstrap.min.css">
+    <style>
+        body { background: #0f0f23; color: #f5f5f5; font-family: -apple-system, sans-serif; }
+        .ai-admin { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .ai-admin-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-admin-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #c41e3a, #e63950); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .ai-admin-title h1 { font-size: 22px; color: #d4af37; margin: 0 0 4px; }
+        .ai-admin-title p { font-size: 12px; color: #b8b8b8; margin: 0; }
+        .ai-admin-nav { display: flex; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1a1a2e; border-radius: 10px; overflow-x: auto; }
+        .ai-admin-nav a { padding: 8px 16px; color: #b8b8b8; text-decoration: none; border-radius: 6px; white-space: nowrap; transition: all 0.3s; }
+        .ai-admin-nav a:hover { color: #d4af37; }
+        .ai-admin-nav a.active { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+        .ai-admin-panel { background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); padding: 24px; }
+        .ai-panel-title { font-size: 16px; color: #d4af37; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-test-section { background: #16213e; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+        .ai-test-section h4 { color: #d4af37; margin: 0 0 12px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .ai-test-endpoint { display: flex; gap: 8px; margin-bottom: 12px; }
+        .ai-method { padding: 8px 16px; background: #c41e3a; border-radius: 6px; font-size: 12px; font-weight: 600; color: #fff; }
+        .ai-method.post { background: #10b981; }
+        .ai-method.get { background: #3b82f6; }
+        .ai-endpoint-url { flex: 1; padding: 8px 14px; background: #0f0f23; border-radius: 6px; font-family: monospace; font-size: 13px; color: #b8b8b8; }
+        .ai-test-form { display: flex; gap: 12px; margin-bottom: 12px; }
+        .ai-test-input { flex: 1; padding: 10px 14px; background: #0f0f23; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px; }
+        .ai-test-input:focus { outline: none; border-color: #d4af37; }
+        .ai-test-result { background: #0f0f23; border-radius: 8px; padding: 16px; min-height: 120px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+        .ai-result-success { color: #10b981; }
+        .ai-result-error { color: #ef4444; }
+        .ai-result-info { color: #3b82f6; }
+        .ai-result-loading { color: #f59e0b; }
+        .ai-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .ai-btn-primary { background: linear-gradient(135deg, #c41e3a, #e63950); color: #fff; }
+        .ai-btn-primary:hover { transform: translateY(-2px); }
+        .ai-btn-secondary { background: #0f0f23; color: #f5f5f5; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .ai-form-actions { display: flex; gap: 12px; margin-bottom: 12px; }
+        .ai-json-key { color: #d4af37; }
+        .ai-json-string { color: #10b981; }
+        .ai-json-number { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="ai-admin">
+        <div class="ai-admin-header">
+            <div class="ai-admin-logo">☯</div>
+            <div class="ai-admin-title">
+                <h1>AI助手「道玄」配置</h1>
+                <p>符宝网智能问答系统</p>
+            </div>
+        </div>
+
+        <div class="ai-admin-nav">
+            <a href="{:url('index/ai_assistant/config')}">基础配置</a>
+            <a href="{:url('index/ai_assistant/model')}">模型配置</a>
+            <a href="{:url('index/ai_assistant/knowledge')}">知识库</a>
+            <a href="{:url('index/ai_assistant/optimize')}">训练优化</a>
+            <a href="{:url('index/ai_assistant/test')}" class="active">接口测试</a>
+        </div>
+
+        <div class="ai-admin-panel">
+            <div class="ai-panel-title">API接口测试</div>
+            
+            <!-- 健康检查 -->
+            <div class="ai-test-section">
+                <h4><i class="mdi mdi-heart-pulse"></i> 健康检查接口</h4>
+                <div class="ai-test-endpoint">
+                    <span class="ai-method get">GET</span>
+                    <span class="ai-endpoint-url">/api/ai/chat/health</span>
+                </div>
+                <div class="ai-form-actions">
+                    <button type="button" class="ai-btn ai-btn-primary" onclick="testHealth()">
+                        <i class="mdi mdi-play"></i> 发送请求
+                    </button>
+                    <button type="button" class="ai-btn ai-btn-secondary" onclick="clearResult('healthResult')">
+                        <i class="mdi mdi-eraser"></i> 清空
+                    </button>
+                </div>
+                <div class="ai-test-result" id="healthResult"><span class="ai-result-info">等待测试...</span></div>
+            </div>
+
+            <!-- 获取配置 -->
+            <div class="ai-test-section">
+                <h4><i class="mdi mdi-cog"></i> 获取配置接口</h4>
+                <div class="ai-test-endpoint">
+                    <span class="ai-method get">GET</span>
+                    <span class="ai-endpoint-url">/api/ai/chat/config</span>
+                </div>
+                <div class="ai-form-actions">
+                    <button type="button" class="ai-btn ai-btn-primary" onclick="testConfig()">
+                        <i class="mdi mdi-play"></i> 发送请求
+                    </button>
+                    <button type="button" class="ai-btn ai-btn-secondary" onclick="clearResult('configResult')">
+                        <i class="mdi mdi-eraser"></i> 清空
+                    </button>
+                </div>
+                <div class="ai-test-result" id="configResult"><span class="ai-result-info">等待测试...</span></div>
+            </div>
+
+            <!-- 发送消息 -->
+            <div class="ai-test-section">
+                <h4><i class="mdi mdi-chat-processing"></i> 发送消息接口</h4>
+                <div class="ai-test-endpoint">
+                    <span class="ai-method post">POST</span>
+                    <span class="ai-endpoint-url">/api/ai/chat</span>
+                </div>
+                <div class="ai-form-actions">
+                    <input type="text" class="ai-test-input" id="chatInput" placeholder="输入测试问题，如：什么是符箓？" value="什么是符箓？">
+                    <button type="button" class="ai-btn ai-btn-primary" onclick="testChat()">
+                        <i class="mdi mdi-play"></i> 发送
+                    </button>
+                </div>
+                <div class="ai-test-result" id="chatResult"><span class="ai-result-info">等待测试...</span></div>
+            </div>
+
+            <!-- 流式测试 -->
+            <div class="ai-test-section">
+                <h4><i class="mdi mdi-lightning-bolt"></i> 流式输出接口</h4>
+                <div class="ai-test-endpoint">
+                    <span class="ai-method post">POST</span>
+                    <span class="ai-endpoint-url">/api/ai/chat/stream</span>
+                </div>
+                <div class="ai-form-actions">
+                    <input type="text" class="ai-test-input" id="streamInput" placeholder="输入测试问题" value="道家思想的核心理念是什么？">
+                    <button type="button" class="ai-btn ai-btn-primary" onclick="testStream()">
+                        <i class="mdi mdi-play"></i> 测试流式
+                    </button>
+                </div>
+                <div class="ai-test-result" id="streamResult"><span class="ai-result-info">等待测试...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{:REQUEST_BASE}/static/common/jquery.min.js"></script>
+    <script src="{:REQUEST_BASE}/static/common/layer/layer.js"></script>
+    <script>
+        var baseUrl = window.location.origin;
+
+        // 健康检查
+        function testHealth() {
+            var resultEl = $('#healthResult');
+            resultEl.html('<span class="ai-result-loading">正在请求...</span>');
+            
+            $.get('/api/ai/chat/health', function(res) {
+                if (res.code === 0) {
+                    resultEl.html('<span class="ai-result-success">✓ 请求成功</span>\n\n' + formatJson(res));
+                } else {
+                    resultEl.html('<span class="ai-result-error">✗ 请求失败</span>\n\n' + formatJson(res));
+                }
+            }).fail(function(xhr) {
+                resultEl.html('<span class="ai-result-error">✗ 请求失败</span>\n状态码: ' + xhr.status);
+            });
+        }
+
+        // 获取配置
+        function testConfig() {
+            var resultEl = $('#configResult');
+            resultEl.html('<span class="ai-result-loading">正在请求...</span>');
+            
+            $.get('/api/ai/chat/config', function(res) {
+                if (res.code === 0) {
+                    resultEl.html('<span class="ai-result-success">✓ 请求成功</span>\n\n' + formatJson(res));
+                } else {
+                    resultEl.html('<span class="ai-result-error">✗ 请求失败</span>\n\n' + formatJson(res));
+                }
+            }).fail(function(xhr) {
+                resultEl.html('<span class="ai-result-error">✗ 请求失败</span>\n状态码: ' + xhr.status);
+            });
+        }
+
+        // 发送消息
+        function testChat() {
+            var message = $('#chatInput').val().trim();
+            if (!message) {
+                layer.msg('请输入问题', {icon: 7});
+                return;
+            }
+            
+            var resultEl = $('#chatResult');
+            resultEl.html('<span class="ai-result-loading">正在处理...</span>');
+            
+            $.ajax({
+                url: '/api/ai/chat',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ message: message }),
+                success: function(res) {
+                    if (res.code === 0 && res.data) {
+                        var output = '<span class="ai-result-success">✓ 请求成功</span>\n';
+                        output += '<span class="ai-json-key">匹配率:</span> <span class="ai-json-number">' + (res.data.match_rate || 0) + '%</span>\n\n';
+                        output += '<span class="ai-json-key">回复内容:</span>\n' + res.data.content;
+                        resultEl.html(output);
+                    } else {
+                        resultEl.html('<span class="ai-result-error">✗ 请求失败</span>\n\n' + formatJson(res));
+                    }
+                },
+                error: function(xhr) {
+                    resultEl.html('<span class="ai-result-error">✗ 请求失败</span>\n状态码: ' + xhr.status);
+                }
+            });
+        }
+
+        // 流式测试
+        function testStream() {
+            var message = $('#streamInput').val().trim();
+            if (!message) {
+                layer.msg('请输入问题', {icon: 7});
+                return;
+            }
+            
+            var resultEl = $('#streamResult');
+            resultEl.html('<span class="ai-result-loading">正在流式输出...</span>\n');
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/ai/chat/stream', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            
+            xhr.onprogress = function() {
+                var text = xhr.responseText;
+                var lines = text.split('\n');
+                var lastLine = lines[lines.length - 2] || '';
+                if (lastLine.startsWith('data: ')) {
+                    try {
+                        var data = JSON.parse(lastLine.substring(6));
+                        if (data.content) {
+                            resultEl.html('<span class="ai-result-info">流式输出中...</span>\n\n' + data.content);
+                        }
+                    } catch(e) {}
+                }
+            };
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    resultEl.html('<span class="ai-result-success">✓ 流式完成</span>\n\n' + xhr.responseText);
+                } else {
+                    resultEl.html('<span class="ai-result-error">✗ 流式请求失败</span>\n状态码: ' + xhr.status);
+                }
+            };
+            
+            xhr.onerror = function() {
+                resultEl.html('<span class="ai-result-error">✗ 网络错误</span>');
+            };
+            
+            xhr.send(JSON.stringify({ message: message }));
+        }
+
+        // 清空结果
+        function clearResult(id) {
+            $('#' + id).html('<span class="ai-result-info">已清空</span>');
+        }
+
+        // 格式化JSON
+        function formatJson(obj) {
+            return JSON.stringify(obj, null, 2)
+                .replace(/"([^"]+)":/g, '<span class="ai-json-key">"$1"</span>:')
+                .replace(/: "([^"]+)"/g, ': <span class="ai-json-string">"$1"</span>')
+                .replace(/: (\d+)/g, ': <span class="ai-json-number">$1</span>');
+        }
+    </script>
+</body>
+</html>

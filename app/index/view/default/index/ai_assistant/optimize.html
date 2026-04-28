@@ -1,0 +1,113 @@
+{__CONTENT__}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>训练优化 - AI道玄 - 符宝网</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{:REQUEST_BASE}/static/common/bootstrap/css/bootstrap.min.css">
+    <style>
+        body { background: #0f0f23; color: #f5f5f5; font-family: -apple-system, sans-serif; }
+        .ai-admin { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .ai-admin-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-admin-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #c41e3a, #e63950); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .ai-admin-title h1 { font-size: 22px; color: #d4af37; margin: 0 0 4px; }
+        .ai-admin-title p { font-size: 12px; color: #b8b8b8; margin: 0; }
+        .ai-admin-nav { display: flex; gap: 8px; margin-bottom: 20px; padding: 12px; background: #1a1a2e; border-radius: 10px; overflow-x: auto; }
+        .ai-admin-nav a { padding: 8px 16px; color: #b8b8b8; text-decoration: none; border-radius: 6px; white-space: nowrap; transition: all 0.3s; }
+        .ai-admin-nav a:hover { color: #d4af37; }
+        .ai-admin-nav a.active { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+        .ai-admin-panel { background: #1a1a2e; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); padding: 24px; }
+        .ai-panel-title { font-size: 16px; color: #d4af37; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.15); }
+        .ai-info-card { background: #16213e; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+        .ai-info-card h4 { color: #d4af37; margin: 0 0 12px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .ai-info-card p { color: #b8b8b8; font-size: 13px; line-height: 1.6; margin: 0; }
+        .ai-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .ai-stat-card { background: #16213e; border-radius: 10px; padding: 16px; text-align: center; }
+        .ai-stat-value { font-size: 28px; font-weight: 700; color: #d4af37; }
+        .ai-stat-label { font-size: 12px; color: #b8b8b8; margin-top: 4px; }
+        .ai-btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .ai-btn-primary { background: linear-gradient(135deg, #c41e3a, #e63950); color: #fff; }
+        .ai-btn-secondary { background: #16213e; color: #f5f5f5; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .ai-form-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .ai-coming-soon { text-align: center; padding: 60px 20px; }
+        .ai-coming-soon-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+        .ai-coming-soon h3 { color: #d4af37; margin-bottom: 12px; }
+        .ai-coming-soon p { color: #b8b8b8; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="ai-admin">
+        <div class="ai-admin-header">
+            <div class="ai-admin-logo">☯</div>
+            <div class="ai-admin-title">
+                <h1>AI助手「道玄」配置</h1>
+                <p>符宝网智能问答系统</p>
+            </div>
+        </div>
+
+        <div class="ai-admin-nav">
+            <a href="{:url('index/ai_assistant/config')}">基础配置</a>
+            <a href="{:url('index/ai_assistant/model')}">模型配置</a>
+            <a href="{:url('index/ai_assistant/knowledge')}">知识库</a>
+            <a href="{:url('index/ai_assistant/optimize')}" class="active">训练优化</a>
+            <a href="{:url('index/ai_assistant/test')}">接口测试</a>
+        </div>
+
+        <div class="ai-admin-panel">
+            <div class="ai-panel-title">训练优化统计</div>
+            
+            <div class="ai-stats-grid">
+                <div class="ai-stat-card">
+                    <div class="ai-stat-value">0</div>
+                    <div class="ai-stat-label">知识条目</div>
+                </div>
+                <div class="ai-stat-card">
+                    <div class="ai-stat-value">0</div>
+                    <div class="ai-stat-label">训练次数</div>
+                </div>
+                <div class="ai-stat-card">
+                    <div class="ai-stat-value">0%</div>
+                    <div class="ai-stat-label">匹配率</div>
+                </div>
+                <div class="ai-stat-card">
+                    <div class="ai-stat-value">0</div>
+                    <div class="ai-stat-label">对话次数</div>
+                </div>
+            </div>
+
+            <div class="ai-info-card">
+                <h4><i class="mdi mdi-information"></i> 训练优化说明</h4>
+                <p>训练优化功能可以帮助AI助手更好地理解用户意图，提高回答的准确性和相关性。通过持续优化，AI将越来越懂道家文化知识。</p>
+            </div>
+
+            <div class="ai-coming-soon">
+                <div class="ai-coming-soon-icon">🔧</div>
+                <h3>功能开发中</h3>
+                <p>训练优化功能正在开发中，敬请期待...</p>
+            </div>
+
+            <div class="ai-form-actions">
+                <button type="button" class="ai-btn ai-btn-primary" disabled>
+                    <i class="mdi mdi-robot"></i> 开始训练 (开发中)
+                </button>
+                <button type="button" class="ai-btn ai-btn-secondary" disabled>
+                    <i class="mdi mdi-refresh"></i> 刷新统计 (开发中)
+                </button>
+                <a href="{:url('index/ai_assistant/knowledge')}" class="ai-btn ai-btn-secondary">
+                    <i class="mdi mdi-book-open-variant"></i> 管理知识库
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{:REQUEST_BASE}/static/common/jquery.min.js"></script>
+    <script>
+        // 功能开发中提示
+        $('.ai-btn[disabled]').on('click', function() {
+            layer.msg('该功能正在开发中', {icon: 7, time: 2000});
+        });
+    </script>
+</body>
+</html>
