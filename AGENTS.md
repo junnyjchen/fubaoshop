@@ -209,9 +209,38 @@ CREATE TABLE `sxo_bottom_bar_config` (
 
 ## 服务器部署
 
+### 快速安装
+
+```bash
+# 1. 上传代码到服务器
+cd /www/wwwroot/fubao
+
+# 2. 运行一键安装脚本
+bash scripts/server-install.sh
+
+# 3. 配置数据库
+# - 编辑 .env 文件配置数据库连接
+# - 创建数据库并导入数据
+
+# 4. 导入数据库
+mysql -u root -p mizhi_shop < docs/database/full_install.sql
+```
+
+### 完整安装文档
+
+详细安装步骤请参考：`docs/INSTALL_SERVER.md`
+
+### 数据库文件
+
+| 文件 | 说明 |
+|------|------|
+| `docs/database/full_install.sql` | 完整数据库（含AI知识库、如愿晒单、一物一码等） |
+| `docs/database/wish.sql` | 如愿晒单表 |
+| `docs/database/certificate.sql` | 一物一码表 |
+| `docs/database/ai_knowledge_expand.sql` | AI知识库扩展表 |
+
 ### 一键更新脚本
 ```bash
-# 上传到服务器后执行
 cd /www/wwwroot/fubao
 bash scripts/deploy.sh full    # 完整更新
 bash scripts/deploy.sh code   # 仅更新代码
@@ -228,7 +257,7 @@ rm -rf runtime/cache/*
 rm -rf runtime/log/*
 
 # 更新数据库
-mysql -u root -p mizhi_shop < docs/database/*.sql
+mysql -u root -p mizhi_shop < docs/database/full_install.sql
 ```
 
 ---
