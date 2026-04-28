@@ -108,6 +108,47 @@ class AIAssistant extends Base
     }
     
     /**
+     * 测试API连接
+     */
+    public function testApi()
+    {
+        if (!$this->request->isPost()) {
+            return json(['code' => 400, 'msg' => '请求方式错误']);
+        }
+        
+        $provider = input('provider', '');
+        $apiKey = input('api_key', '');
+        $model = input('model', '');
+        
+        $result = $this->service->testApiConnection($provider, $apiKey, $model);
+        
+        if ($result['success']) {
+            return json(['code' => 0, 'msg' => $result['message']]);
+        } else {
+            return json(['code' => 1, 'msg' => $result['message']]);
+        }
+    }
+    
+    /**
+     * 获取API提供商列表
+     */
+    public function getProviders()
+    {
+        $providers = $this->service->getApiProviders();
+        return json(['code' => 0, 'data' => $providers]);
+    }
+    
+    /**
+     * 获取模型列表
+     */
+    public function getModels()
+    {
+        $provider = input('provider', 'doubao');
+        $models = $this->service->getModelsByProvider($provider);
+        return json(['code' => 0, 'data' => $models]);
+    }
+    
+    /**
      * 配置页面
      */
     public function config()

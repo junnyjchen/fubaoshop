@@ -1,7 +1,7 @@
 <?php
 /**
  * AI助手服务层
- * 符宝网
+ * 符宝网 - 支持大模型API配置
  */
 
 namespace app\index\service;
@@ -17,6 +17,50 @@ class AIAssistantService
     
     // 知识库缓存键
     const KNOWLEDGE_CACHE_KEY = 'ai_knowledge_list';
+    
+    // 大模型API配置
+    const API_PROVIDERS = [
+        'doubao' => [
+            'name' => '豆包 (Volcengine)',
+            'base_url' => 'https://ark.cn-beijing.volces.com/api/v3',
+            'models' => [
+                'doubao-seed-2-0-pro-260215' => '豆包 Pro 2.0',
+                'doubao-seed-2-0-lite-260215' => '豆包 Lite 2.0',
+                'doubao-seed-2-0-mini-260215' => '豆包 Mini 2.0',
+            ]
+        ],
+        'deepseek' => [
+            'name' => 'DeepSeek',
+            'base_url' => 'https://api.deepseek.com/v1',
+            'models' => [
+                'deepseek-v3-2-251201' => 'DeepSeek V3.2',
+                'deepseek-chat' => 'DeepSeek Chat',
+            ]
+        ],
+        'kimi' => [
+            'name' => 'Kimi (月之暗面)',
+            'base_url' => 'https://api.moonshot.cn/v1',
+            'models' => [
+                'kimi-k2-5-260127' => 'Kimi K2.5',
+                'moonshot-v1-8k' => 'Moonshot V1 8K',
+                'moonshot-v1-32k' => 'Moonshot V1 32K',
+            ]
+        ],
+        'zhipu' => [
+            'name' => '智谱 GLM',
+            'base_url' => 'https://open.bigmodel.cn/api/paas/v4',
+            'models' => [
+                'glm-5-0-260211' => 'GLM-5.0',
+                'glm-4' => 'GLM-4',
+                'glm-4-flash' => 'GLM-4 Flash',
+            ]
+        ],
+        'custom' => [
+            'name' => '自定义API',
+            'base_url' => '',
+            'models' => []
+        ],
+    ];
     
     /**
      * 获取配置
@@ -36,6 +80,9 @@ class AIAssistantService
                     'enable_api' => (bool)$config['is_enable'],
                     'knowledge_first' => (bool)($config['knowledge_first'] ?? true),
                     'stream_response' => (bool)($config['stream_response'] ?? true),
+                    'provider' => !empty($config['api_provider']) ? $config['api_provider'] : 'doubao',
+                    'api_key' => !empty($config['api_key']) ? $this->decryptApiKey($config['api_key']) : '',
+                    'api_url' => !empty($config['api_url']) ? $config['api_url'] : '',
                     'model' => !empty($config['model']) ? $config['model'] : 'doubao-seed-2-0-pro-260215',
                     'temperature' => isset($config['temperature']) ? floatval($config['temperature']) : 0.7,
                     'top_p' => isset($config['top_p']) ? intval($config['top_p']) : 80,
@@ -66,6 +113,9 @@ class AIAssistantService
             'enable_api' => false,
             'knowledge_first' => true,
             'stream_response' => true,
+            'provider' => 'doubao',
+            'api_key' => '',
+            'api_url' => '',
             'model' => 'doubao-seed-2-0-pro-260215',
             'temperature' => 10,
             'top_p' => 80,
@@ -76,6 +126,25 @@ class AIAssistantService
             'welcome' => '施主好，贫道道玄，有何疑惑尽管道来。',
             'quick_questions' => "什么是符箓？\n如何请购开光符？\n犯太岁如何化解？"
         ];
+    }
+    
+    /**
+     * 获取API提供商列表
+     */
+    public function getApiProviders()
+    {
+        return self::API_PROVIDERS;
+    }
+    
+    /**
+     * 根据提供商获取模型列表
+     */
+    public function getModelsByProvider($provider)
+    {
+        if (isset(self::API_PROVIDERS[$provider])) {
+            return self::API_PROVIDERS[$provider]['models'];
+        }
+        return [];
     }
     
     /**
@@ -119,6 +188,21 @@ TEXT;
         $saveData['enable_thinking'] = isset($data['enable_thinking']) ? 1 : 0;
         $saveData['show_thinking'] = isset($data['show_thinking']) ? 1 : 0;
         
+        // 处理API配置
+        if (isset($data['provider']) && !empty($data['provider'])) {
+            $saveData['api_provider'] = trim($data['provider']);
+        }
+        
+        // API密钥加密存储
+        if (isset($data['api_key']) && !empty(trim($data['api_key']))) {
+            $saveData['api_key'] = $this->encryptApiKey(trim($data['api_key']));
+        }
+        
+        // 自定义API地址
+        if (isset($data['api_url'])) {
+            $saveData['api_url'] = trim($data['api_url']);
+        }
+        
         // 处理模型选择
         if (isset($data['model']) && !empty($data['model'])) {
             $saveData['model'] = trim($data['model']);
@@ -159,6 +243,185 @@ TEXT;
             return true;
         } catch (\Exception $e) {
             return false;
+        }
+    }
+    
+    /**
+     * 加密API密钥
+     */
+    public function encryptApiKey($apiKey)
+    {
+        // 简单的Base64编码，实际生产环境建议使用更安全的加密方式
+        return base64_encode($apiKey);
+    }
+    
+    /**
+     * 解密API密钥
+     */
+    public function decryptApiKey($encryptedKey)
+    {
+        return base64_decode($encryptedKey);
+    }
+    
+    /**
+     * 测试API连接
+     */
+    public function testApiConnection($provider, $apiKey, $model)
+    {
+        if (empty($apiKey)) {
+            return ['success' => false, 'message' => 'API密钥不能为空'];
+        }
+        
+        $config = self::API_PROVIDERS[$provider] ?? null;
+        if (!$config) {
+            return ['success' => false, 'message' => '不支持的API提供商'];
+        }
+        
+        // 构建请求URL
+        $baseUrl = $config['base_url'];
+        if ($provider === 'custom') {
+            $baseUrl = rtrim($apiKey, '/'); // custom模式下apiKey实际上是完整URL
+        }
+        
+        $url = rtrim($baseUrl, '/') . '/chat/completions';
+        
+        // 构建测试请求
+        $data = [
+            'model' => $model,
+            'messages' => [
+                ['role' => 'user', 'content' => '你好']
+            ],
+            'max_tokens' => 10
+        ];
+        
+        try {
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $apiKey
+                ],
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_SSL_VERIFYPEER => true,
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            
+            if ($error) {
+                return ['success' => false, 'message' => '连接失败: ' . $error];
+            }
+            
+            if ($httpCode === 200) {
+                return ['success' => true, 'message' => '连接成功！'];
+            } else {
+                $result = json_decode($response, true);
+                $errorMsg = $result['error']['message'] ?? '未知错误';
+                return ['success' => false, 'message' => 'API错误 (' . $httpCode . '): ' . $errorMsg];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => '请求异常: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * 调用大模型API
+     */
+    public function callApi($messages, $stream = false)
+    {
+        $config = $this->getConfig();
+        
+        if (!$config['enable_api']) {
+            return ['error' => 'API未启用'];
+        }
+        
+        $apiKey = $config['api_key'];
+        if (empty($apiKey)) {
+            return ['error' => 'API密钥未配置'];
+        }
+        
+        $provider = $config['provider'];
+        $providerConfig = self::API_PROVIDERS[$provider] ?? null;
+        
+        if (!$providerConfig && $provider !== 'custom') {
+            return ['error' => '不支持的API提供商: ' . $provider];
+        }
+        
+        // 构建请求URL
+        if ($provider === 'custom') {
+            $baseUrl = !empty($config['api_url']) ? $config['api_url'] : '';
+            if (empty($baseUrl)) {
+                return ['error' => '自定义API地址未配置'];
+            }
+        } else {
+            $baseUrl = $providerConfig['base_url'];
+        }
+        
+        $url = rtrim($baseUrl, '/') . '/chat/completions';
+        
+        // 构建请求参数
+        $params = [
+            'model' => $config['model'],
+            'messages' => $messages,
+            'temperature' => $config['temperature'] / 10, // 转换为0-2范围
+            'max_tokens' => $config['max_tokens'],
+            'top_p' => $config['top_p'] / 100, // 转换为0-1范围
+        ];
+        
+        // 添加系统提示词
+        if (!empty($config['system_prompt'])) {
+            array_unshift($messages, [
+                'role' => 'system',
+                'content' => $config['system_prompt']
+            ]);
+            $params['messages'] = $messages;
+        }
+        
+        try {
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($params),
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $apiKey
+                ],
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_SSL_VERIFYPEER => true,
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            
+            if ($error) {
+                return ['error' => '请求失败: ' . $error];
+            }
+            
+            if ($httpCode !== 200) {
+                $result = json_decode($response, true);
+                $errorMsg = $result['error']['message'] ?? 'API返回错误 (' . $httpCode . ')';
+                return ['error' => $errorMsg];
+            }
+            
+            $result = json_decode($response, true);
+            return [
+                'content' => $result['choices'][0]['message']['content'] ?? '',
+                'usage' => $result['usage'] ?? [],
+                'id' => $result['id'] ?? ''
+            ];
+            
+        } catch (\Exception $e) {
+            return ['error' => '调用异常: ' . $e->getMessage()];
         }
     }
     
@@ -247,10 +510,7 @@ TEXT;
             
             if ($detail) {
                 // 更新匹配次数
-                Db::name('ai_knowledge_item')
-                    ->where('id', $id)
-                    ->inc('match_count')
-                    ->update();
+                Db::name('ai_knowledge_item')->where('id', $id)->setInc('hit_count');
             }
             
             return $detail;
@@ -260,224 +520,168 @@ TEXT;
     }
     
     /**
-     * 知识库匹配
-     */
-    public function matchKnowledge($query)
-    {
-        $query = mb_strtolower(trim($query));
-        
-        try {
-            // 尝试精确匹配关键词
-            $list = Db::name('ai_knowledge_item')
-                ->where('is_enable', 1)
-                ->select()
-                ->toArray();
-        } catch (\Exception $e) {
-            $list = $this->getBuiltinKnowledge();
-        }
-        
-        $bestMatch = null;
-        $bestScore = 0;
-        
-        foreach ($list as $item) {
-            $keywords = $item['keywords'] ?? '';
-            $keywordList = array_filter(array_map('trim', explode(',', $keywords)));
-            
-            foreach ($keywordList as $keyword) {
-                $keywordLower = mb_strtolower($keyword);
-                if (strpos($query, $keywordLower) !== false) {
-                    $score = mb_strlen($keyword) / mb_strlen($query);
-                    if ($score > $bestScore) {
-                        $bestScore = $score;
-                        $bestMatch = $item;
-                    }
-                }
-            }
-        }
-        
-        if ($bestMatch) {
-            return [
-                'found' => true,
-                'content' => $bestMatch['content'],
-                'match_rate' => min(100, round($bestScore * 100)),
-                'id' => $bestMatch['id']
-            ];
-        }
-        
-        return [
-            'found' => false,
-            'content' => null,
-            'match_rate' => 0,
-            'id' => 0
-        ];
-    }
-    
-    /**
-     * 内置知识库
-     */
-    private function getBuiltinKnowledge()
-    {
-        return [
-            [
-                'id' => 1,
-                'keywords' => '平安符,护身符',
-                'content' => "平安符乃道家护身之宝\n\n【功效】\n• 护佑出入平安\n• 驱邪避祸\n• 化解小人\n• 保佑身体健康\n\n【使用方法】\n1. 挂于大门内侧，头朝外\n2. 可随身携带，放于钱包或口袋\n3. 保持干燥，不可沾水\n\n【适用人群】\n• 经常出差旅行\n• 体质较弱易招阴邪\n• 运势低迷期"
-            ],
-            [
-                'id' => 2,
-                'keywords' => '财神符,招财符,财运',
-                'content' => "财神符乃招财进宝之宝\n\n【适合人群】\n• 经商做生意\n• 财运不佳\n• 投资理财\n• 创业开张\n\n【功效】\n• 招财进宝\n• 财源广进\n• 守财聚财"
-            ],
-            [
-                'id' => 3,
-                'keywords' => '文昌符,学业符,考试',
-                'content' => "文昌符乃求学问道之宝\n\n【适合人群】\n• 学生备考\n• 中考高考\n• 考研考公\n• 职称考试\n\n【功效】\n• 开启智慧\n• 学业进步\n• 考试顺利"
-            ],
-            [
-                'id' => 4,
-                'keywords' => '太岁符,犯太岁,本命年',
-                'content' => "太岁符专门化解犯太岁\n\n【犯太岁类型】\n• 值太岁：本命年\n• 冲太岁：六大冲\n• 破太岁\n• 害太岁\n• 刑太岁\n\n【化解方法】\n1. 请太岁符贴身携带\n2. 犯太岁年份必请"
-            ],
-            [
-                'id' => 5,
-                'keywords' => '开光',
-                'content' => "开光是道家重要仪式\n\n【开光条件】\n• 必须由有道行的法师主持\n• 需设坛焚香，诵经祈祷\n• 选择吉日良时进行\n\n【开光流程】\n1. 净坛：清净道场\n2. 上香：诚心供奉\n3. 诵经：诵读道经\n4. 敕笔：法师持咒\n5. 点睛：开光点眼\n6. 发牒：颁发证明"
-            ],
-            [
-                'id' => 6,
-                'keywords' => '请符,如何请',
-                'content' => "请符有讲究，心诚则灵\n\n【请符流程】\n1. 选择正规道观或店铺\n2. 说明自身需求\n3. 法师根据八字推荐\n4. 心存善念，不可强求\n5. 请回后妥善保管\n\n【禁忌】\n• 心存恶念者符不灵\n• 不可用污秽之物接触\n• 符箓不可让外人随意触碰"
-            ],
-            [
-                'id' => 7,
-                'keywords' => '五行,金木水火土',
-                'content' => "五行是道家核心理论\n\n【五行】\n金、木、水、火、土\n\n【相生】\n木生火 → 火生土 → 土生金 → 金生水 → 水生木\n\n【相克】\n木克土 → 土克水 → 水克火 → 火克金 → 金克木"
-            ],
-            [
-                'id' => 8,
-                'keywords' => '见效,多久,效果',
-                'content' => "符箓见效时间因人而异\n\n【短期效果】7-30天\n• 心态渐趋平和\n• 睡眠质量改善\n\n【中期效果】1-3个月\n• 贵人运开始增强\n• 做事更加顺利\n\n【长期效果】3-6个月\n• 事业财运明显提升\n\n关键在于：心诚 + 配合自身努力。"
-            ]
-        ];
-    }
-    
-    /**
      * 获取快捷问题
      */
     public function getQuickQuestions()
     {
+        $config = $this->getConfig();
+        $questions = $config['quick_questions'] ?? '';
+        
+        if (empty($questions)) {
+            return [
+                '什么是符箓？',
+                '如何请购开光符？',
+                '犯太岁如何化解？'
+            ];
+        }
+        
+        return array_filter(array_map('trim', explode("\n", $questions)));
+    }
+    
+    /**
+     * 匹配知识库
+     */
+    public function matchKnowledge($query)
+    {
+        $query = trim($query);
+        if (empty($query)) {
+            return null;
+        }
+        
+        try {
+            // 简单的关键词匹配
+            $list = Db::name('ai_knowledge_item')
+                ->where('is_enable', 1)
+                ->select()
+                ->toArray();
+            
+            $bestMatch = null;
+            $bestScore = 0;
+            
+            foreach ($list as $item) {
+                $score = 0;
+                $question = strtolower($item['question']);
+                $queryLower = strtolower($query);
+                
+                // 精确匹配
+                if (strpos($question, $queryLower) !== false) {
+                    $score = 100;
+                }
+                // 关键词匹配
+                $keywords = preg_split('/[\s,，]+/', $queryLower);
+                foreach ($keywords as $kw) {
+                    if (strlen($kw) >= 2 && strpos($question, $kw) !== false) {
+                        $score += 20;
+                    }
+                }
+                
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $bestMatch = $item;
+                }
+            }
+            
+            // 匹配阈值
+            if ($bestScore >= 30 && $bestMatch) {
+                Db::name('ai_knowledge_item')->where('id', $bestMatch['id'])->setInc('hit_count');
+                return [
+                    'content' => $bestMatch['answer'],
+                    'match_rate' => min(100, $bestScore),
+                    'source' => 'knowledge'
+                ];
+            }
+        } catch (\Exception $e) {
+            // 忽略错误
+        }
+        
+        return null;
+    }
+    
+    /**
+     * 获取聊天回复
+     */
+    public function getChatResponse($message, $history = [])
+    {
+        $config = $this->getConfig();
+        
+        // 先匹配知识库
+        if ($config['knowledge_first']) {
+            $knowledgeResult = $this->matchKnowledge($message);
+            if ($knowledgeResult && $knowledgeResult['match_rate'] >= 70) {
+                return $knowledgeResult;
+            }
+        }
+        
+        // 如果启用API且知识库未匹配或未设置知识库优先
+        if ($config['enable_api']) {
+            // 构建消息列表
+            $messages = [];
+            
+            // 添加历史对话
+            foreach ($history as $h) {
+                $messages[] = [
+                    'role' => $h['role'],
+                    'content' => $h['content']
+                ];
+            }
+            
+            // 添加当前消息
+            $messages[] = [
+                'role' => 'user',
+                'content' => $message
+            ];
+            
+            // 调用API
+            $result = $this->callApi($messages);
+            
+            if (isset($result['error'])) {
+                return [
+                    'content' => '抱歉，贫道暂时无法回复此问题。' . $result['error'],
+                    'match_rate' => 0,
+                    'source' => 'error'
+                ];
+            }
+            
+            return [
+                'content' => $result['content'],
+                'match_rate' => 0,
+                'source' => 'api'
+            ];
+        }
+        
+        // 内置回复
         return [
-            [
-                'question' => '平安符有什么功效？',
-                'category' => 'talisman'
-            ],
-            [
-                'question' => '如何正确请符？',
-                'category' => 'taoism'
-            ],
-            [
-                'question' => '什么是犯太岁？',
-                'category' => 'taoism'
-            ],
-            [
-                'question' => '符箓多久见效？',
-                'category' => 'faq'
-            ],
-            [
-                'question' => '什么是开光？',
-                'category' => 'taoism'
-            ],
-            [
-                'question' => '文昌符对考试有帮助吗？',
-                'category' => 'talisman'
-            ]
+            'content' => $this->getBuiltInResponse($message),
+            'match_rate' => 0,
+            'source' => 'builtin'
         ];
     }
     
     /**
-     * 生成回复
+     * 内置回复
      */
-    public function generateResponse($query, $knowledgeMatch)
+    private function getBuiltInResponse($message)
     {
-        if ($knowledgeMatch['found']) {
-            return $knowledgeMatch['content'];
+        $lowerMsg = mb_strtolower($message);
+        
+        // 常见问题回复
+        $patterns = [
+            '符箓' => '符箓，乃道教重要法器，承载天地人之信息，可用于祈福、辟邪、镇宅等。符箓需经高功法师敕封方有灵效，请购请至符宝网。',
+            '开光' => '开光，乃通过法师诵经存想，将天地灵气注入法物之中，使其具有灵性。开光后的符箓方可发挥其应有的作用。',
+            '太岁' => '犯太岁，乃流年与生肖相冲相克，主运程多有波折。可通过安太岁、化太岁符等方式化解。符宝网提供专业化解太岁服务。',
+            '请购' => '施主可至符宝网请购开光符箓，本店所有符箓均由高功法师亲手敕封，功效灵验。',
+            '功效' => '符箓功效因种类而异，有招财符、平安符、姻缘符、事业符等，请根据自身需求选择合适的符箓。',
+            'hello' => '施主好，贫道道玄，在此恭候多时。有什么道家文化方面的问题，尽管问道。',
+            '你好' => '施主好，贫道道玄，在此恭候多时。有什么道家文化方面的问题，尽管问道。',
+            '谢谢' => '施主客气，修道之人当广结善缘。愿施主福寿安康，万事顺遂。',
+        ];
+        
+        foreach ($patterns as $keyword => $response) {
+            if (strpos($lowerMsg, $keyword) !== false) {
+                return $response;
+            }
         }
         
-        $queryLower = mb_strtolower($query);
-        
-        if (strpos($queryLower, '符') !== false && strpos($queryLower, '请') !== false) {
-            return "施主问请符之道，贫道细细道来：
-
-【请符流程】
-1. 明确需求：知晓需要何种符箓
-2. 选择正规：符宝网法物流通处
-3. 提供信息：可告知生辰八字
-4. 心存善念：符到之处，福报随行
-
-【请符禁忌】
-• 心存恶念者，符不灵验
-• 不可用污秽之物接触
-• 符箓不可让外人随意触碰
-
-施主若有具体需求，可告诉贫道，贫道为您推荐。";
-        }
-        
-        if (strpos($queryLower, '效') !== false || strpos($queryLower, '多久') !== false) {
-            return "符箓见效之期，因人而异：
-
-【短期效果】7-30天
-• 心态渐趋平和
-• 睡眠质量改善
-
-【中期效果】1-3个月
-• 贵人运开始增强
-• 做事更加顺利
-
-【长期效果】3-6个月
-• 事业财运明显提升
-
-关键在于：心诚 + 配合自身努力。";
-        }
-        
-        return "施主所问，贫道已悉知。
-
-道法自然，万物皆有其缘法。请施主详细说明所求，或选择以下快捷问题：
-
-◆ 各类符箓的功效和使用方法
-◆ 如何正确请符
-◆ 符箓的保存和禁忌
-◆ 什么是犯太岁
-
-贫道当为施主指点迷津。";
-    }
-    
-    /**
-     * 获取默认回复
-     */
-    public function getDefaultReply($query, $knowledgeMatch)
-    {
-        if ($knowledgeMatch['found']) {
-            return $knowledgeMatch['content'];
-        }
-        
-        return $this->generateResponse($query, $knowledgeMatch);
-    }
-    
-    /**
-     * 流式输出响应
-     */
-    public function streamResponse($query, $config, $knowledgeMatch)
-    {
-        $response = $this->generateResponse($query, $knowledgeMatch);
-        $chars = mb_str_split($response);
-        
-        foreach ($chars as $char) {
-            echo "data: " . json_encode(['content' => $char, 'done' => false]) . "\n\n";
-            flush();
-            usleep(10000); // 10ms
-        }
-        
-        echo "data: " . json_encode(['done' => true]) . "\n\n";
-        flush();
+        return '施主所问，贫道需要思索片刻。建议施主可先浏览符宝网符箓百科，或联系客服详询。';
     }
 }
